@@ -476,14 +476,15 @@ export const s = stylex.create({
     gridTemplateColumns: "repeat(auto-fit, minmax(78px, 1fr))",
     gap: 8,
   },
-  swatch: {
+  swatch: (backgroundColor: string) => ({
+    backgroundColor,
     boxSizing: "border-box",
     height: 64,
     borderRadius: 6,
     borderWidth: "1px",
     borderStyle: "solid",
     borderColor: "#0001",
-  },
+  }),
   table: {
     boxSizing: "border-box",
     width: "100%",
