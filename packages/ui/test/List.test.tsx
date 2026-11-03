@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { List, ThemeProvider, type ListItem } from "../src/index";
@@ -53,7 +53,7 @@ describe("standard lists", () => {
       screen.getByRole("menu", { name: "Revision 2 actions" }),
     ).toBeVisible();
     await user.keyboard("{Escape}");
-    expect(menu).toHaveFocus();
+    await waitFor(() => expect(menu).toHaveFocus());
     await user.click(
       screen.getByRole("button", { name: "Revision 3 actions" }),
     );
