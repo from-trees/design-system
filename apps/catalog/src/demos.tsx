@@ -1,6 +1,8 @@
 import { useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
+  List,
+  type ListItem,
   ActionGroup,
   Badge,
   Button,
@@ -536,42 +538,42 @@ export function HistoryPanel({
                 Restoring creates a new current revision. Previous saves remain
                 available.
               </p>
-              {revisions.map((revision) => (
-                <div key={revision} {...stylex.props(s.row, s.between)}>
-                  <div>
-                    <strong>Revision {revision}</strong>
-                    <p {...stylex.props(s.small)}>
-                      {revision === current && restored
+              <List
+                label="Saved revisions"
+                items={revisions.map(
+                  (revision): ListItem => ({
+                    id: String(revision),
+                    title: `Revision ${revision}`,
+                    metadata:
+                      revision === current && restored
                         ? "Restored just now"
-                        : "Example team member · Nov 2"}
-                    </p>
-                  </div>
-                  {revision === current ? (
-                    <Badge tone="success">Current</Badge>
-                  ) : (
-                    <MenuButton
-                      label={`Revision ${revision} actions`}
-                      actions={[
-                        {
-                          id: "view",
-                          label: "Inspect revision",
-                          icon: "view",
-                          onAction: () =>
-                            setMessage(
-                              `Revision ${revision} selected for inspection. Production integration supplies the viewer.`,
-                            ),
-                        },
-                        {
-                          id: "restore",
-                          label: "Restore",
-                          icon: "history",
-                          onAction: () => setConfirm(revision),
-                        },
-                      ]}
-                    />
-                  )}
-                </div>
-              ))}
+                        : "Example team member · Nov 2",
+                    ...(revision === current
+                      ? {
+                          status: { label: "Current", tone: "success" },
+                        }
+                      : {
+                          actions: [
+                            {
+                              id: "view",
+                              label: "Inspect revision",
+                              icon: "view",
+                              onAction: () =>
+                                setMessage(
+                                  `Revision ${revision} selected for inspection. Production integration supplies the viewer.`,
+                                ),
+                            },
+                            {
+                              id: "restore",
+                              label: "Restore",
+                              icon: "history",
+                              onAction: () => setConfirm(revision),
+                            },
+                          ],
+                        }),
+                  }),
+                )}
+              />
             </>
           ) : (
             <>
@@ -773,12 +775,92 @@ export function Workflows() {
     </Stack>
   );
 }
+export function ListsDemo({ state = "default" }: { state?: ExampleState }) {
+  const [message, setMessage] = useState("");
+  const actions = (title: string): Action[] => [
+    {
+      id: "view",
+      label: "Inspect",
+      icon: "view",
+      onAction: () => setMessage(`${title} selected for inspection.`),
+    },
+    {
+      id: "restore",
+      label: "Restore",
+      icon: "history",
+      disabled: state === "disabled" || state === "loading",
+      onAction: () =>
+        setMessage(
+          `${title} selected for restoration. Apps supply confirmation.`,
+        ),
+    },
+  ];
+  return (
+    <Stack>
+      <List
+        label="Revision list"
+        items={[
+          {
+            id: "4",
+            title: "Revision 4",
+            metadata: "Example team member · Nov 2",
+            status: { label: "Current", tone: "success" },
+          },
+          ...[3, 2, 1].map(
+            (revision): ListItem => ({
+              id: String(revision),
+              title: `Revision ${revision}`,
+              metadata: "Example team member · Nov 2",
+              actions: actions(`Revision ${revision}`),
+            }),
+          ),
+        ]}
+      />
+      {message && <Status tone="success">{message}</Status>}
+      {state === "loading" && <Status>Loading revisions…</Status>}
+      {state === "error" && (
+        <Status tone="danger">
+          Unable to refresh revisions. Existing rows stay available.
+        </Status>
+      )}
+      <Section title="Long content & narrow layouts" defaultOpen>
+        <List
+          label="Long content example"
+          items={[
+            {
+              id: "long",
+              title:
+                "Kitchen renovation with an intentionally long project title",
+              metadata:
+                "a.very.long.team.member.name@example.test · Nov 2, 7:40 PM",
+              actions: actions("Long title"),
+            },
+            {
+              id: "view-only",
+              title: "View-only record",
+              metadata: "No actions available",
+            },
+          ]}
+        />
+      </Section>
+      <Section title="Empty list" defaultOpen>
+        <List
+          label="Empty revision list"
+          items={[]}
+          emptyMessage="No saved revisions yet."
+        />
+      </Section>
+    </Stack>
+  );
+}
 export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
     case "foundations":
       return <Foundations />;
     case "buttons":
       return <ButtonsDemo state={state} />;
+    case "lists":
+      return <ListsDemo state={state} />;
     case "menus":
       return <MenusDemo state={state} />;
     case "fields":

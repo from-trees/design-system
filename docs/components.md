@@ -1,4 +1,4 @@
-# Public component API, v0.2.1
+# Public component API, v0.3.0
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -55,3 +55,25 @@ Prefer gap for sibling spacing and padding for surface insets. Block/inline foll
 import {layout, gap, paddingInline} from '@from-trees/ui/utilities';
 <div {...stylex.props(layout.row, layout.wrap, layout.alignCenter, gap.sm, paddingInline.lg, localStyles.toolbar)} />
 ```
+
+## Lists
+
+`List` owns the complete standard list composition used by History & sharing. Supply `label`, `items` and optional `emptyMessage`. It renders a semantic list with consistent row spacing, title/metadata typography, text overflow and a right-aligned status or MenuButton. Do not reconstruct the row in an app.
+
+`ListItem = {id, title, metadata}` plus **either** `{status: {label, tone?}}` **or** `{actions?, actionLabel?}`. Title and metadata are plain strings. Status tones match Badge. Actions use the shared Action API; their default accessible menu name is `${title} actions`. A row without actions or status is informational. IDs must be unique and stable.
+
+There are no children, row renderers, class/style overrides, inline button variants or separator variants. Even a single action stays in the row menu. Keep concise metadata on one line; full strings remain in the DOM and the native title tooltip when truncated. Detailed records belong in the inspection workflow. Applications own date formatting, navigation callbacks, permissions and restore confirmations. Loading/error feedback sits beside the list, using shared Status, while existing data remains visible.
+
+```tsx
+import {List, type ListItem} from '@from-trees/ui';
+const items: ListItem[] = [
+  {id: '4', title: 'Revision 4', metadata: 'Team member · Nov 2', status: {label: 'Current', tone: 'success'}},
+  {id: '3', title: 'Revision 3', metadata: 'Team member · Nov 2', actions: [
+    {id: 'inspect', label: 'Inspect', icon: 'view', onAction: inspect},
+    {id: 'restore', label: 'Restore', icon: 'history', onAction: confirmRestore},
+  ]},
+];
+<List label="Saved revisions" items={items} />
+```
+
+The catalog's History & sharing workflow imports this component directly. Review long content, empty state, disabled actions, keyboard menus, themes and narrow layouts on the Lists page before app adoption.

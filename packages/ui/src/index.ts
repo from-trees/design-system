@@ -23,3 +23,4 @@ export {
   marginBlock,
   marginInline,
 } from "./utilities";
+export { List, type ListItem, type ListStatus, type ListProps } from "./List";

@@ -19,7 +19,8 @@ This is a standalone first implementation. “Implemented” means available for
 | Synthetic history/customer links                | Implemented                | Contextual drawer, local restore/link feedback; no backend                               |
 | GitHub Pages publication                        | Infrastructure implemented | Verify workflow deployment and URL during bootstrap                                      |
 | Package distribution                            | Infrastructure implemented | CI tarballs, initial prerelease tarball; registry release is explicit                    |
-| Dedicated table/list primitives                 | Planned                    | Responsive columns, selection, row action integration                                    |
+| Standard lists                                 | Implemented for catalog review | Fixed title/metadata rows, right-aligned status or menu; history demo uses the public List |
+| Dedicated table primitives                     | Planned                    | Responsive columns and selection |
 | Navigation Tabs                                 | Planned                    | Correct tab-panel semantics; separate from mode selection                                |
 | Visual selectors and material previews          | Planned                    | Thumbnail choices, keyboard behavior and long lists                                      |
 | Toolbar and overflow measurement                | Planned                    | ActionGroup handles explicit action lists today                                          |
@@ -37,3 +38,7 @@ Future components need a documented purpose, public API, working examples, appli
 ## 0.2.0 architecture correction
 
 The package is now native React/StyleX source for our common stack. Apps compile it alongside their own styles, share exported tokens and use a common Vite/Vitest helper. Precompiled CSS distribution, CSS imports and standalone Node SSR compatibility are intentionally removed. The catalog has no authored CSS files or global reset; its output stylesheet is compiler-generated.
+
+## 0.3.0 standard list review
+
+The canonical History & sharing row is now the public List component, rather than catalog-only markup. A dedicated Lists page covers long content, empty state and action availability. Cabinitron adoption is a separate step after user confirmation of this catalog implementation; this change does not modify Cabinitron.
