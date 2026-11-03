@@ -1,0 +1,50 @@
+{
+  "oak.jpg": {
+    "source": "https://polyhaven.com/a/oak_veneer_05",
+    "license": "CC0-1.0",
+    "authors": {},
+    "originalFile": "oak_veneer_05_diff_1k.jpg",
+    "sha256": "2c19382650f986c035b350a276c97c43687d83b0ba87c9fce4e73304b7027ffc"
+  },
+  "walnut.jpg": {
+    "source": "https://polyhaven.com/a/natural_walnut_veneer",
+    "license": "CC0-1.0",
+    "authors": {},
+    "originalFile": "natural_walnut_veneer_diff_1k.jpg",
+    "sha256": "41fe45f6457bddd4d97627bc610d2980d91683bc521c9692a6c4f2a6a3b05efd"
+  },
+  "floor.jpg": {
+    "source": "https://polyhaven.com/a/wood_floor",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "All"
+    },
+    "originalFile": "wood_floor_diff_1k.jpg",
+    "sha256": "2a1c07687b6dbb214c4b9213739c6d92d425f1f0fc8ab3ac157f105d78240789"
+  },
+  "concrete.jpg": {
+    "source": "https://polyhaven.com/a/smooth_concrete_floor",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "All"
+    },
+    "originalFile": "smooth_concrete_floor_diff_1k.jpg",
+    "sha256": "079587ae48fb3e2bfb0d0f9209eb75dc26ee30e213403d96377a30f6f6955092"
+  },
+  "plaster.jpg": {
+    "source": "https://polyhaven.com/a/white_plaster_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "originalFile": "white_plaster_02_diff_1k.jpg",
+    "sha256": "a1ebbe091bd1ae93d2abd5de8d69f9003a8d0ee6532bcf9a87c2492c97051f23"
+  },
+  "granite.jpg": {
+    "source": "https://ambientcg.com/view?id=Granite001B",
+    "license": "CC0-1.0",
+    "authors": {},
+    "originalFile": "Granite001B_1K-JPG_Color.jpg",
+    "sha256": "14c47277d395c14372e9ec2a1c3b06d2f9b3a5a3c4a75796226cff4b7d460eee"
+  }
+}

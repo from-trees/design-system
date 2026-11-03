@@ -87,7 +87,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.5.0</Badge>
+            <Badge>v0.6.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>

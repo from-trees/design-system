@@ -6,6 +6,7 @@ export type PageId =
   | "lists"
   | "menus"
   | "fields"
+  | "swatches"
   | "help"
   | "parameters"
   | "panels"
@@ -68,6 +69,14 @@ export const pages: {
     group: "Components",
     description:
       "Short labels, useful validation, and consistent spacing. Choose controls by the decision being made, rather than styling every choice as an action.",
+  },
+  {
+    id: "swatches",
+    title: "Swatches & previews",
+    icon: "view",
+    group: "Components",
+    description:
+      "Choose by appearance. Compact parameter fields open labeled visual grids for materials, colors, profiles and configurations. Applications provide the previews.",
   },
   {
     id: "help",
@@ -135,6 +144,12 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  swatches: [
+    "The field shows the current preview and label. The popup shows a visual grid with selected and keyboard-focus indicators.",
+    "SwatchPicker inherits ParameterRow labeling, help and errors; applications supply option identity, labels, preview components and eligibility.",
+    "Materials and colors are separate choices. Front and crown profile previews describe geometry independently from finish.",
+    "Keyboard navigation, typeahead, Escape cancellation, disabled choices and modal focus follow accessible select behavior. Catalog artwork is illustrative; applications can supply real material images.",
+  ],
   sidebar: [
     "Cabinitron-specific schemas and workflows live in this catalog example. The shared package remains domain-neutral.",
     "Selection, Room and Styles are distinct contexts. Heading and actions remain visible while the property body scrolls.",
