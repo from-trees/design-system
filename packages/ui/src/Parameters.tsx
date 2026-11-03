@@ -45,6 +45,8 @@ export type ParameterRowProps = {
 export type ParameterGroup = {
   id: string;
   label?: string;
+  help?: string;
+  helpLabel?: string;
   parameters: readonly (Parameter | CustomParameter)[];
 };
 export type ParametersProps = {
@@ -54,7 +56,15 @@ export type ParametersProps = {
 const styles = stylex.create({
   root: { display: "flex", flexDirection: "column", gap: 18 },
   group: { margin: 0, padding: 0, borderWidth: 0, minWidth: 0 },
+  groupHeading: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
   legend: {
+    width: "100%",
+    boxSizing: "border-box",
     fontSize: 11,
     fontWeight: 650,
     color: color.muted,
@@ -290,8 +300,19 @@ export function Parameters({ groups, unit }: ParametersProps) {
         .filter((group) => group.parameters.length > 0)
         .map((group) => (
           <fieldset key={group.id} {...stylex.props(styles.group)}>
-            {group.label && (
-              <legend {...stylex.props(styles.legend)}>{group.label}</legend>
+            {(group.label || group.help) && (
+              <legend {...stylex.props(styles.legend)}>
+                <span {...stylex.props(styles.groupHeading)}>
+                  <span>{group.label}</span>
+                  {group.help && (
+                    <InfoTooltip
+                      label={group.helpLabel ?? group.label ?? "Parameters"}
+                    >
+                      {group.help}
+                    </InfoTooltip>
+                  )}
+                </span>
+              </legend>
             )}
             <div {...stylex.props(styles.fields)}>
               {group.parameters.map((parameter) =>

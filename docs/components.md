@@ -169,3 +169,5 @@ Schemas remain supported. A `CustomParameter` has the usual `id`, `label`, optio
 ```
 
 Keep exactly one editor in each row. The row owns layout and accessible labeling; it does not change a select or switch into a numeric input, or apply measurement parsing to custom controls. Review **Mixed parameter editors** on the Parameters page and the expanded **Appearance** and **Construction** sections on Panels & sections before app adoption.
+
+Parameter groups accept optional `help` and `helpLabel`. The help icon sits at the right edge of the group heading, above the editor column. Use the first group for instructions shared by the whole parameter set, such as measurement syntax; keep per-property help beside its row label. The catalog app supplies that guidance, not the generic library.

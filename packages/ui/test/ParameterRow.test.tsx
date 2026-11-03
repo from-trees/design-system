@@ -108,3 +108,38 @@ it("accepts mixed schema controls and forwards row help and errors to custom edi
   expect(screen.getByRole("textbox", { name: "Locked" })).toBeDisabled();
   expect(screen.getAllByText("Mode")).toHaveLength(1);
 });
+
+it("places shared editing help in the group heading above its editors", async () => {
+  const user = userEvent.setup();
+  render(
+    <ThemeProvider>
+      <Parameters
+        groups={[
+          {
+            id: "size",
+            label: "Size",
+            helpLabel: "Entering measurements",
+            help: "Use decimals or fractions.",
+            parameters: [
+              { id: "width", label: "Width", value: 12, onChange: () => {} },
+            ],
+          },
+        ]}
+      />
+    </ThemeProvider>,
+  );
+  const help = screen.getByRole("button", {
+    name: "About Entering measurements",
+  });
+  expect(help.closest("legend")).toHaveTextContent("Size");
+  expect(
+    help.compareDocumentPosition(
+      screen.getByRole("textbox", { name: "Width" }),
+    ) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  await user.tab();
+  expect(help).toHaveFocus();
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Use decimals or fractions.",
+  );
+});

@@ -176,14 +176,7 @@ export function ParameterDemo({
         </Status>
       ) : changed ? (
         <Status tone="success">{changed}</Status>
-      ) : (
-        <div {...stylex.props(layout.row)}>
-          <InfoTooltip label="Entering measurements">
-            Use decimals or fractions, such as 30 1/2, 30.5 or 1/2. Leaving the
-            field commits; Enter leaves the field; Escape resets the draft.
-          </InfoTooltip>
-        </div>
-      )}
+      ) : null}
     </Stack>
   );
 }
