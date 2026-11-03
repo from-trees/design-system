@@ -55,3 +55,7 @@ Parameters now consumes app-defined groups/fields and has no cabinet keys, fixed
 Optional custom validation enables app-specific constraints without defining domain rules in the library. Controlled commits display the actual value even when an app snaps a draft back to the same value. The catalog owns the positive-size and whole-inch rounding examples. Cabinitron integration remains separate after confirmation; this change does not alter its editor.
 
 Parameter validation and normalization are deferred until blur. Enter ends editing by blurring; focusing an invalid field clears its error for correction. Intermediate typing never changes the saved value.
+
+### Parameter editor composition (0.5.0)
+
+Shared ParameterRow now owns the layout for numeric and component editors. Panels & sections uses it for every Appearance and Construction choice; Parameters includes a mixed-editor example and custom control binding. Confirm this catalog behavior before adopting it in Cabinitron.

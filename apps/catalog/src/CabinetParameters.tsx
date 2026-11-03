@@ -46,6 +46,8 @@ export function CabinetParameters({
     {
       id: "size",
       label: "Size",
+      helpLabel: "Entering measurements",
+      help: "Use decimals or fractions, such as 30 1/2, 30.5 or 1/2. Changes apply when focus leaves the field. Enter finishes editing; Escape resets the draft.",
       parameters: [
         field("width", "Width", "width", { min: 1 }),
         field("height", "Height", "height", { min: 1 }),

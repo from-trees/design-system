@@ -13,6 +13,7 @@ import {
   MenuButton,
   Panel,
   Parameters,
+  ParameterRow,
   Section,
   SegmentedControl,
   Select,
@@ -175,14 +176,7 @@ export function ParameterDemo({
         </Status>
       ) : changed ? (
         <Status tone="success">{changed}</Status>
-      ) : (
-        <div {...stylex.props(layout.row)}>
-          <InfoTooltip label="Entering measurements">
-            Use decimals or fractions, such as 30 1/2, 30.5 or 1/2. Leaving the
-            field commits; Enter leaves the field; Escape resets the draft.
-          </InfoTooltip>
-        </div>
-      )}
+      ) : null}
     </Stack>
   );
 }
@@ -268,6 +262,74 @@ function ParameterRulesDemo() {
         Size {size} in · Offset {offset} in
       </output>
     </Stack>
+  );
+}
+function MixedParameterEditors() {
+  const [name, setName] = useState("Sample");
+  const [mode, setMode] = useState("standard");
+  const [enabled, setEnabled] = useState(true);
+  const [size, setSize] = useState(12);
+  return (
+    <Parameters
+      groups={[
+        {
+          id: "mixed-editors",
+          label: "App-defined controls",
+          parameters: [
+            {
+              id: "size",
+              label: "Size",
+              value: size,
+              onChange: setSize,
+              unit: "in",
+            },
+            {
+              id: "name",
+              label: "Name",
+              control: (
+                <TextInput
+                  value={name}
+                  onChange={(event) => setName(event.currentTarget.value)}
+                />
+              ),
+            },
+            {
+              id: "mode",
+              label: "Mode",
+              control: (
+                <Select
+                  value={mode}
+                  onChange={(event) => setMode(event.currentTarget.value)}
+                >
+                  <option value="standard">Standard</option>
+                  <option value="custom">Custom</option>
+                </Select>
+              ),
+            },
+            {
+              id: "enabled",
+              label: "Enabled",
+              help: "This switch is an app-supplied component in the same parameter layout.",
+              control: <Switch selected={enabled} onChange={setEnabled} />,
+            },
+            {
+              id: "quality",
+              label: "Quality",
+              help: "A custom editor receives the row label and description attributes. Its behavior belongs to the app.",
+              control: (props) => (
+                <input
+                  {...props}
+                  type="range"
+                  min="1"
+                  max="10"
+                  defaultValue="5"
+                />
+              ),
+            },
+          ],
+        },
+      ]}
+    />
   );
 }
 export function ButtonsDemo({ state }: { state: ExampleState }) {
@@ -457,6 +519,7 @@ export function SidebarDemo({
 }) {
   const [finish, setFinish] = useState("oak");
   const [custom, setCustom] = useState(true);
+  const [thickness, setThickness] = useState(0.5);
   return (
     <Panel
       title={objectType === "wall" ? "Wall cabinet" : "Base cabinet"}
@@ -483,22 +546,49 @@ export function SidebarDemo({
     >
       <ParameterDemo state={state} subset objectType={objectType} />
       <Section title="Appearance" collapsible>
-        <Select
-          label="Finish"
-          value={finish}
-          onChange={(e) => setFinish(e.currentTarget.value)}
-        >
-          <option value="oak">Natural oak</option>
-          <option value="walnut">Walnut</option>
-        </Select>
+        <ParameterRow label="Finish">
+          <Select
+            value={finish}
+            disabled={state === "disabled"}
+            onChange={(e) => setFinish(e.currentTarget.value)}
+          >
+            <option value="oak">Natural oak</option>
+            <option value="walnut">Walnut</option>
+          </Select>
+        </ParameterRow>
       </Section>
       <Section title="Construction" collapsible modified={custom}>
-        <Switch
+        <ParameterRow
           label="Custom back thickness"
-          selected={custom}
-          onChange={setCustom}
-        />
-        {custom && <TextInput label="Back thickness (in)" defaultValue="0.5" />}
+          help="Override the standard back thickness for this cabinet."
+        >
+          <Switch
+            selected={custom}
+            onChange={setCustom}
+            disabled={state === "disabled"}
+          />
+        </ParameterRow>
+        {custom && (
+          <Parameters
+            unit="in"
+            groups={[
+              {
+                id: "back",
+                label: "",
+                parameters: [
+                  {
+                    id: "thickness",
+                    label: "Back thickness",
+                    value: thickness,
+                    onChange: setThickness,
+                    min: 0.125,
+                    disabled: state === "disabled",
+                  },
+                ],
+              },
+            ]}
+          />
+        )}
       </Section>
     </Panel>
   );
@@ -979,6 +1069,9 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
           <ParameterDemo state={state} />
           <Section title="Different app-defined schema" collapsible>
             <GenericSettingsParameters />
+          </Section>
+          <Section title="Mixed parameter editors" collapsible>
+            <MixedParameterEditors />
           </Section>
           <Section title="App-defined validation & snapping" collapsible>
             <ParameterRulesDemo />

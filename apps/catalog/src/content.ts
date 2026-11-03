@@ -154,6 +154,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Keep validation adjacent. Disabled and read-only have distinct meanings.",
   ],
   parameters: [
+    "Every editor uses the same ParameterRow layout. Compose Select, Switch, TextInput or an app-specific editor as a component child or control slot.",
     "Apps can reject parsed values with validate and a specific inline message. After commit, the displayed value follows the app, including unchanged snapped values.",
     "Optional reference/help text appears through the info control beside the label. Validation errors remain inline.",
     "The app supplies ordered groups and fields. Cabinet order lives in the catalog app’s CabinetParameters wrapper, not the shared package.",
@@ -162,7 +163,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Changing a parameter’s external value resets the draft. Key the control by object identity when selection changes.",
   ],
   panels: [
-    "Common dimensions are visible. Appearance and construction have predictable sections.",
+    "Common dimensions are visible. Every choice in Appearance and Construction uses the same parameter row layout.",
     "Collapsed sections can indicate Modified or Needs attention.",
     "Use explicit names for uncommon groups; avoid a miscellaneous advanced drawer.",
   ],
@@ -211,20 +212,32 @@ const items: ListItem[] = [
   buttons: `import {Button, IconButton} from '@from-trees/ui';\n\n<Button icon="save" variant="primary" onPress={save}>Save</Button>\n<IconButton icon="copy" label="Duplicate cabinet" onPress={duplicate} />`,
   menus: `<ActionGroup\n  primaryId="save"\n  actions={[\n    {id: 'save', label: 'Save', icon: 'save', onAction: save},\n    {id: 'copy', label: 'Duplicate', icon: 'copy', onAction: duplicate},\n    {id: 'delete', label: 'Delete', icon: 'delete',\n      destructive: true, separatorBefore: true, onAction: remove},\n  ]}\n/>`,
   fields: `<TextInput label="Project name" value={name}\n  onChange={event => setName(event.currentTarget.value)} />\n<Select label="Finish" value={finish}\n  onChange={event => setFinish(event.currentTarget.value)}>\n  <option value="oak">Natural oak</option>\n  <option value="paint">Paint</option>\n</Select>`,
-  parameters: `import {Parameters, type ParameterGroup} from '@from-trees/ui';
+  parameters: `import {Parameters, ParameterRow, Select, Switch, type ParameterGroup} from '@from-trees/ui';
 
 // Define and reuse this policy in an application component.
 const groups: ParameterGroup[] = [
   {id: 'output', label: 'Output', parameters: [
     {id: 'duration-ms', label: 'Duration', unit: 'ms', value: duration, onChange: setDuration},
     {id: 'gain-pct', label: 'Gain', unit: '%', value: gain, onChange: setGain},
+    {id: 'enabled', label: 'Enabled', control: <Switch selected={enabled} onChange={setEnabled} />},
   ]},
 ];
 <Parameters groups={groups} />
 
+// Use the exact same row directly inside app-owned sections.
+<ParameterRow label="Finish">
+  <Select value={finish} onChange={e => setFinish(e.currentTarget.value)}>
+    <option value="oak">Natural oak</option>
+    <option value="paint">Paint</option>
+  </Select>
+</ParameterRow>
+
+// Custom editors forward the provided accessible control attributes.
+<ParameterRow label="Quality">{props => <input {...props} type="range" />}</ParameterRow>
+
 // This catalog app supplies its own cabinet-specific wrapper:
 // <CabinetParameters values={dimensions} onChange={changeDimension} />`,
-  panels: `<Panel title="Base cabinet" actions={<MenuButton actions={actions} />}>\n  <Parameters groups={parameterGroups} />\n  <Section title="Appearance" collapsible>…</Section>\n  <Section title="Construction" collapsible modified>…</Section>\n</Panel>`,
+  panels: `<Panel title="Base cabinet" actions={<MenuButton actions={actions} />}>\n  <Parameters groups={parameterGroups} />\n  <Section title="Appearance" collapsible>\n    <ParameterRow label="Finish">\n      <Select value={finish} onChange={e => setFinish(e.currentTarget.value)}>\n        <option value="oak">Natural oak</option>\n        <option value="paint">Paint</option>\n      </Select>\n    </ParameterRow>\n  </Section>\n  <Section title="Construction" collapsible modified>…</Section>\n</Panel>`,
   overlays: `<SidePanel title="History & sharing" open={open}\n  onOpenChange={setOpen} description={project.name}>\n  <ProjectHistory project={project} />\n</SidePanel>\n\n// Use Dialog for focused forms and confirmations.\n// The application guards unsaved changes before closing.`,
   feedback: `<Status tone="success">Link copied</Status>\n<Status tone="danger">Unable to save. Try again.</Status>\n<Badge tone="warning">Unsaved</Badge>`,
 };
