@@ -38,8 +38,8 @@ For GitHub Packages, map `@from-trees:registry=https://npm.pkg.github.com` in th
 ## Consume
 
 ```tsx
-import {ThemeProvider, Button, ActionGroup, Parameters} from '@from-trees/ui';
-import '@from-trees/ui/styles.css';
+import { ThemeProvider, Button, ActionGroup, Parameters } from "@from-trees/ui";
+import "@from-trees/ui/styles.css";
 
 export function App() {
   return (
@@ -52,7 +52,7 @@ export function App() {
 }
 ```
 
-Import the stylesheet once, after existing global styles. This package adds no global element reset. Applications with aggressive unlayered element selectors should scope those rules: unlayered CSS takes precedence over layered StyleX CSS regardless of import order. Validate the consuming app before migration.
+Import the stylesheet once, after existing global styles. This package adds no global element reset. Styles are emitted without CSS layers so separately compiled StyleX applications can coexist without atomic-class collisions. The package and catalog use distinct stable class-name prefixes. Applications should scope aggressive global selectors and validate their styles before migration.
 
 ## Structure
 
