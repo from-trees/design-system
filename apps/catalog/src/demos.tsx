@@ -60,10 +60,7 @@ export function Foundations() {
             ["Border", "#d8dfd7"],
           ].map(([label, value]) => (
             <div key={label}>
-              <div
-                {...stylex.props(s.swatch)}
-                style={{ backgroundColor: value }}
-              />
+              <div {...stylex.props(s.swatch(value))} />
               <div {...stylex.props(s.row, s.between)}>
                 <p {...stylex.props(s.small)}>{label}</p>
                 <p {...stylex.props(s.small)}>{value}</p>
@@ -690,7 +687,7 @@ export function Workflows() {
         </div>
       </div>
       <Panel title="Business designs">
-        <div style={{ overflowX: "auto" }}>
+        <div {...stylex.props(s.tableWrap)}>
           <table {...stylex.props(s.table)}>
             <thead>
               <tr>

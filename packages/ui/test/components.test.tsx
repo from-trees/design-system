@@ -11,8 +11,8 @@ import {
   SidePanel,
   ThemeProvider,
   parseMeasurement,
-} from "../dist/index.js";
-import type { Action } from "./MenuButton";
+} from "../src/index";
+import type { Action } from "../src/MenuButton";
 
 describe("measurement parsing", () => {
   it.each([

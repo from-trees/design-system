@@ -1,4 +1,3 @@
-import "./styles.css";
 export { ThemeProvider, type Theme, type Density } from "./theme";
 export { Icon, type IconName } from "./Icon";
 export { Button, IconButton, type ButtonProps } from "./Button";

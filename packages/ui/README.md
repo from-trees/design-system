@@ -1,20 +1,14 @@
 # @from-trees/ui
 
-Shared React 18.3/19 components, built with StyleX and React Aria. No application data or backend dependencies.
+Native React + StyleX source package for From Trees applications. Components and tokens are compiled by the consuming app's shared StyleX setup.
 
 ```tsx
-import {ThemeProvider, Button, IconButton, MenuButton, Parameters} from '@from-trees/ui';
-import '@from-trees/ui/styles.css';
-
-<ThemeProvider theme="forest" density="compact">
-  <Button icon="save" variant="primary" onPress={save}>Save</Button>
-</ThemeProvider>
+import {ThemeProvider, Button} from '@from-trees/ui';
+import {color, metrics, space} from '@from-trees/ui/tokens.stylex';
 ```
 
-Compiled CSS and TypeScript declarations ship in the package. No consumer-side StyleX compilation is necessary. Themes: `forest`, `slate`, `dark`. Density: `comfortable`, `compact`.
+Configure `fromTreesStylex` from `@from-trees/ui/vite` in Vite and Vitest. It compiles library and app source together and loads the compiler-generated stylesheet. There is no library CSS import or compiled distribution.
 
-React and React DOM are peers. React Aria, StyleX runtime, and Lucide icons are dependencies. Import CSS once; the package does not reset global element styles. Scope aggressive app-level CSS before adoption. Compiled component styles use no CSS layers, allowing independently compiled StyleX styles to compose consistently.
+Themes: forest/slate/dark. Density: comfortable/compact. The application owns business logic and data. This package deliberately targets our React, TypeScript, StyleX and Vite stack.
 
-Documentation and interactive reference: https://from-trees.github.io/design-system/
-
-Source, conventions and adoption guide: https://github.com/from-trees/design-system
+https://from-trees.github.io/design-system/

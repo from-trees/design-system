@@ -4,8 +4,8 @@ This is a standalone first implementation. “Implemented” means available for
 
 | Workstream                                      | Status                     | Evidence / next work                                                                     |
 | ----------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- |
-| React/StyleX package and declarations           | Implemented                | Library build, SSR and tarball checks                                                    |
-| Static interactive reference app                | Implemented                | Imports compiled public package, hash-based navigation for Pages                         |
+| React/StyleX package and declarations           | Implemented                | Native source, token exports, common compiler and tarball checks                                                    |
+| Static interactive reference app                | Implemented                | Compiles native public package, hash-based navigation for Pages                         |
 | Themes and density                              | Implemented                | Forest, slate, dark; compact/comfortable; overlay inheritance                            |
 | Icons and buttons                               | Implemented                | Named icon controls, tooltip, busy/disabled examples                                     |
 | Menu and action overflow                        | Implemented                | Primary+menu rule, keyboard and disabled tests                                           |
@@ -33,3 +33,7 @@ This is a standalone first implementation. “Implemented” means available for
 | Other application adoption                      | Pending                    | Adopt deliberately, version by version                                                   |
 
 Future components need a documented purpose, public API, working examples, applicable interaction states, tests, responsive review and migration guidance. Additions that change public behavior require a version change and release notes. Do not hide deferred work by removing it from this ledger.
+
+## 0.2.0 architecture correction
+
+The package is now native React/StyleX source for our common stack. Apps compile it alongside their own styles, share exported tokens and use a common Vite/Vitest helper. Precompiled CSS distribution, CSS imports and standalone Node SSR compatibility are intentionally removed. The catalog has no authored CSS files or global reset; its output stylesheet is compiler-generated.

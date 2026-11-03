@@ -32,6 +32,7 @@ const styles = stylex.create({
   },
   drawerOverlay: { justifyContent: "flex-end", padding: 0 },
   modal: {
+    boxSizing: "border-box",
     width: "min(520px, 100%)",
     maxHeight: "calc(100dvh - 40px)",
     backgroundColor: color.surface,
@@ -69,7 +70,16 @@ const styles = stylex.create({
     borderBottomColor: color.border,
     flexShrink: 0,
   },
-  title: { fontSize: 18, letterSpacing: "-0.02em", fontWeight: 650, margin: 0 },
+  title: {
+    fontFamily: "inherit",
+    fontStyle: "normal",
+    lineHeight: 1.3,
+    whiteSpace: "normal",
+    fontSize: 18,
+    letterSpacing: "-0.02em",
+    fontWeight: 650,
+    margin: 0,
+  },
   description: {
     fontSize: 13,
     color: color.muted,
@@ -84,6 +94,9 @@ const styles = stylex.create({
     flexGrow: 1,
   },
   footer: {
+    backgroundColor: color.surface,
+    color: color.ink,
+    margin: 0,
     padding: metrics.panelPadding,
     borderTopWidth: 1,
     borderTopStyle: "solid",
@@ -109,6 +122,7 @@ function Overlay({
   const descriptionId = useId();
   return (
     <ModalOverlay
+      data-ft-ui="overlay"
       isOpen={open}
       onOpenChange={onOpenChange}
       isDismissable={dismissible}

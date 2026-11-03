@@ -3,8 +3,8 @@
 No application migration is part of this repository bootstrap.
 
 - [ ] Choose a tested, versioned package artifact or registry release.
-- [ ] Install React peers and import the compiled stylesheet once.
-- [ ] Audit global button/input/select rules and selector precedence before migration.
+- [ ] Install our React/StyleX peers and configure `fromTreesStylex` in Vite/Vitest. Do not import a library CSS file.
+- [ ] Audit global button/input/select rules and remaining legacy selector interference before migration.
 - [ ] Choose theme and density at an app boundary.
 - [ ] Map actions and icon names to consistent terminology.
 - [ ] Replace action groups with ActionGroup/MenuButton.

@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 const styles = stylex.create({
   panel: {
+    boxSizing: "border-box",
     backgroundColor: color.surface,
     borderWidth: 1,
     borderStyle: "solid",
@@ -21,7 +22,16 @@ const styles = stylex.create({
     borderBottomStyle: "solid",
     borderBottomColor: color.border,
   },
-  title: { margin: 0, fontSize: 15, fontWeight: 650 },
+  title: {
+    fontFamily: "inherit",
+    fontStyle: "normal",
+    lineHeight: 1.3,
+    letterSpacing: "normal",
+    whiteSpace: "normal",
+    margin: 0,
+    fontSize: 15,
+    fontWeight: 650,
+  },
   body: {
     padding: metrics.panelPadding,
     display: "flex",

@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+const styles = stylex.create({ icon: { flexShrink: 0 } });
 import {
   ArrowDownToLine,
   ArrowLeftRight,
@@ -68,7 +70,7 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       strokeWidth={1.75}
       aria-hidden="true"
       focusable="false"
-      style={{ flexShrink: 0 }}
+      {...stylex.props(styles.icon)}
     />
   );
 }

@@ -1,11 +1,18 @@
 import { defineConfig } from "vitest/config";
+import { fromTreesStylex } from "./packages/ui/tooling/vite.mjs";
 import react from "@vitejs/plugin-react";
-// Exercise the compiled public package, exactly as consumers and the catalog do.
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    ...fromTreesStylex({
+      rootDir: process.cwd(),
+      prefix: "fttest",
+      test: true,
+    }),
+    react(),
+  ],
   test: {
     environment: "jsdom",
-    setupFiles: ["packages/ui/src/test-setup.ts"],
-    include: ["packages/ui/src/**/*.test.{ts,tsx}"],
+    setupFiles: ["packages/ui/test/test-setup.ts"],
+    include: ["packages/ui/test/**/*.test.{ts,tsx}"],
   },
 });
