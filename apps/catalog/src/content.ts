@@ -11,6 +11,7 @@ export type PageId =
   | "panels"
   | "overlays"
   | "feedback"
+  | "sidebar"
   | "patterns"
   | "adoption";
 export const pages: {
@@ -109,6 +110,14 @@ export const pages: {
       "Show what happened beside the task. Distinguish progress, success, warnings and errors without relying on color alone.",
   },
   {
+    id: "sidebar",
+    title: "Designer sidebar",
+    icon: "settings",
+    group: "Patterns",
+    description:
+      "A whole-sidebar Cabinitron prototype: common properties first, focused contexts and deliberate disclosure. Review organization and behavior before application adoption.",
+  },
+  {
     id: "patterns",
     title: "Composed workflows",
     icon: "history",
@@ -126,6 +135,14 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  sidebar: [
+    "Cabinitron-specific schemas and workflows live in this catalog example. The shared package remains domain-neutral.",
+    "Selection, Room and Styles are distinct contexts. Heading and actions remain visible while the property body scrolls.",
+    "Size and position are immediately available; uncommon settings use named expandable sections with Modified or Needs attention indicators.",
+    "Assigned style changes one object. Shared style editing explicitly identifies how many objects are affected and commits only on Save.",
+    "Numeric validation and rounding wait for focus loss. Rules are explained in field help. Dialog and task drafts are discarded when dismissed.",
+    "The external review controls represent plan selection. No geometry engine, production constraints, persistence or network mutations are implemented.",
+  ],
   lists: [
     "Title and metadata stay together on the left. A status or menu stays on the right at every width.",
     "Rows have no separators, card borders, extra padding or exposed action buttons. Even one action uses the row menu.",

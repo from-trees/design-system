@@ -38,7 +38,8 @@ export default function App() {
   useEffect(() => {
     document.title = `${current.title} · From Trees design system`;
   }, [current.title]);
-  const isComposition = page === "overview" || page === "patterns";
+  const isComposition =
+    page === "overview" || page === "patterns" || page === "sidebar";
   const hasStates = [
     "lists",
     "buttons",
@@ -117,7 +118,9 @@ export default function App() {
                   ? "Less noise. More clarity."
                   : current.title}
               </h1>
-              <Badge tone="warning">Initial release</Badge>
+              <Badge tone="warning">
+                {page === "sidebar" ? "Prototype" : "Initial release"}
+              </Badge>
             </div>
             <p {...stylex.props(s.lede)}>{current.description}</p>
             {page === "adoption" ? (
@@ -141,9 +144,11 @@ export default function App() {
                   >
                     <header {...stylex.props(s.cardHeader)}>
                       <h2 {...stylex.props(s.cardTitle)}>
-                        {isComposition
-                          ? "Cabinitron · composed examples"
-                          : "Interactive example"}
+                        {page === "sidebar"
+                          ? "Cabinitron · sidebar prototype"
+                          : isComposition
+                            ? "Cabinitron · composed examples"
+                            : "Interactive example"}
                       </h2>
                       {snippets[page] && (
                         <SegmentedControl
