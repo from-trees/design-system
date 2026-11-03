@@ -97,22 +97,40 @@ describe("action hierarchy", () => {
   });
 });
 describe("parameters", () => {
-  it("orders applicable fields, commits fractions and protects against invalid input", async () => {
+  it("preserves app-defined group and field order, commits fractions and protects against invalid input", async () => {
     const user = userEvent.setup();
     const change = vi.fn();
     render(
       <ThemeProvider>
         <Parameters
-          values={{
-            offset: { value: 12, onChange: change },
-            depth: { value: 24, onChange: change },
-            width: { value: 30, min: 1, onChange: change },
-          }}
+          groups={[
+            {
+              id: "placement",
+              label: "Placement first",
+              parameters: [
+                { id: "offset", label: "Offset", value: 12, onChange: change },
+              ],
+            },
+            {
+              id: "size",
+              label: "Dimensions",
+              parameters: [
+                { id: "depth", label: "Depth", value: 24, onChange: change },
+                {
+                  id: "width",
+                  label: "Width",
+                  value: 30,
+                  min: 1,
+                  onChange: change,
+                },
+              ],
+            },
+          ]}
         />
       </ThemeProvider>,
     );
     expect(screen.getAllByRole("textbox").map((e) => e.id)).toEqual(
-      ["Width", "Depth", "Offset"].map(
+      ["Offset", "Depth", "Width"].map(
         (label) => screen.getByLabelText(label).id,
       ),
     );
@@ -129,12 +147,86 @@ describe("parameters", () => {
     expect(width).toHaveValue("30");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
+  it("accepts unrelated schemas and units without adding cabinet fields or defaults", async () => {
+    const change = vi.fn(),
+      other = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Parameters
+        groups={[
+          {
+            id: "quality",
+            label: "Quality first",
+            parameters: [
+              {
+                id: "gain-pct",
+                label: "Gain",
+                unit: "%",
+                value: 25,
+                onChange: change,
+              },
+            ],
+          },
+          {
+            id: "output",
+            label: "Output second",
+            parameters: [
+              {
+                id: "duration-ms",
+                label: "Duration",
+                unit: "ms",
+                value: 200,
+                onChange: other,
+              },
+              { id: "count", label: "Samples", value: 8, onChange: other },
+            ],
+          },
+        ]}
+      />,
+    );
+    expect(
+      screen
+        .getAllByRole("group")
+        .map((group) => group.querySelector("legend")?.textContent),
+    ).toEqual(["Quality first", "Output second"]);
+    expect(
+      screen
+        .getAllByRole("textbox")
+        .map((input) => input.getAttribute("aria-describedby")),
+    ).toEqual([expect.any(String), expect.any(String), null]);
+    expect(screen.getByLabelText("Gain")).toHaveAccessibleDescription("%");
+    expect(screen.getByLabelText("Duration")).toHaveAccessibleDescription("ms");
+    expect(screen.queryByText("in")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Width")).not.toBeInTheDocument();
+    await user.clear(screen.getByLabelText("Gain"));
+    await user.type(screen.getByLabelText("Gain"), "30.5{Enter}");
+    expect(change).toHaveBeenCalledExactlyOnceWith(30.5);
+    expect(other).not.toHaveBeenCalled();
+  });
   it("resets drafts when an external saved value changes", () => {
     const fn = vi.fn();
     const { rerender } = render(
-      <Parameters values={{ width: { value: 30, onChange: fn } }} />,
+      <Parameters
+        groups={[
+          {
+            id: "custom",
+            label: "Controls",
+            parameters: [{ id: "w", label: "Width", value: 30, onChange: fn }],
+          },
+        ]}
+      />,
     );
-    rerender(<Parameters values={{ width: { value: 36, onChange: fn } }} />);
+    rerender(
+      <Parameters
+        groups={[
+          {
+            id: "custom",
+            label: "Controls",
+            parameters: [{ id: "w", label: "Width", value: 36, onChange: fn }],
+          },
+        ]}
+      />,
+    );
     expect(screen.getByLabelText("Width")).toHaveValue("36");
   });
 });

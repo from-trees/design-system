@@ -9,6 +9,7 @@ This is a standalone first implementation. “Implemented” means available for
 | Themes and density                              | Implemented                | Forest, slate, dark; compact/comfortable; overlay inheritance                            |
 | Icons and buttons                               | Implemented                | Named icon controls, tooltip, busy/disabled examples                                     |
 | Menu and action overflow                        | Implemented                | Primary+menu rule, keyboard and disabled tests                                           |
+| Contextual info help                            | Implemented for catalog review | Standalone InfoTooltip; Parameters reference/help uses it; app adoption awaits confirmation |
 | Fields, select, switch                          | Implemented                | Labels, descriptions and validation examples                                             |
 | Dimension/position parameters                   | Implemented                | Order, fractions, bounds, commit/reset tests                                             |
 | Panels and named sections                       | Implemented                | Progressive disclosure and modified/error indicators                                     |
@@ -42,3 +43,9 @@ The package is now native React/StyleX source for our common stack. Apps compile
 ## 0.3.0 standard list review
 
 The canonical History & sharing row is now the public List component, rather than catalog-only markup. A dedicated Lists page covers long content, empty state and action availability. Cabinitron adoption is a separate step after user confirmation of this catalog implementation; this change does not modify Cabinitron.
+
+## 0.4.0 generic parameters and contextual help review
+
+Optional parameter references and input guidance move behind the standalone InfoTooltip. The catalog demonstrates it independently and inside a dialog. Validation remains visible and screen-reader descriptions retain explanatory text. This branch does not change or release Cabinitron; confirm catalog behavior before app adoption.
+
+Parameters now consumes app-defined groups/fields and has no cabinet keys, fixed group names, canonical order or default units. The catalog app supplies its reusable CabinetParameters wrapper and a second unrelated schema. The former values-record API and ParameterKey/parameterOrder exports are removed; apps must adopt the new API only after catalog confirmation.

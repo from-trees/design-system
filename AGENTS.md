@@ -6,3 +6,5 @@
 - Apps own business data, authorization, geometry, persistence and navigation.
 - Create a GitHub PR for every completed change. Do not self-approve or merge. Main publishes the catalog automatically.
 - Run checks appropriate to code changes. Documentation-only changes do not require the component test suite or builds.
+
+- Keep Parameters generic: applications define their schemas, grouping, order, labels, units and bounds in specific reusable app components. Do not add domain parameter presets or canonical parameter keys to the shared UI package.

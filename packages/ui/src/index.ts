@@ -7,12 +7,13 @@ export { Panel, Section } from "./Panel";
 export { Dialog, SidePanel, type OverlayProps } from "./Overlay";
 export { Badge, Status } from "./Feedback";
 export { SegmentedControl } from "./SegmentedControl";
-export { Parameters, type ParametersProps, type Parameter } from "./Parameters";
 export {
-  parameterOrder,
-  parseMeasurement,
-  type ParameterKey,
-} from "./measurement";
+  Parameters,
+  type ParametersProps,
+  type Parameter,
+  type ParameterGroup,
+} from "./Parameters";
+export { parseMeasurement } from "./measurement";
 export {
   layout,
   gap,
@@ -24,3 +25,4 @@ export {
   marginInline,
 } from "./utilities";
 export { List, type ListItem, type ListStatus, type ListProps } from "./List";
+export { InfoTooltip, type InfoTooltipProps } from "./InfoTooltip";

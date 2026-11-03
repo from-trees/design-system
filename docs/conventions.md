@@ -16,9 +16,13 @@ An action group may show at most two adjacent buttons. Use `ActionGroup` for dyn
 
 Use icon-only controls for recognizable actions; supply a short, specific accessible label. Use short icon+text buttons when interpretation requires context. Menu items always have visible labels. Disabled actions may remain visible when their availability is useful; do not expose privileged data through those labels.
 
+## Optional explanations
+
+Use InfoTooltip for optional elaboration beside a concise label. Keep it available through hover, keyboard focus and click/tap; do not depend on hover alone. Parameters use the same component for reference/help text instead of always-visible prose. Essential labels, units and actionable validation errors remain visible. Tooltip content is non-interactive; use a dialog for links or actions. Confirm behavior in the catalog before app adoption.
+
 ## Parameters
 
-Stable presentation: Width → Height → Depth; Offset → Height from floor → Setback; Rotation. Omit irrelevant parameters without reordering. Label origins explicitly when needed. Always map a stored value's real meaning: never reinterpret an elevation-to-center as height-to-bottom.
+Applications own their parameter schema through a specific reusable wrapper. Define available parameters, labels, groups, order, icons, units and bounds there; the generic Parameters component renders the supplied arrays without inferring a cabinet schema. Reuse the app wrapper wherever those controls are needed. The catalog's CabinetParameters demonstrates this separation. Geometry origins remain explicit application meaning: never reinterpret elevation-to-center as height-to-bottom.
 
 `Parameters` works in the supplied unit; it does not convert units or round geometry. Inputs accept decimal and fractional text. Blur/Enter commits a valid finite value within bounds; Escape cancels an unfinished edit. A changed external value resets the draft. Remount with `key={selectedObject.id}` when selection changes. A parent decides how to handle leaving a selection with an invalid draft.
 

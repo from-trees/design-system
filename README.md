@@ -62,7 +62,15 @@ Never import `@from-trees/ui/styles.css`; that entry point was removed in 0.2.0.
 
 ## Standard lists
 
-Use `List` from `@from-trees/ui` for title/metadata rows with a right-aligned status or action menu. The component owns the row markup, spacing and typography; applications supply plain item data and callbacks. The catalog's History & sharing example uses it directly. See the [list API](docs/components.md#lists). Version 0.3.0 is under design-system review; app adoption follows confirmation.
+Use `List` from `@from-trees/ui` for title/metadata rows with a right-aligned status or action menu. The component owns the row markup, spacing and typography; applications supply plain item data and callbacks. The catalog's History & sharing example uses it directly. See the [list API](docs/components.md#lists). Introduced in 0.3.0; use a confirmed, versioned artifact for app adoption.
+
+## Generic parameters
+
+`Parameters` receives ordered app-defined groups and numeric fields. Applications own the specific schema in a reusable wrapper, including parameter IDs, labels, order, icons and units. The catalog's CabinetParameters is app code, not a library preset. Version 0.4.0 replaces the old values-record API and removes ParameterKey/parameterOrder. See the [API](docs/components.md#parameters).
+
+## Optional contextual help
+
+`InfoTooltip` supplies the shared info button and explanation on hover, keyboard focus or tap. Parameters use it for `reference` and `help`; errors remain inline. See [API](docs/components.md#contextual-help) and the Contextual help catalog page. Version 0.4.0 is under review; app adoption follows confirmation and a versioned release.
 
 ## Shared spacing and layout
 
