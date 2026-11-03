@@ -303,17 +303,16 @@ function Adoption() {
       <section {...stylex.props(s.card, s.prose)}>
         <h2 {...stylex.props(s.heading)}>Install the package</h2>
         <p {...stylex.props(s.text)}>
-          GitHub Packages distribution uses your organization’s package access.
-          A built tarball is also attached to each successful verification run
-          for evaluation before a release.
+          Install the public evaluation tarball now. It installs as @from-trees/ui
+          and includes the compiled JavaScript, stylesheet and TypeScript declarations.
         </p>
         <pre {...stylex.props(s.code)}>
-          <code>{`# Configure @from-trees to use GitHub Packages in your .npmrc\n@from-trees:registry=https://npm.pkg.github.com\n\n# Authenticate locally; never commit credentials\nnpm install @from-trees/ui@0.1.0`}</code>
+          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.1.0/from-trees-ui-0.1.0.tgz`}</code>
         </pre>
         <p {...stylex.props(s.small)}>
-          The initial source PR does not itself publish a registry version. A
-          maintainer runs the versioned package-release workflow after adoption
-          review.
+          GitHub Packages publication is a separate maintainer workflow after
+          adoption review. Registry configuration and contribution guidance are
+          in the repository README.
         </p>
       </section>
       <section {...stylex.props(s.card)}>
@@ -326,7 +325,7 @@ function Adoption() {
           </p>
         </div>
         <pre {...stylex.props(s.code)}>
-          <code>{`import {ThemeProvider, Button, MenuButton} from '@from-trees/ui';\nimport '@from-trees/ui/styles.css';\n\nexport export default function App() {\n  return (\n    <ThemeProvider theme="forest" density="compact">\n      <Button icon="save" variant="primary" onPress={save}>\n        Save\n      </Button>\n    </ThemeProvider>\n  );\n}`}</code>
+          <code>{`import {ThemeProvider, Button, MenuButton} from '@from-trees/ui';\nimport '@from-trees/ui/styles.css';\n\nexport default function App() {\n  return (\n    <ThemeProvider theme="forest" density="compact">\n      <Button icon="save" variant="primary" onPress={save}>\n        Save\n      </Button>\n    </ThemeProvider>\n  );\n}`}</code>
         </pre>
       </section>
       <section {...stylex.props(s.card, s.prose)}>
