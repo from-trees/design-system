@@ -21,7 +21,16 @@ const styles = stylex.create({
     borderBottomStyle: "solid",
     borderBottomColor: color.border,
   },
-  title: { margin: 0, fontSize: 15, fontWeight: 650 },
+  title: {
+    fontFamily: "inherit",
+    fontStyle: "normal",
+    lineHeight: 1.3,
+    letterSpacing: "normal",
+    whiteSpace: "normal",
+    margin: 0,
+    fontSize: 15,
+    fontWeight: 650,
+  },
   body: {
     padding: metrics.panelPadding,
     display: "flex",

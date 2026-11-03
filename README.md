@@ -28,7 +28,7 @@ npm run check     # lint, types, interaction tests, both builds, package smoke c
 Download the package artifact from a successful GitHub Actions verification run, or use the initial prerelease tarball:
 
 ```sh
-npm install https://github.com/from-trees/design-system/releases/download/v0.1.0/from-trees-ui-0.1.0.tgz
+npm install https://github.com/from-trees/design-system/releases/download/v0.1.1/from-trees-ui-0.1.1.tgz
 ```
 
 That tarball installs as `@from-trees/ui`. It includes declarations and compiled CSS, with runtime dependencies installed normally. No repository source build is required.

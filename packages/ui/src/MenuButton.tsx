@@ -24,6 +24,9 @@ export type Action = {
 };
 const styles = stylex.create({
   trigger: {
+    boxSizing: "border-box",
+    margin: 0,
+    textTransform: "none",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",

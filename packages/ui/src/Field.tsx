@@ -10,8 +10,17 @@ import { color, metrics } from "./tokens.stylex";
 import { Icon } from "./Icon";
 const styles = stylex.create({
   field: { display: "flex", flexDirection: "column", gap: 6, minWidth: 0 },
-  label: { fontSize: metrics.small, color: color.muted, fontWeight: 550 },
+  label: {
+    margin: 0,
+    fontFamily: "inherit",
+    lineHeight: 1.4,
+    fontSize: metrics.small,
+    color: color.muted,
+    fontWeight: 550,
+  },
   input: {
+    margin: 0,
+    lineHeight: 1.4,
     boxSizing: "border-box",
     width: "100%",
     minWidth: 0,

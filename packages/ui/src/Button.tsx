@@ -19,6 +19,9 @@ export type ButtonProps = Omit<
 };
 const styles = stylex.create({
   base: {
+    boxSizing: "border-box",
+    margin: 0,
+    textTransform: "none",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
