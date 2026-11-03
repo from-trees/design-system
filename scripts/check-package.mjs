@@ -21,6 +21,7 @@ const [packed] = JSON.parse(
 for (const path of [
   "src/index.ts",
   "src/tokens.stylex.ts",
+  "src/utilities.ts",
   "src/Button.tsx",
   "tooling/vite.mjs",
 ])

@@ -1,4 +1,4 @@
-# Public component API, v0.2.0
+# Public component API, v0.2.1
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -41,3 +41,17 @@ Each entry accepts `{value, onChange, label?, reference?, min?, max?, readOnly?,
 ## Composition
 
 Examples in the catalog demonstrate public APIs. Synthetic History & sharing is a catalog pattern, not a package export; production history, restore and links must be supplied by the application. The restore confirmation deliberately replaces the drawer while active and returns to it after completion, rather than stacking overlays.
+
+## StyleX utilities
+
+Import from `@from-trees/ui/utilities` (also exported from the package root). All exports are native `stylex.create` objects, composed with `stylex.props` and compiled by the consuming app.
+
+- `gap`, `padding`, `paddingBlock`, `paddingInline`, `margin`, `marginBlock`, `marginInline`: `none`, `xs`, `sm`, `md`, `lg`, `xl`, `xxl` map to 0, 4, 8, 12, 16, 24, 32 px using the shared `space` tokens.
+- `layout`: `row`, `stack`, `wrap`, `alignCenter`, `alignStart`, `alignStretch`, `between`, `grow`. Row and stack set flex direction and allow shrinking; they do not set a gap or alignment.
+
+Prefer gap for sibling spacing and padding for surface insets. Block/inline follow the writing direction. Spacing utilities are fixed across control densities; use density-aware `metrics` for component internals. Compose component-specific styles last when intentional overrides are needed. Use local StyleX for responsive layouts or domain-specific dimensions; do not add arbitrary pixel-size utility variants. ThemeProvider supplies shared tokens, including in overlays.
+
+```tsx
+import {layout, gap, paddingInline} from '@from-trees/ui/utilities';
+<div {...stylex.props(layout.row, layout.wrap, layout.alignCenter, gap.sm, paddingInline.lg, localStyles.toolbar)} />
+```

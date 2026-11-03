@@ -1,6 +1,6 @@
 {
   "name": "@from-trees/ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shared React and StyleX components for From Trees applications",
   "type": "module",
   "license": "UNLICENSED",
@@ -24,6 +24,10 @@
     "./vite": {
       "types": "./tooling/vite.d.mts",
       "import": "./tooling/vite.mjs"
+    },
+    "./utilities": {
+      "types": "./src/utilities.ts",
+      "import": "./src/utilities.ts"
     }
   },
   "sideEffects": false,
