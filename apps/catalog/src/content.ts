@@ -6,6 +6,7 @@ export type PageId =
   | "lists"
   | "menus"
   | "fields"
+  | "help"
   | "parameters"
   | "panels"
   | "overlays"
@@ -68,12 +69,20 @@ export const pages: {
       "Short labels, useful validation, and consistent spacing. Choose controls by the decision being made, rather than styling every choice as an action.",
   },
   {
+    id: "help",
+    title: "Contextual help",
+    icon: "info",
+    group: "Components",
+    description:
+      "Keep labels concise. Put optional explanations behind an info control, available on hover, keyboard focus or tap.",
+  },
+  {
     id: "parameters",
     title: "Parameters",
     icon: "width",
     group: "Components",
     description:
-      "Dimensions and placement in the same order, wherever they appear. Show applicable parameters and make the measurement reference explicit.",
+      "App-defined parameters and groups, presented consistently. The app owns labels, units and order; shared controls handle editing, validation and optional help.",
   },
   {
     id: "panels",
@@ -123,6 +132,12 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Long strings truncate to one line; their full text remains available in the DOM and native title tooltip. Menus keep their full width.",
     "Applications supply plain strings and action callbacks. List owns the markup, typography, spacing and overflow behavior; it accepts no renderItem, children or style overrides.",
   ],
+  help: [
+    "Hover or keyboard-focus the info button to read optional detail. Click or tap toggles it; outside press, blur or Escape dismisses it.",
+    "Move the pointer onto the explanation to keep reading. The tooltip is portaled, viewport-aware and inherits theme through overlays.",
+    "Help is non-interactive text. Use a dialog for links, forms or actions. Labels, units and actionable validation errors stay visible.",
+    "Parameters use this same component for reference and help text. Hidden descriptions remain associated with the input for assistive technology.",
+  ],
   buttons: [
     "Icon buttons expose a visible tooltip on hover or keyboard focus and an accessible name.",
     "Busy buttons prevent repeat activation. Disabled controls retain their place in the layout.",
@@ -139,7 +154,8 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Keep validation adjacent. Disabled and read-only have distinct meanings.",
   ],
   parameters: [
-    "Stable order: Width, Height, Depth; Offset, Height from floor, Setback; Rotation.",
+    "Optional reference/help text appears through the info control beside the label. Validation errors remain inline.",
+    "The app supplies ordered groups and fields. Cabinet order lives in the catalog app’s CabinetParameters wrapper, not the shared package.",
     "Commit on Enter or blur. Escape restores the last value. Invalid input never calls onChange.",
     "Decimals, simple fractions and mixed fractions are accepted. Units and origins come from the application.",
     "Changing a parameter’s external value resets the draft. Key the control by object identity when selection changes.",
@@ -178,11 +194,36 @@ const items: ListItem[] = [
     ]},
 ];
 <List label="Saved revisions" items={items} />`,
+  help: `import {InfoTooltip} from '@from-trees/ui';
+
+<InfoTooltip label="Wall offset">
+  From the start of the parent wall.
+</InfoTooltip>
+
+<Parameters groups={[{
+  id: 'placement', label: 'Placement', parameters: [{
+    id: 'offset', value: offset, label: 'Offset from left', onChange: setOffset,
+    reference: 'From the start of the parent wall.',
+    help: 'Follows the wall direction, not the screen edge.',
+  }],
+}]} />`,
   buttons: `import {Button, IconButton} from '@from-trees/ui';\n\n<Button icon="save" variant="primary" onPress={save}>Save</Button>\n<IconButton icon="copy" label="Duplicate cabinet" onPress={duplicate} />`,
   menus: `<ActionGroup\n  primaryId="save"\n  actions={[\n    {id: 'save', label: 'Save', icon: 'save', onAction: save},\n    {id: 'copy', label: 'Duplicate', icon: 'copy', onAction: duplicate},\n    {id: 'delete', label: 'Delete', icon: 'delete',\n      destructive: true, separatorBefore: true, onAction: remove},\n  ]}\n/>`,
   fields: `<TextInput label="Project name" value={name}\n  onChange={event => setName(event.currentTarget.value)} />\n<Select label="Finish" value={finish}\n  onChange={event => setFinish(event.currentTarget.value)}>\n  <option value="oak">Natural oak</option>\n  <option value="paint">Paint</option>\n</Select>`,
-  parameters: `<Parameters key={selectedObject.id} unit="in" values={{\n  width: {value: width, min: 1, onChange: setWidth},\n  height: {value: height, min: 1, onChange: setHeight},\n  depth: {value: depth, min: 1, onChange: setDepth},\n  offset: {value: offset, label: 'Offset from left',\n    reference: 'From the start of the parent wall.',\n    onChange: setOffset},\n}} />`,
-  panels: `<Panel title="Base cabinet" actions={<MenuButton actions={actions} />}>\n  <Parameters values={parameters} />\n  <Section title="Appearance" collapsible>…</Section>\n  <Section title="Construction" collapsible modified>…</Section>\n</Panel>`,
+  parameters: `import {Parameters, type ParameterGroup} from '@from-trees/ui';
+
+// Define and reuse this policy in an application component.
+const groups: ParameterGroup[] = [
+  {id: 'output', label: 'Output', parameters: [
+    {id: 'duration-ms', label: 'Duration', unit: 'ms', value: duration, onChange: setDuration},
+    {id: 'gain-pct', label: 'Gain', unit: '%', value: gain, onChange: setGain},
+  ]},
+];
+<Parameters groups={groups} />
+
+// This catalog app supplies its own cabinet-specific wrapper:
+// <CabinetParameters values={dimensions} onChange={changeDimension} />`,
+  panels: `<Panel title="Base cabinet" actions={<MenuButton actions={actions} />}>\n  <Parameters groups={parameterGroups} />\n  <Section title="Appearance" collapsible>…</Section>\n  <Section title="Construction" collapsible modified>…</Section>\n</Panel>`,
   overlays: `<SidePanel title="History & sharing" open={open}\n  onOpenChange={setOpen} description={project.name}>\n  <ProjectHistory project={project} />\n</SidePanel>\n\n// Use Dialog for focused forms and confirmations.\n// The application guards unsaved changes before closing.`,
   feedback: `<Status tone="success">Link copied</Status>\n<Status tone="danger">Unable to save. Try again.</Status>\n<Badge tone="warning">Unsaved</Badge>`,
 };

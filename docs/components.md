@@ -1,4 +1,4 @@
-# Public component API, v0.3.0
+# Public component API, v0.4.0
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -13,7 +13,7 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 | TextInput        | label, help, error, native input props                                | Label/description/error associations; controlled or uncontrolled                     |
 | Select           | label, help, error, native select props, children                     | Native platform selection behavior                                                   |
 | Switch           | label, selected, onChange, disabled                                   | Controlled binary choice                                                             |
-| Parameters       | values, unit                                                          | Stable parameter order; see below                                                    |
+| Parameters       | groups, unit                                                          | App-defined schema and order; see below                                                    |
 | Panel            | title, actions, children                                              | Persistent surface with header and body                                              |
 | Section          | title, collapsible, defaultOpen, modified, hasError, children         | Named grouping; optional initial expansion and status hints                          |
 | Dialog           | title, description, open, onOpenChange, children, footer, dismissible | Focused modal task                                                                   |
@@ -22,7 +22,6 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 | Badge            | tone, children                                                        | neutral/success/warning/danger, non-announcing label                                 |
 | Status           | tone, children                                                        | Error alert or polite status announcement                                            |
 | parseMeasurement | raw string                                                            | Finite decimal/fraction parser; number or null                                       |
-| parameterOrder   | readonly array                                                        | Canonical parameter order                                                            |
 
 ## Actions
 
@@ -30,9 +29,26 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 
 ## Parameters
 
-`values` is a partial record keyed by `width`, `height`, `depth`, `offset`, `heightFromFloor`, `setback`, `rotation`.
+`Parameters({groups, unit?})` is a generic numeric parameter editor. It does not define parameter IDs, labels, groups, order, icons, units or domain-specific bounds. It renders the supplied group/field arrays in order, omitting empty groups.
 
-Each entry accepts `{value, onChange, label?, reference?, min?, max?, readOnly?, disabled?, unit?}`. Units default to `in` for lengths and `°` for rotation. Display labels may clarify reference origins without changing the canonical ordering. Values must be finite numbers. Bounds are inclusive. No automatic unit conversion, geometry normalization, or precision rounding is applied.
+`ParameterGroup = {id, label, parameters: readonly Parameter[]}`.
+
+`Parameter = {id, label, value, onChange, icon?, reference?, help?, min?, max?, readOnly?, disabled?, unit?}`. IDs are strings chosen by the app; group IDs and field IDs within a group must be unique and stable. Units have no default. A field unit overrides the optional container unit. Values must be finite; bounds are inclusive. The component accepts decimals and fractions, commits on blur/Enter, cancels a draft on Escape and resets on external value changes. It performs no unit conversion, domain normalization or precision rounding.
+
+Each application should provide a specific wrapper that defines its available parameters, grouping, ordering, labeling, icons, units and constraints in one place. Reuse that wrapper throughout the app. The catalog's `apps/catalog/src/CabinetParameters.tsx` is an example: its Size/Position/Orientation schema is application code, not a library preset. Another catalog example uses unrelated Gain/Duration/Samples fields and units.
+
+```tsx
+import {Parameters, type ParameterGroup} from '@from-trees/ui';
+const groups: ParameterGroup[] = [
+  {id: 'output', label: 'Output', parameters: [
+    {id: 'duration-ms', label: 'Duration', unit: 'ms', value: duration, onChange: setDuration},
+    {id: 'gain-pct', label: 'Gain', unit: '%', value: gain, onChange: setGain},
+  ]},
+];
+<Parameters groups={groups} />
+```
+
+The 0.4.0 API replaces the former `values` record. `ParameterKey` and `parameterOrder` are removed from the UI package. Migrate domain schemas into an app wrapper; there is no library fallback to the old cabinet schema.
 
 ## Segmented choices
 
@@ -77,3 +93,23 @@ const items: ListItem[] = [
 ```
 
 The catalog's History & sharing workflow imports this component directly. Review long content, empty state, disabled actions, keyboard menus, themes and narrow layouts on the Lists page before app adoption.
+
+## Contextual help
+
+`InfoTooltip({label, children})` is the standalone info control. It displays the common 16px info icon in a 24px target, named `About ${label}` for assistive technology. Supply optional non-interactive explanatory content; use a dialog for actions, links or forms.
+
+Hover opens after 350ms; keyboard focus opens immediately. The pointer can move into the tooltip without losing it. Click/tap toggles the explanation. Outside press, blur or Escape dismisses it. Escape dismisses help before its containing dialog. The portal uses its containing dialog when present, preserving modal accessibility; placement stays inside the viewport and inherits theme.
+
+In Parameters, `reference` and `help` are combined in the info control beside the label. They do not add a visible paragraph or change row height. A hidden input description preserves that detail for assistive technology. The help button remains available when the parameter is disabled or read-only. Labels, values and units stay visible; validation errors remain inline and associated with the input. Do not hide an essential label or required action in help.
+
+```tsx
+import {InfoTooltip, Parameters} from '@from-trees/ui';
+<InfoTooltip label="Wall offset">From the start of the parent wall.</InfoTooltip>
+<Parameters groups={[{id: 'placement', label: 'Placement', parameters: [{
+  id: 'offset', value: offset, onChange: setOffset, label: 'Offset from left',
+  reference: 'From the start of the parent wall.',
+  help: 'Follows the wall direction, not the screen edge.',
+}]}]} />
+```
+
+This API is under catalog review. Cabinitron adoption follows user confirmation in a separate app change.

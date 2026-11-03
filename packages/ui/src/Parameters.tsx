@@ -2,41 +2,30 @@ import { useEffect, useId, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 import { Icon, type IconName } from "./Icon";
-import {
-  parameterOrder,
-  parseMeasurement,
-  type ParameterKey,
-} from "./measurement";
+import { InfoTooltip } from "./InfoTooltip";
+import { parseMeasurement } from "./measurement";
 export type Parameter = {
+  id: string;
+  label: string;
   value: number;
   onChange: (value: number) => void;
-  label?: string;
+  icon?: IconName;
   reference?: string;
+  help?: string;
   min?: number;
   max?: number;
   readOnly?: boolean;
   disabled?: boolean;
   unit?: string;
 };
-export type ParametersProps = {
-  values: Partial<Record<ParameterKey, Parameter>>;
-  unit?: string;
+export type ParameterGroup = {
+  id: string;
+  label: string;
+  parameters: readonly Parameter[];
 };
-const definitions: Record<
-  ParameterKey,
-  { label: string; icon: IconName; group: string }
-> = {
-  width: { label: "Width", icon: "width", group: "Size" },
-  height: { label: "Height", icon: "height", group: "Size" },
-  depth: { label: "Depth", icon: "depth", group: "Size" },
-  offset: { label: "Offset", icon: "offset", group: "Position" },
-  heightFromFloor: {
-    label: "Height from floor",
-    icon: "ground",
-    group: "Position",
-  },
-  setback: { label: "Setback", icon: "depth", group: "Position" },
-  rotation: { label: "Rotation", icon: "rotation", group: "Orientation" },
+export type ParametersProps = {
+  groups: readonly ParameterGroup[];
+  unit?: string;
 };
 const styles = stylex.create({
   root: { display: "flex", flexDirection: "column", gap: 18 },
@@ -94,22 +83,36 @@ const styles = stylex.create({
   unit: { fontSize: 11, color: color.muted, paddingRight: 9 },
   error: { color: color.danger, fontSize: 12, margin: 0 },
   invalid: { borderColor: color.danger },
-  reference: { fontSize: 11, color: color.muted, margin: 0 },
+  labelGroup: { display: "flex", alignItems: "center", gap: 4, minWidth: 0 },
+  hiddenHelp: {
+    position: "absolute",
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: "hidden",
+    clipPath: "inset(50%)",
+    whiteSpace: "nowrap",
+    borderWidth: 0,
+  },
   field: { display: "flex", flexDirection: "column", gap: 4 },
   disabled: { opacity: 0.5 },
 });
 function ParameterField({
-  name,
   parameter,
   unit,
 }: {
-  name: ParameterKey;
   parameter: Parameter;
-  unit: string;
+  unit?: string;
 }) {
   const [draft, setDraft] = useState(String(parameter.value));
   const [error, setError] = useState("");
   const id = useId();
+  const label = parameter.label;
+  const displayUnit = parameter.unit ?? unit;
+  const detail = [parameter.reference, parameter.help]
+    .filter(Boolean)
+    .join("\n\n");
   useEffect(() => {
     setDraft(String(parameter.value));
     setError("");
@@ -135,10 +138,13 @@ function ParameterField({
   return (
     <div {...stylex.props(styles.field, parameter.disabled && styles.disabled)}>
       <div {...stylex.props(styles.row)}>
-        <label htmlFor={id} {...stylex.props(styles.label)}>
-          <Icon name={definitions[name].icon} size={15} />
-          {parameter.label ?? definitions[name].label}
-        </label>
+        <div {...stylex.props(styles.labelGroup)}>
+          <label htmlFor={id} {...stylex.props(styles.label)}>
+            {parameter.icon && <Icon name={parameter.icon} size={15} />}
+            {label}
+          </label>
+          {detail && <InfoTooltip label={label}>{detail}</InfoTooltip>}
+        </div>
         <div {...stylex.props(styles.inputWrap, !!error && styles.invalid)}>
           <input
             id={id}
@@ -148,7 +154,15 @@ function ParameterField({
             readOnly={parameter.readOnly}
             disabled={parameter.disabled}
             aria-invalid={!!error || undefined}
-            aria-describedby={`${id}-unit${error || parameter.reference ? ` ${id}-hint` : ""}`}
+            aria-describedby={
+              [
+                displayUnit ? `${id}-unit` : null,
+                detail ? `${id}-help` : null,
+                error ? `${id}-error` : null,
+              ]
+                .filter(Boolean)
+                .join(" ") || undefined
+            }
             onChange={(e) => {
               setDraft(e.currentTarget.value);
               setError("");
@@ -168,46 +182,46 @@ function ParameterField({
             }}
             {...stylex.props(styles.input)}
           />
-          <span id={`${id}-unit`} {...stylex.props(styles.unit)}>
-            {parameter.unit ?? (name === "rotation" ? "°" : unit)}
-          </span>
+          {displayUnit && (
+            <span id={`${id}-unit`} {...stylex.props(styles.unit)}>
+              {displayUnit}
+            </span>
+          )}
         </div>
       </div>
-      {(error || parameter.reference) && (
-        <p
-          id={`${id}-hint`}
-          role={error ? "alert" : undefined}
-          {...stylex.props(error ? styles.error : styles.reference)}
-        >
-          {error || parameter.reference}
+      {detail && (
+        <span id={`${id}-help`} {...stylex.props(styles.hiddenHelp)}>
+          {detail}
+        </span>
+      )}
+      {error && (
+        <p id={`${id}-error`} role="alert" {...stylex.props(styles.error)}>
+          {error}
         </p>
       )}
     </div>
   );
 }
-export function Parameters({ values, unit = "in" }: ParametersProps) {
+/** Render app-defined groups and fields in their supplied order; never infer a schema. */
+export function Parameters({ groups, unit }: ParametersProps) {
   return (
     <div {...stylex.props(styles.root)}>
-      {["Size", "Position", "Orientation"].map((group) => {
-        const keys = parameterOrder.filter(
-          (key) => values[key] && definitions[key].group === group,
-        );
-        return keys.length ? (
-          <fieldset key={group} {...stylex.props(styles.group)}>
-            <legend {...stylex.props(styles.legend)}>{group}</legend>
+      {groups
+        .filter((group) => group.parameters.length > 0)
+        .map((group) => (
+          <fieldset key={group.id} {...stylex.props(styles.group)}>
+            <legend {...stylex.props(styles.legend)}>{group.label}</legend>
             <div {...stylex.props(styles.fields)}>
-              {keys.map((key) => (
+              {group.parameters.map((parameter) => (
                 <ParameterField
-                  key={key}
-                  name={key}
-                  parameter={values[key]!}
+                  key={parameter.id}
+                  parameter={parameter}
                   unit={unit}
                 />
               ))}
             </div>
           </fieldset>
-        ) : null;
-      })}
+        ))}
     </div>
   );
 }
