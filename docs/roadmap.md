@@ -49,3 +49,9 @@ The canonical History & sharing row is now the public List component, rather tha
 Optional parameter references and input guidance move behind the standalone InfoTooltip. The catalog demonstrates it independently and inside a dialog. Validation remains visible and screen-reader descriptions retain explanatory text. This branch does not change or release Cabinitron; confirm catalog behavior before app adoption.
 
 Parameters now consumes app-defined groups/fields and has no cabinet keys, fixed group names, canonical order or default units. The catalog app supplies its reusable CabinetParameters wrapper and a second unrelated schema. The former values-record API and ParameterKey/parameterOrder exports are removed; apps must adopt the new API only after catalog confirmation.
+
+## 0.4.1 app-owned parameter rules review
+
+Optional custom validation enables app-specific constraints without defining domain rules in the library. Controlled commits display the actual value even when an app snaps a draft back to the same value. The catalog owns the positive-size and whole-inch rounding examples. Cabinitron integration remains separate after confirmation; this change does not alter its editor.
+
+Parameter validation and normalization are deferred until blur. Enter ends editing by blurring; focusing an invalid field clears its error for correction. Intermediate typing never changes the saved value.

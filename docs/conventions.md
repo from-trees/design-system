@@ -24,7 +24,7 @@ Use InfoTooltip for optional elaboration beside a concise label. Keep it availab
 
 Applications own their parameter schema through a specific reusable wrapper. Define available parameters, labels, groups, order, icons, units and bounds there; the generic Parameters component renders the supplied arrays without inferring a cabinet schema. Reuse the app wrapper wherever those controls are needed. The catalog's CabinetParameters demonstrates this separation. Geometry origins remain explicit application meaning: never reinterpret elevation-to-center as height-to-bottom.
 
-`Parameters` works in the supplied unit; it does not convert units or round geometry. Inputs accept decimal and fractional text. Blur/Enter commits a valid finite value within bounds; Escape cancels an unfinished edit. A changed external value resets the draft. Remount with `key={selectedObject.id}` when selection changes. A parent decides how to handle leaving a selection with an invalid draft.
+`Parameters` works in the supplied unit; it does not convert units or round geometry. Inputs accept decimal and fractional text. Focus loss commits a valid finite value within bounds. Enter blurs the field; Escape cancels an unfinished edit. Allow partial and temporary invalid drafts without validation or snapping during editing. A changed external value resets the draft. Remount with `key={selectedObject.id}` when selection changes. A parent decides how to handle leaving a selection with an invalid draft.
 
 ## Lists
 

@@ -154,9 +154,10 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Keep validation adjacent. Disabled and read-only have distinct meanings.",
   ],
   parameters: [
+    "Apps can reject parsed values with validate and a specific inline message. After commit, the displayed value follows the app, including unchanged snapped values.",
     "Optional reference/help text appears through the info control beside the label. Validation errors remain inline.",
     "The app supplies ordered groups and fields. Cabinet order lives in the catalog app’s CabinetParameters wrapper, not the shared package.",
-    "Commit on Enter or blur. Escape restores the last value. Invalid input never calls onChange.",
+    "Validation and updates wait until focus leaves the field. Enter blurs; Escape resets the draft. Temporary partial values remain editable.",
     "Decimals, simple fractions and mixed fractions are accepted. Units and origins come from the application.",
     "Changing a parameter’s external value resets the draft. Key the control by object identity when selection changes.",
   ],

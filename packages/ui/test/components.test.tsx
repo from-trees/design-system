@@ -143,6 +143,9 @@ describe("parameters", () => {
     await user.type(width, "0{Enter}");
     expect(change).not.toHaveBeenCalled();
     expect(width).toHaveAttribute("aria-invalid", "true");
+    expect(width).not.toHaveFocus();
+    await user.click(width);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     await user.keyboard("{Escape}");
     expect(width).toHaveValue("30");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

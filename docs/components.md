@@ -1,4 +1,4 @@
-# Public component API, v0.4.0
+# Public component API, v0.4.1
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -33,7 +33,7 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 
 `ParameterGroup = {id, label, parameters: readonly Parameter[]}`.
 
-`Parameter = {id, label, value, onChange, icon?, reference?, help?, min?, max?, readOnly?, disabled?, unit?}`. IDs are strings chosen by the app; group IDs and field IDs within a group must be unique and stable. Units have no default. A field unit overrides the optional container unit. Values must be finite; bounds are inclusive. The component accepts decimals and fractions, commits on blur/Enter, cancels a draft on Escape and resets on external value changes. It performs no unit conversion, domain normalization or precision rounding.
+`Parameter = {id, label, value, onChange, validate?, icon?, reference?, help?, min?, max?, readOnly?, disabled?, unit?}`. IDs are strings chosen by the app; group IDs and field IDs within a group must be unique and stable. Units have no default. A field unit overrides the optional container unit. Values must be finite; bounds are inclusive. The component accepts decimals and fractions, commits only on blur (Enter blurs), cancels a draft on Escape and resets on external value changes. It performs no unit conversion, domain normalization or precision rounding.
 
 Each application should provide a specific wrapper that defines its available parameters, grouping, ordering, labeling, icons, units and constraints in one place. Reuse that wrapper throughout the app. The catalog's `apps/catalog/src/CabinetParameters.tsx` is an example: its Size/Position/Orientation schema is application code, not a library preset. Another catalog example uses unrelated Gain/Duration/Samples fields and units.
 
@@ -113,3 +113,20 @@ import {InfoTooltip, Parameters} from '@from-trees/ui';
 ```
 
 This API is under catalog review. Cabinitron adoption follows user confirmation in a separate app change.
+
+## App-owned numeric rules
+
+`Parameter.validate(value)` optionally returns an error message for an otherwise parsed, finite value. Return `undefined` to accept it. The component shows that message inline, associates it with the input and does not call onChange for rejected values. Parsing and min/max checks run first. Keep validation synchronous and free of side effects; apps own the rule and its wording.
+
+After a valid commit, the field displays the controlled `value`, including when an app normalizes a draft back to the same saved value. Later external-value updates still reset the field. This prevents a value such as 8.25 remaining displayed when the app snapped it back to an unchanged 8. The component does not supply a snap step, rounding rule or positive-only constraint.
+
+```tsx
+{ id: 'size', label: 'Size', value: size, onChange: setSize,
+  validate: value => value > 0 ? undefined : 'Enter a size greater than zero.' }
+{ id: 'offset', label: 'Offset', value: offset,
+  onChange: value => setOffset(Math.round(value)) }
+```
+
+The catalog's **App-defined validation & snapping** example demonstrates these rules in app code. Review this behavior before app adoption.
+
+Validation and normalization run only after focus leaves the input. Typing does not call validate or onChange, including empty, partial, temporary zero or out-of-range drafts. Enter blurs the input and therefore ends editing before committing. Returning to an invalid field clears its error while it is edited; validation runs again on blur. Escape restores the current value without a write. No active draft is clamped or rounded while the user types.

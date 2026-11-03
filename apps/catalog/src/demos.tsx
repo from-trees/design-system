@@ -178,8 +178,8 @@ export function ParameterDemo({
       ) : (
         <div {...stylex.props(layout.row)}>
           <InfoTooltip label="Entering measurements">
-            Use decimals or fractions, such as 30 1/2, 30.5 or 1/2. Enter or
-            blur commits; Escape resets the draft.
+            Use decimals or fractions, such as 30 1/2, 30.5 or 1/2. Leaving the
+            field commits; Enter leaves the field; Escape resets the draft.
           </InfoTooltip>
         </div>
       )}
@@ -231,6 +231,43 @@ function GenericSettingsParameters() {
         },
       ]}
     />
+  );
+}
+function ParameterRulesDemo() {
+  const [size, setSize] = useState(12);
+  const [offset, setOffset] = useState(8);
+  return (
+    <Stack>
+      <Parameters
+        unit="in"
+        groups={[
+          {
+            id: "app-rules",
+            label: "App-defined rules",
+            parameters: [
+              {
+                id: "positive-size",
+                label: "Size",
+                value: size,
+                onChange: setSize,
+                validate: (value) =>
+                  value > 0 ? undefined : "Enter a size greater than zero.",
+              },
+              {
+                id: "snapped-offset",
+                label: "Offset",
+                value: offset,
+                onChange: (value) => setOffset(Math.round(value)),
+                help: "This example app rounds offsets to whole inches after editing ends. Try 8.25 or 8.75, then leave the field.",
+              },
+            ],
+          },
+        ]}
+      />
+      <output aria-label="Stored parameter values" {...stylex.props(s.small)}>
+        Size {size} in · Offset {offset} in
+      </output>
+    </Stack>
   );
 }
 export function ButtonsDemo({ state }: { state: ExampleState }) {
@@ -905,8 +942,8 @@ export function HelpDemo() {
       <div {...stylex.props(layout.row, layout.alignCenter, gap.xs)}>
         <span>Measurement input</span>
         <InfoTooltip label="Measurement input">
-          Use decimals or fractions, such as 30 1/2. Enter or blur commits;
-          Escape resets the draft.
+          Use decimals or fractions, such as 30 1/2. Changes apply when focus
+          leaves the field. Enter finishes editing; Escape resets the draft.
         </InfoTooltip>
       </div>
       <Button onPress={() => setDialog(true)}>Help inside a dialog</Button>
@@ -942,6 +979,9 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
           <ParameterDemo state={state} />
           <Section title="Different app-defined schema" collapsible>
             <GenericSettingsParameters />
+          </Section>
+          <Section title="App-defined validation & snapping" collapsible>
+            <ParameterRulesDemo />
           </Section>
         </Stack>
       );

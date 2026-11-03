@@ -9,6 +9,8 @@ export type Parameter = {
   label: string;
   value: number;
   onChange: (value: number) => void;
+  /** Return an app-owned error message to reject a parsed value. */
+  validate?: (value: number) => string | undefined;
   icon?: IconName;
   reference?: string;
   help?: string;
@@ -131,9 +133,15 @@ function ParameterField({
       setError(`Enter ${parameter.min ?? "−∞"} to ${parameter.max ?? "∞"}.`);
       return;
     }
+    const validation = parameter.validate?.(parsed);
+    if (validation) {
+      setError(validation);
+      return;
+    }
     setError("");
-    setDraft(String(parsed));
     if (parsed !== parameter.value) parameter.onChange(parsed);
+    // The controlled value is authoritative, even if the app snaps back to the same value.
+    setDraft(String(parameter.value));
   };
   return (
     <div {...stylex.props(styles.field, parameter.disabled && styles.disabled)}>
@@ -167,11 +175,12 @@ function ParameterField({
               setDraft(e.currentTarget.value);
               setError("");
             }}
+            onFocus={() => setError("")}
             onBlur={commit}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                commit();
+                e.currentTarget.blur();
               }
               if (e.key === "Escape") {
                 e.preventDefault();
