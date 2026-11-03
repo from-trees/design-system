@@ -76,6 +76,8 @@ Apps should compose these shared classes instead of repeating spacing and flex d
 
 More than two adjacent actions use ActionGroup/MenuButton. Prefer recognizable icons and concise labels. Parameters follow stable size/position ordering. Keep common controls visible and uncommon settings in named sections. Use contextual side panels/dialogs instead of distant page updates.
 
+Build shared UI changes in this repository and explore their behavior in the catalog first. Obtain the user's confirmation before implementing adoption in any app. App adoption is a separate change and review; do not develop both stages in parallel. See [adoption](docs/adoption.md).
+
 All changes require a PR with screenshots and behavior evidence where relevant. Main publishes the catalog automatically. Evaluation tarballs can be attached to prereleases for coordinated app review; package registry publication is a separate explicit maintainer workflow from main. Do not overwrite published versions.
 
 See [API](docs/components.md), [conventions](docs/conventions.md), [adoption](docs/adoption.md), and [roadmap](docs/roadmap.md).
