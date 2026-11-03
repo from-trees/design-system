@@ -1,8 +1,12 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 import { Icon, type IconName } from "./Icon";
 import { InfoTooltip } from "./InfoTooltip";
+import {
+  ParameterContext,
+  type ParameterControlProps,
+} from "./ParameterContext";
 import { parseMeasurement } from "./measurement";
 export type Parameter = {
   id: string;
@@ -20,10 +24,28 @@ export type Parameter = {
   disabled?: boolean;
   unit?: string;
 };
-export type ParameterGroup = {
+export type CustomParameter = {
   id: string;
   label: string;
-  parameters: readonly Parameter[];
+  icon?: IconName;
+  reference?: string;
+  help?: string;
+  error?: string;
+  control: ReactNode | ((props: ParameterControlProps) => ReactNode);
+};
+export type ParameterRowProps = {
+  label: string;
+  icon?: IconName;
+  reference?: string;
+  help?: string;
+  error?: string;
+  id?: string;
+  children: ReactNode | ((props: ParameterControlProps) => ReactNode);
+};
+export type ParameterGroup = {
+  id: string;
+  label?: string;
+  parameters: readonly (Parameter | CustomParameter)[];
 };
 export type ParametersProps = {
   groups: readonly ParameterGroup[];
@@ -55,6 +77,13 @@ const styles = stylex.create({
     fontSize: metrics.small,
     color: color.ink,
     minWidth: 0,
+  },
+  control: {
+    minWidth: 0,
+    minHeight: metrics.control,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
   inputWrap: {
     display: "flex",
@@ -100,6 +129,61 @@ const styles = stylex.create({
   field: { display: "flex", flexDirection: "column", gap: 4 },
   disabled: { opacity: 0.5 },
 });
+/** One layout for every editor. Built-in fields inherit the row's accessible label. */
+export function ParameterRow({
+  label,
+  icon,
+  reference,
+  help,
+  error,
+  id: suppliedId,
+  children,
+}: ParameterRowProps) {
+  const generatedId = useId();
+  const id = suppliedId ?? generatedId;
+  const detail = [reference, help].filter(Boolean).join("\n\n");
+  const controlProps: ParameterControlProps = {
+    id,
+    "aria-labelledby": `${id}-label`,
+    "aria-describedby":
+      [detail && `${id}-help`, error && `${id}-error`]
+        .filter(Boolean)
+        .join(" ") || undefined,
+    "aria-invalid": error ? true : undefined,
+  };
+  return (
+    <div {...stylex.props(styles.field)}>
+      <div {...stylex.props(styles.row)}>
+        <div {...stylex.props(styles.labelGroup)}>
+          <label
+            id={`${id}-label`}
+            htmlFor={id}
+            {...stylex.props(styles.label)}
+          >
+            {icon && <Icon name={icon} size={15} />}
+            {label}
+          </label>
+          {detail && <InfoTooltip label={label}>{detail}</InfoTooltip>}
+        </div>
+        <div {...stylex.props(styles.control)}>
+          <ParameterContext.Provider value={controlProps}>
+            {typeof children === "function" ? children(controlProps) : children}
+          </ParameterContext.Provider>
+        </div>
+      </div>
+      {detail && (
+        <span id={`${id}-help`} {...stylex.props(styles.hiddenHelp)}>
+          {detail}
+        </span>
+      )}
+      {error && (
+        <p id={`${id}-error`} role="alert" {...stylex.props(styles.error)}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 function ParameterField({
   parameter,
   unit,
@@ -110,11 +194,7 @@ function ParameterField({
   const [draft, setDraft] = useState(String(parameter.value));
   const [error, setError] = useState("");
   const id = useId();
-  const label = parameter.label;
   const displayUnit = parameter.unit ?? unit;
-  const detail = [parameter.reference, parameter.help]
-    .filter(Boolean)
-    .join("\n\n");
   useEffect(() => {
     setDraft(String(parameter.value));
     setError("");
@@ -144,30 +224,31 @@ function ParameterField({
     setDraft(String(parameter.value));
   };
   return (
-    <div {...stylex.props(styles.field, parameter.disabled && styles.disabled)}>
-      <div {...stylex.props(styles.row)}>
-        <div {...stylex.props(styles.labelGroup)}>
-          <label htmlFor={id} {...stylex.props(styles.label)}>
-            {parameter.icon && <Icon name={parameter.icon} size={15} />}
-            {label}
-          </label>
-          {detail && <InfoTooltip label={label}>{detail}</InfoTooltip>}
-        </div>
-        <div {...stylex.props(styles.inputWrap, !!error && styles.invalid)}>
+    <ParameterRow
+      id={id}
+      label={parameter.label}
+      icon={parameter.icon}
+      reference={parameter.reference}
+      help={parameter.help}
+      error={error}
+    >
+      {(controlProps) => (
+        <div
+          {...stylex.props(
+            styles.inputWrap,
+            !!error && styles.invalid,
+            parameter.disabled && styles.disabled,
+          )}
+        >
           <input
-            id={id}
+            {...controlProps}
             type="text"
             inputMode="text"
             value={draft}
             readOnly={parameter.readOnly}
             disabled={parameter.disabled}
-            aria-invalid={!!error || undefined}
             aria-describedby={
-              [
-                displayUnit ? `${id}-unit` : null,
-                detail ? `${id}-help` : null,
-                error ? `${id}-error` : null,
-              ]
+              [controlProps["aria-describedby"], displayUnit && `${id}-unit`]
                 .filter(Boolean)
                 .join(" ") || undefined
             }
@@ -197,18 +278,8 @@ function ParameterField({
             </span>
           )}
         </div>
-      </div>
-      {detail && (
-        <span id={`${id}-help`} {...stylex.props(styles.hiddenHelp)}>
-          {detail}
-        </span>
       )}
-      {error && (
-        <p id={`${id}-error`} role="alert" {...stylex.props(styles.error)}>
-          {error}
-        </p>
-      )}
-    </div>
+    </ParameterRow>
   );
 }
 /** Render app-defined groups and fields in their supplied order; never infer a schema. */
@@ -219,15 +290,30 @@ export function Parameters({ groups, unit }: ParametersProps) {
         .filter((group) => group.parameters.length > 0)
         .map((group) => (
           <fieldset key={group.id} {...stylex.props(styles.group)}>
-            <legend {...stylex.props(styles.legend)}>{group.label}</legend>
+            {group.label && (
+              <legend {...stylex.props(styles.legend)}>{group.label}</legend>
+            )}
             <div {...stylex.props(styles.fields)}>
-              {group.parameters.map((parameter) => (
-                <ParameterField
-                  key={parameter.id}
-                  parameter={parameter}
-                  unit={unit}
-                />
-              ))}
+              {group.parameters.map((parameter) =>
+                "control" in parameter ? (
+                  <ParameterRow
+                    key={parameter.id}
+                    label={parameter.label}
+                    icon={parameter.icon}
+                    reference={parameter.reference}
+                    help={parameter.help}
+                    error={parameter.error}
+                  >
+                    {parameter.control}
+                  </ParameterRow>
+                ) : (
+                  <ParameterField
+                    key={parameter.id}
+                    parameter={parameter}
+                    unit={unit}
+                  />
+                ),
+              )}
             </div>
           </fieldset>
         ))}

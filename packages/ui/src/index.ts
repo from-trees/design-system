@@ -9,6 +9,9 @@ export { Badge, Status } from "./Feedback";
 export { SegmentedControl } from "./SegmentedControl";
 export {
   Parameters,
+  ParameterRow,
+  type ParameterRowProps,
+  type CustomParameter,
   type ParametersProps,
   type Parameter,
   type ParameterGroup,
@@ -26,3 +29,4 @@ export {
 } from "./utilities";
 export { List, type ListItem, type ListStatus, type ListProps } from "./List";
 export { InfoTooltip, type InfoTooltipProps } from "./InfoTooltip";
+export type { ParameterControlProps } from "./ParameterContext";

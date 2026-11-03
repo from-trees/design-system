@@ -1,4 +1,4 @@
-# Public component API, v0.4.1
+# Public component API, v0.5.0
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -130,3 +130,42 @@ After a valid commit, the field displays the controlled `value`, including when 
 The catalog's **App-defined validation & snapping** example demonstrates these rules in app code. Review this behavior before app adoption.
 
 Validation and normalization run only after focus leaves the input. Typing does not call validate or onChange, including empty, partial, temporary zero or out-of-range drafts. Enter blurs the input and therefore ends editing before committing. Returning to an invalid field clears its error while it is edited; validation runs again on blur. Escape restores the current value without a write. No active draft is clamped or rounded while the user types.
+
+## Shared parameter rows and component editors
+
+`ParameterRow` owns the same fixed label/editor columns used by numeric `Parameters`, plus optional icon, contextual `reference`/`help` and inline `error`. Use it for related property choices within an editing section, including the selects and switches in the Appearance and Construction examples. Sections organize those rows; they do not introduce another property layout. Standalone inputs remain appropriate for forms, search and other interactions that are not parameter editing. Do not rebuild the grid in app code.
+
+Pass a component instance as its child. Shared `TextInput`, `Select` and `Switch` inherit the row label and descriptions through context, without rendering a second label. Outside a row, they retain their standalone layouts and require an accessible label. Provide disabled/read-only state to the editor itself. Optional detail belongs on the row's help control.
+
+```tsx
+<Section title="Appearance" collapsible>
+  <ParameterRow label="Finish">
+    <Select value={finish} onChange={e => setFinish(e.currentTarget.value)}>
+      <option value="oak">Natural oak</option>
+      <option value="paint">Paint</option>
+    </Select>
+  </ParameterRow>
+</Section>
+<ParameterRow label="Custom back thickness" help="Override the standard thickness.">
+  <Switch selected={custom} onChange={setCustom} />
+</ParameterRow>
+```
+
+For an app-specific editor, the child can be a function receiving `ParameterControlProps`: `id`, `aria-labelledby`, `aria-describedby`, and `aria-invalid`. Forward those attributes to the one editable control. The row does not inspect, clone or overwrite arbitrary component props; the custom editor owns its state, interaction, validation timing and styling within the editor slot.
+
+```tsx
+<ParameterRow label="Quality" help="App-owned quality setting.">
+  {controlProps => <input {...controlProps} type="range" min="1" max="10" />}
+</ParameterRow>
+```
+
+Schemas remain supported. A `CustomParameter` has the usual `id`, `label`, optional icon/help/reference/error, and a `control` containing a component instance or the same render function. Numeric entries retain `Parameter` and their existing focus-loss commit behavior. Group labels are optional when an enclosing Section already supplies the heading; applications still own group order and content.
+
+```tsx
+<Parameters groups={[{id: 'options', parameters: [
+  {id: 'width', label: 'Width', value: width, onChange: setWidth, unit: 'in'},
+  {id: 'enabled', label: 'Enabled', control: <Switch selected={enabled} onChange={setEnabled} />},
+]}]} />
+```
+
+Keep exactly one editor in each row. The row owns layout and accessible labeling; it does not change a select or switch into a numeric input, or apply measurement parsing to custom controls. Review **Mixed parameter editors** on the Parameters page and the expanded **Appearance** and **Construction** sections on Panels & sections before app adoption.

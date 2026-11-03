@@ -7,6 +7,7 @@ import {
 import { Switch as AriaSwitch } from "react-aria-components";
 import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
+import { useParameterControl } from "./ParameterContext";
 import { Icon } from "./Icon";
 const styles = stylex.create({
   field: { display: "flex", flexDirection: "column", gap: 6, minWidth: 0 },
@@ -81,7 +82,7 @@ const styles = stylex.create({
     pointerEvents: "none",
   },
 });
-type FieldProps = { label: string; help?: string; error?: string };
+type FieldProps = { label?: string; help?: string; error?: string };
 export function TextInput({
   label,
   help,
@@ -90,20 +91,36 @@ export function TextInput({
   ...props
 }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
   const generatedId = useId();
-  const id = suppliedId ?? generatedId;
+  const parameter = useParameterControl();
+  const id = parameter?.id ?? suppliedId ?? generatedId;
+  if (!parameter && !label && !props["aria-label"] && !props["aria-labelledby"])
+    throw new Error("Standalone fields require a label.");
   return (
     <div {...stylex.props(styles.field)}>
-      <label htmlFor={id} {...stylex.props(styles.label)}>
-        {label}
-      </label>
+      {!parameter && label && (
+        <label htmlFor={id} {...stylex.props(styles.label)}>
+          {label}
+        </label>
+      )}
       <input
         {...props}
         id={id}
-        aria-invalid={!!error || undefined}
-        aria-describedby={help || error ? `${id}-message` : undefined}
+        aria-labelledby={
+          parameter?.["aria-labelledby"] ?? props["aria-labelledby"]
+        }
+        aria-invalid={!!error || parameter?.["aria-invalid"] || undefined}
+        aria-describedby={
+          [
+            parameter?.["aria-describedby"],
+            props["aria-describedby"],
+            (help || error) && `${id}-message`,
+          ]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
         {...stylex.props(
           styles.input,
-          !!error && styles.error,
+          (!!error || parameter?.["aria-invalid"]) && styles.error,
           props.disabled && styles.disabled,
         )}
       />
@@ -127,22 +144,38 @@ export function Select({
   ...props
 }: FieldProps & SelectHTMLAttributes<HTMLSelectElement>) {
   const generatedId = useId();
-  const id = suppliedId ?? generatedId;
+  const parameter = useParameterControl();
+  const id = parameter?.id ?? suppliedId ?? generatedId;
+  if (!parameter && !label && !props["aria-label"] && !props["aria-labelledby"])
+    throw new Error("Standalone fields require a label.");
   return (
     <div {...stylex.props(styles.field)}>
-      <label htmlFor={id} {...stylex.props(styles.label)}>
-        {label}
-      </label>
+      {!parameter && label && (
+        <label htmlFor={id} {...stylex.props(styles.label)}>
+          {label}
+        </label>
+      )}
       <div {...stylex.props(styles.selectWrap)}>
         <select
           {...props}
           id={id}
-          aria-invalid={!!error || undefined}
-          aria-describedby={help || error ? `${id}-message` : undefined}
+          aria-labelledby={
+            parameter?.["aria-labelledby"] ?? props["aria-labelledby"]
+          }
+          aria-invalid={!!error || parameter?.["aria-invalid"] || undefined}
+          aria-describedby={
+            [
+              parameter?.["aria-describedby"],
+              props["aria-describedby"],
+              (help || error) && `${id}-message`,
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
           {...stylex.props(
             styles.input,
             styles.select,
-            !!error && styles.error,
+            (!!error || parameter?.["aria-invalid"]) && styles.error,
             props.disabled && styles.disabled,
           )}
         >
@@ -169,13 +202,20 @@ export function Switch({
   onChange,
   disabled,
 }: {
-  label: ReactNode;
+  label?: ReactNode;
   selected: boolean;
   onChange: (selected: boolean) => void;
   disabled?: boolean;
 }) {
+  const parameter = useParameterControl();
+  if (!parameter && !label)
+    throw new Error("Standalone switches require a label.");
   return (
     <AriaSwitch
+      id={parameter?.id}
+      aria-labelledby={parameter?.["aria-labelledby"]}
+      aria-describedby={parameter?.["aria-describedby"]}
+      aria-invalid={parameter?.["aria-invalid"]}
       isSelected={selected}
       onChange={onChange}
       isDisabled={disabled}
@@ -189,7 +229,7 @@ export function Switch({
           {...stylex.props(styles.thumb, selected && styles.thumbSelected)}
         />
       </span>
-      {label}
+      {!parameter && label}
     </AriaSwitch>
   );
 }

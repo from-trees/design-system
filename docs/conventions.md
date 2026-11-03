@@ -44,3 +44,5 @@ After confirmation, adopt a versioned package in a separate application change a
 
 
 Before adoption, show default, keyboard focus, disabled, read-only, loading, error, empty, long-content and narrow-screen states that apply. Test meaningful behavior, not styling implementation. Include screenshots and video when needed, update the reference examples, and document limitations. Keep the same native public components in the catalog and consuming apps.
+
+- Use `ParameterRow` (directly or through `Parameters`) for property editors such as the Appearance and Construction examples. Use component children or schema control slots for select, switch and custom editors in those groups. Keep the shared row grid, label, help and error placement; apps supply the editor and its behavior. Standalone inputs remain appropriate for forms, search and other interactions that are not parameter editing.
