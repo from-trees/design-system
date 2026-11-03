@@ -30,4 +30,9 @@ Overlays provide modal focus containment, restoration and scroll locking through
 
 ## Review
 
+Shared UI work follows two separate stages. First implement or revise components, tokens, utilities and reusable interaction behavior in this repository, with catalog examples that support exploration and review. Present the relevant states and obtain the user's confirmation of the behavior before implementing adoption in an application. A request to create or explore a shared component is not permission to begin app adoption.
+
+After confirmation, adopt a versioned package in a separate application change and review. Link the confirmed design-system change, keep application data/permissions/persistence in the app, and verify the real integration. Do not develop the library change and its app adoption in parallel, bundle them into one implementation step, or treat passing tests as user confirmation. Existing confirmed components may be adopted directly; reusable changes discovered during integration return to the design-system stage first.
+
+
 Before adoption, show default, keyboard focus, disabled, read-only, loading, error, empty, long-content and narrow-screen states that apply. Test meaningful behavior, not styling implementation. Include screenshots and video when needed, update the reference examples, and document limitations. Keep the same native public components in the catalog and consuming apps.

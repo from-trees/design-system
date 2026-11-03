@@ -1,6 +1,12 @@
 # Application adoption checklist
 
-No application migration is part of this repository bootstrap.
+Shared UI changes are explored and confirmed here before app implementation begins. Keep design-system development and app adoption as separate stages and reviews.
+
+- [ ] Implement the shared change and its applicable states in the design-system catalog.
+- [ ] Obtain the user's confirmation of the behavior before starting app adoption. Tests passing does not replace that confirmation.
+- [ ] Reference the confirmed design-system change in the separate app review.
+
+For existing confirmed components, begin with the package choice below. If app integration reveals a needed reusable change, return to catalog review first.
 
 - [ ] Choose a tested, versioned package artifact or registry release.
 - [ ] Install our React/StyleX peers and configure `fromTreesStylex` in Vite/Vitest. Do not import a library CSS file.
