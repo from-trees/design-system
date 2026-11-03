@@ -84,8 +84,7 @@ export function InfoTooltip({ label, children }: InfoTooltipProps) {
     <TooltipTrigger
       isOpen={open}
       onOpenChange={(next) => {
-        if (next || (!hoveringTooltip.current && !pressedOpen.current))
-          setOpen(next);
+        if (next || !hoveringTooltip.current) setOpen(next);
       }}
       delay={350}
       closeDelay={150}

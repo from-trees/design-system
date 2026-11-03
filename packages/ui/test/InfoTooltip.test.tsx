@@ -64,6 +64,26 @@ describe("contextual help", () => {
     expect(change).not.toHaveBeenCalled();
   });
 
+  it("replaces previously pressed help when another info control is hovered", async () => {
+    const user = userEvent.setup();
+    render(
+      <ThemeProvider>
+        <InfoTooltip label="First">First explanation.</InfoTooltip>
+        <InfoTooltip label="Second">Second explanation.</InfoTooltip>
+      </ThemeProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "About First" }));
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "First explanation.",
+    );
+    await user.hover(screen.getByRole("button", { name: "About Second" }));
+    await waitFor(() =>
+      expect(screen.getByRole("tooltip")).toHaveTextContent(
+        "Second explanation.",
+      ),
+    );
+    expect(screen.getAllByRole("tooltip")).toHaveLength(1);
+  });
   it("stays open while the pointer moves from the trigger into the explanation", async () => {
     const user = userEvent.setup();
     render(
