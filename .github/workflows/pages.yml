@@ -2,7 +2,16 @@ name: Publish catalog
 on:
   push:
     branches: [main]
-    paths: ['packages/**', 'apps/**', 'scripts/**', 'package*.json', '*.ts', '*.js', '.github/workflows/pages.yml']
+    paths:
+      [
+        "packages/**",
+        "apps/**",
+        "scripts/**",
+        "package*.json",
+        "*.ts",
+        "*.js",
+        ".github/workflows/pages.yml",
+      ]
   workflow_dispatch:
 permissions:
   contents: read
