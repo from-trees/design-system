@@ -4,7 +4,7 @@
 
 Shared components own semantics, styling and reusable interaction behavior. Applications own data fetching, geometry, business identity, permissions, save/undo boundaries, persistence, unsaved-change policy and navigation. The reference site uses synthetic data only.
 
-Use StyleX for component styling. Keep the package’s ftui class-name prefix stable and distinct from consuming-app builds; independently compiled StyleX rule priorities must not collide. Keep resets in the catalog, not the package. Use semantic tokens from `tokens.stylex.ts`; add theme values centrally. Do not add arbitrary application-specific overrides to shared primitives. Theme and density changes must also reach portaled menus, tooltips and overlays.
+Use StyleX for component styling. Compile package and app sources together with the shared Vite helper and one app prefix. Do not author CSS files or global resets; apply explicit StyleX classes to elements. Use semantic tokens from `tokens.stylex.ts`; add theme values centrally. Do not add arbitrary application-specific overrides to shared primitives. Theme and density changes must also reach portaled menus, tooltips and overlays.
 
 ## Actions and choices
 
@@ -26,4 +26,4 @@ Overlays provide modal focus containment, restoration and scroll locking through
 
 ## Review
 
-Before adoption, show default, keyboard focus, disabled, read-only, loading, error, empty, long-content and narrow-screen states that apply. Test meaningful behavior, not styling implementation. Include screenshots and video when needed, update the reference examples, and document limitations. Keep the same compiled public components in the catalog and consuming apps.
+Before adoption, show default, keyboard focus, disabled, read-only, loading, error, empty, long-content and narrow-screen states that apply. Test meaningful behavior, not styling implementation. Include screenshots and video when needed, update the reference examples, and document limitations. Keep the same native public components in the catalog and consuming apps.

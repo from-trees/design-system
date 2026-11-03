@@ -104,7 +104,7 @@ export const pages: {
     icon: "export",
     group: "Patterns",
     description:
-      "One package, shared behavior, deliberate adoption. The catalog imports the compiled package that applications will install.",
+      "One package, shared behavior, deliberate adoption. The catalog imports the native source package that applications will install.",
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {

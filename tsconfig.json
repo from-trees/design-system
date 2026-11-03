@@ -13,5 +13,11 @@
     "noEmit": true,
     "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["packages/ui/src", "apps/catalog/src", "*.ts"]
+  "include": [
+    "packages/ui/src",
+    "apps/catalog/src",
+    "*.ts",
+    "packages/ui/test",
+    "packages/ui/tooling"
+  ]
 }

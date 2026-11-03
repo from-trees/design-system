@@ -50,7 +50,7 @@ export default function App() {
     <ThemeProvider theme={theme} density={density}>
       <a
         href="#content"
-        className="skip-link"
+        {...stylex.props(s.skipLink)}
         onClick={(e) => {
           e.preventDefault();
           document.getElementById("content")?.focus();
@@ -85,7 +85,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.1.1</Badge>
+            <Badge>v0.2.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -299,16 +299,16 @@ export default function App() {
 }
 function Adoption() {
   return (
-    <div {...stylex.props(s.stack)} style={{ marginTop: 30 }}>
+    <div {...stylex.props(s.stack)} {...stylex.props(s.adoption)}>
       <section {...stylex.props(s.card, s.prose)}>
         <h2 {...stylex.props(s.heading)}>Install the package</h2>
         <p {...stylex.props(s.text)}>
           Install the public evaluation tarball now. It installs as
-          @from-trees/ui and includes the compiled JavaScript, stylesheet and
-          TypeScript declarations.
+          @from-trees/ui and includes native React, TypeScript and StyleX
+          sources.
         </p>
         <pre {...stylex.props(s.code)}>
-          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.1.1/from-trees-ui-0.1.0.tgz`}</code>
+          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.2.0/from-trees-ui-0.1.0.tgz`}</code>
         </pre>
         <p {...stylex.props(s.small)}>
           GitHub Packages publication is a separate maintainer workflow after
@@ -320,13 +320,12 @@ function Adoption() {
         <div {...stylex.props(s.prose)}>
           <h2 {...stylex.props(s.heading)}>Use in any React application</h2>
           <p {...stylex.props(s.text)}>
-            Supports React 18.3 and 19. Compiled CSS ships with the package;
-            consumers do not need a StyleX compiler. Import the stylesheet once,
-            after existing global styles.
+            The consuming app compiles the library’s StyleX alongside its own
+            styles. Use the shared Vite integration and import tokens directly.
           </p>
         </div>
         <pre {...stylex.props(s.code)}>
-          <code>{`import {ThemeProvider, Button, MenuButton} from '@from-trees/ui';\nimport '@from-trees/ui/styles.css';\n\nexport default function App() {\n  return (\n    <ThemeProvider theme="forest" density="compact">\n      <Button icon="save" variant="primary" onPress={save}>\n        Save\n      </Button>\n    </ThemeProvider>\n  );\n}`}</code>
+          <code>{`import {ThemeProvider, Button, MenuButton} from '@from-trees/ui';\n\nexport default function App() {\n  return (\n    <ThemeProvider theme="forest" density="compact">\n      <Button icon="save" variant="primary" onPress={save}>\n        Save\n      </Button>\n    </ThemeProvider>\n  );\n}`}</code>
         </pre>
       </section>
       <section {...stylex.props(s.card, s.prose)}>
@@ -334,7 +333,7 @@ function Adoption() {
         <ul {...stylex.props(s.list)}>
           <li>
             Implement shared components in packages/ui. The catalog imports
-            their built public API.
+            their native source API.
           </li>
           <li>
             Add working examples, usage guidance and meaningful interaction

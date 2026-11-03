@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 const styles = stylex.create({
   panel: {
+    boxSizing: "border-box",
     backgroundColor: color.surface,
     borderWidth: 1,
     borderStyle: "solid",

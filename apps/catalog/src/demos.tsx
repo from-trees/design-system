@@ -690,7 +690,7 @@ export function Workflows() {
         </div>
       </div>
       <Panel title="Business designs">
-        <div style={{ overflowX: "auto" }}>
+        <div {...stylex.props(s.tableWrap)}>
           <table {...stylex.props(s.table)}>
             <thead>
               <tr>

@@ -32,6 +32,7 @@ const styles = stylex.create({
   },
   drawerOverlay: { justifyContent: "flex-end", padding: 0 },
   modal: {
+    boxSizing: "border-box",
     width: "min(520px, 100%)",
     maxHeight: "calc(100dvh - 40px)",
     backgroundColor: color.surface,

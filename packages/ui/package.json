@@ -1,36 +1,44 @@
 {
   "name": "@from-trees/ui",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Shared React and StyleX components for From Trees applications",
   "type": "module",
   "license": "UNLICENSED",
   "files": [
-    "dist",
+    "src",
+    "tooling",
     "README.md"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./tokens.stylex": {
+      "types": "./src/tokens.stylex.ts",
+      "import": "./src/tokens.stylex.ts"
+    },
+    "./vite": {
+      "types": "./tooling/vite.d.mts",
+      "import": "./tooling/vite.mjs"
+    }
   },
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "sideEffects": false,
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json --noEmit",
     "prepack": "npm run build"
   },
   "peerDependencies": {
     "react": "^18.3.1 || ^19.0.0",
-    "react-dom": "^18.3.1 || ^19.0.0"
+    "react-dom": "^18.3.1 || ^19.0.0",
+    "@stylexjs/stylex": "0.19.1",
+    "@stylexjs/unplugin": "0.19.1",
+    "vite": "^6.2.4 || ^7.0.0"
   },
   "dependencies": {
-    "@stylexjs/stylex": "0.19.1",
     "lucide-react": "^0.468.0",
     "react-aria-components": "^1.13.0"
   },

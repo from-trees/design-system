@@ -1,79 +1,69 @@
 # From Trees design system
 
-A standalone React + StyleX component package and interactive static reference site. Cabinitron supplies the first workflows; no Cabinitron code, customer data, authentication or backend is imported.
+Native React + StyleX components, tokens and build integration for our common application stack. Cabinitron is the first adopter; this repository contains no Cabinitron data or backend logic.
 
-- **Catalog:** https://from-trees.github.io/design-system/
-- **Package:** `@from-trees/ui`
-- **Runtime:** React 18.3 or 19; browser and SSR-compatible exports.
-- **Styling:** StyleX compiled into an explicit stylesheet. Consumers do not need a StyleX compiler.
+- Catalog: https://from-trees.github.io/design-system/
+- Package: `@from-trees/ui`
+- Styling: consuming apps compile library and app StyleX sources in one pipeline.
+- No precompiled library CSS, CSS import, global reset or third-party compatibility layer.
 
 ## Develop
 
-Node 22.12+ (CI uses Node 24), npm workspaces.
-
 ```sh
 npm ci
-npm run build
 npm run dev
+npm run check
 ```
 
-The catalog intentionally imports the **built package**, not a source alias. After editing `packages/ui/src`, run `npm run build -w @from-trees/ui` to refresh the catalog's package dependency. Catalog source has normal Vite hot reload.
+The catalog imports the native source package. Changes to library components have normal Vite hot reload; no library build step is needed to see them. Checks cover lint, types, catalog production build, interaction tests and source package contents.
+
+## Install in our stack
 
 ```sh
-npm run check     # lint, types, interaction tests, both builds, package smoke check
+pnpm add @stylexjs/stylex@0.19.1 https://github.com/from-trees/design-system/releases/download/v0.2.0/from-trees-ui-0.2.0.tgz
+pnpm add -D @stylexjs/unplugin@0.19.1
 ```
 
-## Evaluate before registry release
+Use the shared compiler configuration:
 
-Download the package artifact from a successful GitHub Actions verification run, or use the initial prerelease tarball:
+```ts
+import {defineConfig} from 'vite';
+import {fileURLToPath} from 'node:url';
+import {fromTreesStylex} from '@from-trees/ui/vite';
 
-```sh
-npm install https://github.com/from-trees/design-system/releases/download/v0.1.1/from-trees-ui-0.1.1.tgz
+export default defineConfig(({mode}) => ({
+  plugins: fromTreesStylex({
+    rootDir: fileURLToPath(new URL('.', import.meta.url)),
+    prefix: 'cabinitron',
+    test: mode === 'test',
+  }),
+}));
 ```
 
-That tarball installs as `@from-trees/ui`. It includes declarations and compiled CSS, with runtime dependencies installed normally. No repository source build is required.
-
-For GitHub Packages, map `@from-trees:registry=https://npm.pkg.github.com` in the consuming app's `.npmrc`, authenticate locally, then install an available version with `npm install @from-trees/ui@VERSION`. Never commit a token. Registry publication is an explicit maintainer workflow from main; a source PR does not automatically publish a package version.
-
-## Consume
+The helper compiles both app and library, handles Vite development CSS updates, and loads compiler-generated production CSS even when an app has no CSS inputs. Tests use the compilation adapter without development-server timers. The helper currently targets our Vite HTML-entry apps; other hosts require their own integration before adoption.
 
 ```tsx
-import { ThemeProvider, Button, ActionGroup, Parameters } from "@from-trees/ui";
-import "@from-trees/ui/styles.css";
+import {ThemeProvider, Button} from '@from-trees/ui';
+import {color, space} from '@from-trees/ui/tokens.stylex';
+import * as stylex from '@stylexjs/stylex';
+
+const styles = stylex.create({content: {color: color.ink, padding: space.lg}});
 
 export function App() {
-  return (
-    <ThemeProvider theme="forest" density="compact">
-      <Button icon="save" variant="primary" onPress={() => save()}>
-        Save
-      </Button>
-    </ThemeProvider>
-  );
+  return <ThemeProvider density="compact">
+    <div {...stylex.props(styles.content)}>
+      <Button icon="save" variant="primary" onPress={save}>Save</Button>
+    </div>
+  </ThemeProvider>;
 }
 ```
 
-Import the stylesheet once, after existing global styles. This package adds no global element reset. Styles are emitted without CSS layers so separately compiled StyleX applications can coexist without atomic-class collisions. The package and catalog use distinct stable class-name prefixes. Applications should scope aggressive global selectors and validate their styles before migration.
+Never import `@from-trees/ui/styles.css`; that entry point was removed in 0.2.0. The package ships TypeScript/TSX and `.stylex.ts` token sources. The app owns compilation, generated CSS, geometry adapters, permissions, persistence and unsaved changes.
 
-## Structure
+## Conventions and review
 
-- `packages/ui`: public, domain-independent components, StyleX tokens, themes and tests.
-- `apps/catalog`: working examples, behavior notes, code examples, theme/density controls and synthetic composed workflows.
-- `docs`: usage contract, API, adoption checklist and roadmap.
-- `.github/workflows`: verification, GitHub Pages deployment and deliberate package publication.
+More than two adjacent actions use ActionGroup/MenuButton. Prefer recognizable icons and concise labels. Parameters follow stable size/position ordering. Keep common controls visible and uncommon settings in named sections. Use contextual side panels/dialogs instead of distant page updates.
 
-## Interaction conventions
+All changes require a PR with screenshots and behavior evidence where relevant. Main publishes the catalog automatically. Evaluation tarballs can be attached to prereleases for coordinated app review; package registry publication is a separate explicit maintainer workflow from main. Do not overwrite published versions.
 
-- More than two adjacent actions become a shared menu; one primary action may remain visible.
-- Familiar actions use icons with accessible names and tooltips; ambiguous actions keep concise labels.
-- Parameters preserve Width → Height → Depth; Offset → Height from floor → Setback; Rotation.
-- Common controls remain visible; uncommon details use named sections.
-- Contextual tasks open a side panel or dialog and retain focus/scroll context.
-- State, persistence, permissions, unsaved-change guards and geometry adapters belong to the consuming application.
-
-## Release and review
-
-All changes require a PR. Include real screenshots and behavior evidence for UI changes. `Verify components` checks PRs and produces a package tarball. `Publish catalog` deploys main automatically and supports explicit dispatch against an initial review branch. The live catalog may therefore demonstrate a review branch; use the deployment run/commit to identify its source.
-
-Version the UI package and catalog dependency together. Registry publication runs only from main via `Release UI package`. Do not overwrite a published version. Mark breaking changes and provide migrations. The initial tarball is a prerelease for evaluation; no application migration has been performed.
-
-See [component API](docs/components.md), [conventions](docs/conventions.md), [adoption](docs/adoption.md), and [roadmap](docs/roadmap.md).
+See [API](docs/components.md), [conventions](docs/conventions.md), [adoption](docs/adoption.md), and [roadmap](docs/roadmap.md).

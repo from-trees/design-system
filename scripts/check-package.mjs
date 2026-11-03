@@ -1,31 +1,8 @@
-import { readFile, mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
-import { createElement } from "react";
-import { renderToString } from "react-dom/server";
 const root = resolve(import.meta.dirname, "..");
 await mkdir(resolve(root, "output"), { recursive: true });
-const css = await readFile(
-  resolve(root, "packages/ui/dist/styles.css"),
-  "utf8",
-);
-const js = await readFile(resolve(root, "packages/ui/dist/index.js"), "utf8");
-if (css.length < 5000 || !css.includes("--"))
-  throw new Error("Compiled CSS or theme variables missing");
-if (!js.includes("ftui"))
-  throw new Error("Package styles must use the isolated ftui prefix");
-if (/\.createTheme\(|\.defineVars\(|\.create\(/.test(js))
-  throw new Error("Uncompiled StyleX in distribution");
-const ui = await import("../packages/ui/dist/index.js");
-const html = renderToString(
-  createElement(
-    ui.ThemeProvider,
-    null,
-    createElement(ui.Button, { icon: "save" }, "Save"),
-  ),
-);
-if (!html.includes("Save") || !html.includes("class="))
-  throw new Error("Public package API failed SSR smoke check");
 const [packed] = JSON.parse(
   execFileSync(
     "npm",
@@ -41,15 +18,36 @@ const [packed] = JSON.parse(
     { cwd: root, encoding: "utf8" },
   ),
 );
-for (const required of ["dist/index.js", "dist/index.d.ts", "dist/styles.css"])
-  if (!packed.files.some((f) => f.path === required))
-    throw new Error(`Package missing ${required}`);
+for (const path of [
+  "src/index.ts",
+  "src/tokens.stylex.ts",
+  "src/Button.tsx",
+  "tooling/vite.mjs",
+])
+  if (!packed.files.some((file) => file.path === path))
+    throw Error(`Missing native source: ${path}`);
 if (
   packed.files.some(
-    (f) => f.path.includes("test") || f.path.includes("node_modules"),
+    (file) =>
+      file.path.endsWith(".css") ||
+      file.path.startsWith("dist/") ||
+      file.path.includes(".test."),
   )
 )
-  throw new Error("Unexpected files in package");
+  throw Error(
+    "Native package must not contain CSS, compiled distribution or tests",
+  );
+const manifest = JSON.parse(
+  await readFile(resolve(root, "packages/ui/package.json"), "utf8"),
+);
+if (manifest.exports["./styles.css"])
+  throw Error("Remove the compiled CSS entry point");
+const index = await readFile(
+  resolve(root, "apps/catalog/dist/index.html"),
+  "utf8",
+);
+if (!index.includes('rel="stylesheet"'))
+  throw Error("Catalog must load compiler-generated CSS automatically");
 console.log(
-  `Verified ${packed.filename}: compiled CSS, declarations, public exports, SSR, package contents.`,
+  `Verified ${packed.filename}: native React/StyleX sources, tokens, shared compiler, no CSS distribution, generated catalog stylesheet.`,
 );

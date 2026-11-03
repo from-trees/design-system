@@ -1,6 +1,6 @@
-# Public component API, v0.1.0
+# Public component API, v0.2.0
 
-Import from `@from-trees/ui`; import `@from-trees/ui/styles.css` once.
+Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
 | Export           | Main props                                                            | Notes                                                                                |
 | ---------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |

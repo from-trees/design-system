@@ -1,15 +1,10 @@
 import { defineConfig } from "vite";
-import stylex from "@stylexjs/unplugin";
+import { fromTreesStylex } from "@from-trees/ui/vite";
 import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "./",
   plugins: [
-    stylex.vite({
-      runtimeInjection: false,
-      useCSSLayers: false,
-      classNamePrefix: "ftcatalog",
-      unstable_moduleResolution: { type: "commonJS", rootDir: process.cwd() },
-    }),
+    ...fromTreesStylex({ rootDir: process.cwd(), prefix: "ftcatalog" }),
     react(),
   ],
   resolve: { dedupe: ["react", "react-dom"] },
