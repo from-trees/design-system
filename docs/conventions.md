@@ -22,6 +22,10 @@ Stable presentation: Width → Height → Depth; Offset → Height from floor �
 
 `Parameters` works in the supplied unit; it does not convert units or round geometry. Inputs accept decimal and fractional text. Blur/Enter commits a valid finite value within bounds; Escape cancels an unfinished edit. A changed external value resets the draft. Remount with `key={selectedObject.id}` when selection changes. A parent decides how to handle leaving a selection with an invalid draft.
 
+## Lists
+
+Use the shared `List` for the standard title/metadata/action pattern. Apps supply items and callbacks, not row markup or alternate spacing. Keep metadata concise; status replaces the action menu for a current/informational row. Do not add separators, tall cards, stacked date/actor lines or visible per-row action buttons. Explore any needed list variant in the catalog and obtain confirmation before using it in an app.
+
 ## Surfaces
 
 Use Panel for persistent grouping, Section for progressive disclosure, SidePanel for contextual work, and Dialog for focused tasks. Keep core dimensions visible. Group uncommon controls by their subject; show Modified or Needs attention on collapsed sections.

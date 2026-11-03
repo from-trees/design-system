@@ -3,6 +3,7 @@ export type PageId =
   | "overview"
   | "foundations"
   | "buttons"
+  | "lists"
   | "menus"
   | "fields"
   | "parameters"
@@ -49,6 +50,14 @@ export const pages: {
     group: "Components",
     description:
       "More than two adjacent actions belong in a menu. Keep a frequent primary action visible and give everything else a predictable home.",
+  },
+  {
+    id: "lists",
+    title: "Lists",
+    icon: "history",
+    group: "Components",
+    description:
+      "The shared list owns every row: title, one metadata line, and a right-aligned status or action menu. Apps provide data and actions, not row markup.",
   },
   {
     id: "fields",
@@ -108,6 +117,12 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  lists: [
+    "Title and metadata stay together on the left. A status or menu stays on the right at every width.",
+    "Rows have no separators, card borders, extra padding or exposed action buttons. Even one action uses the row menu.",
+    "Long strings truncate to one line; their full text remains available in the DOM and native title tooltip. Menus keep their full width.",
+    "Applications supply plain strings and action callbacks. List owns the markup, typography, spacing and overflow behavior; it accepts no renderItem, children or style overrides.",
+  ],
   buttons: [
     "Icon buttons expose a visible tooltip on hover or keyboard focus and an accessible name.",
     "Busy buttons prevent repeat activation. Disabled controls retain their place in the layout.",
@@ -151,6 +166,18 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   ],
 };
 export const snippets: Partial<Record<PageId, string>> = {
+  lists: `import {List, type ListItem} from '@from-trees/ui';
+
+const items: ListItem[] = [
+  {id: '4', title: 'Revision 4', metadata: 'Team member · Nov 2',
+    status: {label: 'Current', tone: 'success'}},
+  {id: '3', title: 'Revision 3', metadata: 'Team member · Nov 2',
+    actions: [
+      {id: 'inspect', label: 'Inspect', icon: 'view', onAction: inspect},
+      {id: 'restore', label: 'Restore', icon: 'history', onAction: confirmRestore},
+    ]},
+];
+<List label="Saved revisions" items={items} />`,
   buttons: `import {Button, IconButton} from '@from-trees/ui';\n\n<Button icon="save" variant="primary" onPress={save}>Save</Button>\n<IconButton icon="copy" label="Duplicate cabinet" onPress={duplicate} />`,
   menus: `<ActionGroup\n  primaryId="save"\n  actions={[\n    {id: 'save', label: 'Save', icon: 'save', onAction: save},\n    {id: 'copy', label: 'Duplicate', icon: 'copy', onAction: duplicate},\n    {id: 'delete', label: 'Delete', icon: 'delete',\n      destructive: true, separatorBefore: true, onAction: remove},\n  ]}\n/>`,
   fields: `<TextInput label="Project name" value={name}\n  onChange={event => setName(event.currentTarget.value)} />\n<Select label="Finish" value={finish}\n  onChange={event => setFinish(event.currentTarget.value)}>\n  <option value="oak">Natural oak</option>\n  <option value="paint">Paint</option>\n</Select>`,

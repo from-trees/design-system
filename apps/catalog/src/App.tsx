@@ -40,6 +40,7 @@ export default function App() {
   }, [current.title]);
   const isComposition = page === "overview" || page === "patterns";
   const hasStates = [
+    "lists",
     "buttons",
     "menus",
     "fields",
@@ -85,7 +86,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.2.1</Badge>
+            <Badge>v0.3.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -265,11 +266,17 @@ export default function App() {
                       >
                         <option value="default">Default</option>
                         <option value="disabled">Disabled</option>
-                        {["buttons", "fields"].includes(page) && (
-                          <option value="loading">Loading / read-only</option>
+                        {["buttons", "fields", "lists"].includes(page) && (
+                          <option value="loading">
+                            {page === "lists"
+                              ? "Loading"
+                              : "Loading / read-only"}
+                          </option>
                         )}
-                        {["fields", "parameters"].includes(page) && (
-                          <option value="error">Validation</option>
+                        {["fields", "parameters", "lists"].includes(page) && (
+                          <option value="error">
+                            {page === "lists" ? "Error" : "Validation"}
+                          </option>
                         )}
                       </Select>
                     )}
@@ -303,12 +310,13 @@ function Adoption() {
       <section {...stylex.props(s.card, s.prose)}>
         <h2 {...stylex.props(s.heading)}>Install the package</h2>
         <p {...stylex.props(s.text)}>
-          Install the public evaluation tarball now. It installs as
-          @from-trees/ui and includes native React, TypeScript and StyleX
-          sources.
+          Install the confirmed evaluation tarball. New components stay in
+          catalog review until confirmation and a versioned release. The package
+          installs as @from-trees/ui and includes native React, TypeScript and
+          StyleX sources.
         </p>
         <pre {...stylex.props(s.code)}>
-          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.2.1/from-trees-ui-0.2.1.tgz`}</code>
+          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.3.0/from-trees-ui-0.2.1.tgz`}</code>
         </pre>
         <p {...stylex.props(s.small)}>
           GitHub Packages publication is a separate maintainer workflow after

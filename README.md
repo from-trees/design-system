@@ -60,6 +60,10 @@ export function App() {
 
 Never import `@from-trees/ui/styles.css`; that entry point was removed in 0.2.0. The package ships TypeScript/TSX and `.stylex.ts` token sources. The app owns compilation, generated CSS, geometry adapters, permissions, persistence and unsaved changes.
 
+## Standard lists
+
+Use `List` from `@from-trees/ui` for title/metadata rows with a right-aligned status or action menu. The component owns the row markup, spacing and typography; applications supply plain item data and callbacks. The catalog's History & sharing example uses it directly. See the [list API](docs/components.md#lists). Version 0.3.0 is under design-system review; app adoption follows confirmation.
+
 ## Shared spacing and layout
 
 ```tsx

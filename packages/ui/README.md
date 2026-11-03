@@ -21,3 +21,5 @@ import {layout, gap, padding} from '@from-trees/ui/utilities';
 ```
 
 Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, margin and logical block/inline variants share the same tokens. Keep domain-specific and responsive styles local.
+
+`List` owns standard title/metadata/status-or-menu rows. Supply item data and actions; do not rebuild the row in applications. See the catalog's Lists page and History & sharing workflow.
