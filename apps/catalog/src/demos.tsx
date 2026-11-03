@@ -22,10 +22,11 @@ import {
   type ParameterKey,
 } from "@from-trees/ui";
 import { s } from "./styles";
+import { layout, gap, padding, marginBlock } from "@from-trees/ui/utilities";
 import type { PageId } from "./content";
 export type ExampleState = "default" | "disabled" | "error" | "loading";
 function Stack({ children }: { children: React.ReactNode }) {
-  return <div {...stylex.props(s.stack)}>{children}</div>;
+  return <div {...stylex.props(layout.stack, gap.xl)}>{children}</div>;
 }
 const iconNames: IconName[] = [
   "add",
@@ -80,14 +81,52 @@ export function Foundations() {
           ))}
         </div>
       </div>
-      <div>
-        <h2 {...stylex.props(s.heading)}>Spacing & density</h2>
-        <p {...stylex.props(s.text)}>
-          4 · 8 · 12 · 16 · 24 · 32 px. Comfortable controls are 38 px high;
-          compact controls are 32 px. Keep clear focus indicators and readable
-          labels at either density.
+      <section
+        aria-label="Shared spacing utilities"
+        {...stylex.props(layout.stack, gap.lg)}
+      >
+        <h2 {...stylex.props(s.heading, marginBlock.none)}>
+          Spacing & layout utilities
+        </h2>
+        <p {...stylex.props(s.text, marginBlock.none)}>
+          Compose shared StyleX classes on app elements. Use gaps between
+          children, padding inside surfaces, and logical block/inline spacing.
+          The same scale applies at both densities; control sizing follows
+          density separately.
         </p>
-      </div>
+        <div {...stylex.props(layout.stack, gap.md)}>
+          {(["none", "xs", "sm", "md", "lg", "xl", "xxl"] as const).map(
+            (size, index) => (
+              <div key={size} {...stylex.props(layout.stack, gap.xs)}>
+                <span {...stylex.props(s.small)}>
+                  {size} · {[0, 4, 8, 12, 16, 24, 32][index]} px
+                </span>
+                <div
+                  {...stylex.props(
+                    layout.row,
+                    gap[size],
+                    padding.sm,
+                    s.spacingTrack,
+                  )}
+                >
+                  <span {...stylex.props(s.spacingChip)}>A</span>
+                  <span {...stylex.props(s.spacingChip)}>B</span>
+                  <span {...stylex.props(s.spacingChip)}>C</span>
+                </div>
+              </div>
+            ),
+          )}
+        </div>
+        <pre
+          {...stylex.props(s.code)}
+        >{`import {layout, gap, padding} from '@from-trees/ui/utilities';
+
+<div {...stylex.props(layout.stack, gap.lg, padding.xl)}>
+  <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
+    …
+  </div>
+</div>`}</pre>
+      </section>
     </Stack>
   );
 }
@@ -669,7 +708,7 @@ export function Workflows() {
             <circle cx="180" cy="145" r="2" fill="currentColor" />
           </svg>
         </div>
-        <div {...stylex.props(s.stack)}>
+        <div {...stylex.props(layout.stack, gap.xl)}>
           <SegmentedControl
             label="Selected object"
             value={selection}

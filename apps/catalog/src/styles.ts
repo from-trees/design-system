@@ -1,6 +1,18 @@
 import { color } from "@from-trees/ui/tokens.stylex";
 import * as stylex from "@stylexjs/stylex";
 export const s = stylex.create({
+  spacingTrack: { backgroundColor: color.subtle, borderRadius: 6 },
+  spacingChip: {
+    width: 28,
+    height: 28,
+    display: "grid",
+    placeItems: "center",
+    flexShrink: 0,
+    backgroundColor: color.accent,
+    color: color.onAccent,
+    borderRadius: 4,
+    fontSize: 12,
+  },
   skipLink: {
     position: "fixed",
     top: { default: -80, ":focus": 10 },

@@ -85,7 +85,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.2.0</Badge>
+            <Badge>v0.2.1</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -308,7 +308,7 @@ function Adoption() {
           sources.
         </p>
         <pre {...stylex.props(s.code)}>
-          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.2.0/from-trees-ui-0.1.0.tgz`}</code>
+          <code>{`npm install https://github.com/from-trees/design-system/releases/download/v0.2.1/from-trees-ui-0.2.1.tgz`}</code>
         </pre>
         <p {...stylex.props(s.small)}>
           GitHub Packages publication is a separate maintainer workflow after

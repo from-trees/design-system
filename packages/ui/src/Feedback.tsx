@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 import { color } from "./tokens.stylex";
 import { Icon } from "./Icon";
+import { layout, gap, padding } from "./utilities";
 const styles = stylex.create({
   badge: {
     display: "inline-flex",
@@ -17,10 +18,6 @@ const styles = stylex.create({
     whiteSpace: "nowrap",
   },
   status: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: 8,
-    padding: 12,
     borderRadius: 7,
     fontSize: 13,
     backgroundColor: color.subtle,
@@ -54,7 +51,14 @@ export function Status({
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
-      {...stylex.props(styles.status, tone !== "neutral" && styles[tone])}
+      {...stylex.props(
+        layout.row,
+        layout.alignStart,
+        gap.sm,
+        padding.md,
+        styles.status,
+        tone !== "neutral" && styles[tone],
+      )}
     >
       <Icon name={tone === "success" ? "check" : "info"} />
       <span>{children}</span>

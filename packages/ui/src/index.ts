@@ -13,3 +13,13 @@ export {
   parseMeasurement,
   type ParameterKey,
 } from "./measurement";
+export {
+  layout,
+  gap,
+  padding,
+  paddingBlock,
+  paddingInline,
+  margin,
+  marginBlock,
+  marginInline,
+} from "./utilities";

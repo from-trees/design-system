@@ -6,6 +6,10 @@ Shared components own semantics, styling and reusable interaction behavior. Appl
 
 Use StyleX for component styling. Compile package and app sources together with the shared Vite helper and one app prefix. Do not author CSS files or global resets; apply explicit StyleX classes to elements. Use semantic tokens from `tokens.stylex.ts`; add theme values centrally. Do not add arbitrary application-specific overrides to shared primitives. Theme and density changes must also reach portaled menus, tooltips and overlays.
 
+## Spacing and layout
+
+Use the native utility objects from `@from-trees/ui/utilities` for common spacing and layout in components and apps. Compose `layout.stack`/`layout.row` with `gap`, `padding` and logical block/inline variants through `stylex.props`; avoid duplicating these definitions locally. Prefer container gaps to child margins. Use the shared 0/4/8/12/16/24/32 scale; keep domain measurements and responsive behavior in local StyleX. Utilities share `space` tokens and do not change with control density. Place intentional local overrides last.
+
 ## Actions and choices
 
 An action group may show at most two adjacent buttons. Use `ActionGroup` for dynamic collections so three or more actions collapse automatically. `primaryId` retains one primary action plus a menu. A group of three or more icon buttons is still an action group and must collapse. Tabs, switches and segmented choices are selection controls, not action groups.
