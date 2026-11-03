@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import {
   ModalOverlay,
   Modal,
@@ -106,6 +106,7 @@ function Overlay({
   side = false,
 }: OverlayProps & { side?: boolean }) {
   const theme = useThemeStyles();
+  const descriptionId = useId();
   return (
     <ModalOverlay
       isOpen={open}
@@ -116,6 +117,7 @@ function Overlay({
     >
       <Modal {...stylex.props(styles.modal, side && styles.drawer)}>
         <AriaDialog
+          aria-describedby={description ? descriptionId : undefined}
           {...stylex.props(styles.dialog, side && styles.drawerDialog)}
         >
           <header {...stylex.props(styles.header)}>
@@ -124,7 +126,9 @@ function Overlay({
                 {title}
               </Heading>
               {description && (
-                <p {...stylex.props(styles.description)}>{description}</p>
+                <p id={descriptionId} {...stylex.props(styles.description)}>
+                  {description}
+                </p>
               )}
             </div>
             {dismissible && (

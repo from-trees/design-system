@@ -144,7 +144,12 @@ function OverlayHarness({ side = false }: { side?: boolean }) {
   return (
     <ThemeProvider theme="dark">
       <Button onPress={() => setOpen(true)}>Open task</Button>
-      <Surface title="Example task" open={open} onOpenChange={setOpen}>
+      <Surface
+        title="Example task"
+        description="A contextual example"
+        open={open}
+        onOpenChange={setOpen}
+      >
         <Button>Inside task</Button>
       </Surface>
     </ThemeProvider>
@@ -161,6 +166,7 @@ describe("overlays", () => {
       const dialog = await screen.findByRole("dialog", {
         name: "Example task",
       });
+      expect(dialog).toHaveAccessibleDescription("A contextual example");
       expect(dialog.contains(document.activeElement)).toBe(true);
       await user.tab();
       expect(dialog.contains(document.activeElement)).toBe(true);

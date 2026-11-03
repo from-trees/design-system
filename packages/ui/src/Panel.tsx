@@ -93,7 +93,7 @@ export function Section({
       {title}
       {(hasError || modified) && (
         <span {...stylex.props(styles.hint)}>
-          {hasError ? "Needs attention" : "Modified"}
+          {hasError ? " · Needs attention" : " · Modified"}
         </span>
       )}
     </>
