@@ -1,3 +1,4 @@
+import { VisualChoice, type swatches } from "./SwatchExamples";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
@@ -70,6 +71,7 @@ type SharedStyle = {
   id: string;
   name: string;
   material: string;
+  color: string;
   face: string;
   overlay: string;
   grain: string;
@@ -312,6 +314,7 @@ export function DesignerSidebarPrototype() {
       id: "oak",
       name: "Natural oak",
       material: "Oak",
+      color: "Natural",
       face: "Shaker",
       overlay: "Full overlay",
       grain: "Automatic",
@@ -319,7 +322,8 @@ export function DesignerSidebarPrototype() {
     {
       id: "white",
       name: "Painted white",
-      material: "White paint",
+      material: "Paint grade",
+      color: "White",
       face: "Slab",
       overlay: "Inset",
       grain: "Automatic",
@@ -501,6 +505,7 @@ export function DesignerSidebarPrototype() {
               id,
               name: "New style",
               material: "Oak",
+              color: "Natural",
               face: "Slab",
               overlay: "Full overlay",
               grain: "Automatic",
@@ -581,24 +586,24 @@ export function DesignerSidebarPrototype() {
             room.countertopSurface !== "White quartz"
           }
         >
-          <Choice
+          <VisualChoice
             label="Walls"
+            category="walls"
             value={room.walls}
-            options={["Warm plaster", "White plaster", "Sage paint"]}
             disabled={readOnly}
             onChange={(walls) => setRoom((current) => ({ ...current, walls }))}
           />
-          <Choice
+          <VisualChoice
             label="Floor"
+            category="floors"
             value={room.floor}
-            options={["Oak", "Dark wood", "Concrete"]}
             disabled={readOnly}
             onChange={(floor) => setRoom((current) => ({ ...current, floor }))}
           />
-          <Choice
+          <VisualChoice
             label="Countertops"
+            category="countertops"
             value={room.countertopSurface}
-            options={["White quartz", "Taj Mahal", "Dark granite"]}
             disabled={readOnly}
             onChange={(countertopSurface) =>
               setRoom((current) => ({ ...current, countertopSurface }))
@@ -674,19 +679,19 @@ export function DesignerSidebarPrototype() {
           />
         </Section>
         <Section title="Crown" collapsible modified={room.crown !== "None"}>
-          <Choice
+          <VisualChoice
             label="Profile"
+            category="crown"
             value={room.crown}
-            options={["None", "Cove", "Ogee"]}
             disabled={readOnly}
             onChange={(crown) => setRoom((current) => ({ ...current, crown }))}
             help="Crown belongs to the room. Profile geometry and finish are separate decisions."
           />
           {room.crown !== "None" && (
-            <Choice
+            <VisualChoice
               label="Finish"
+              category="finish"
               value={room.crownFinish}
-              options={["Oak", "Walnut", "White paint"]}
               disabled={readOnly}
               onChange={(crownFinish) =>
                 setRoom((current) => ({ ...current, crownFinish }))
@@ -916,15 +921,10 @@ export function DesignerSidebarPrototype() {
                 item.configuration !== baseline?.configuration
               }
             >
-              <Choice
+              <VisualChoice
                 label="Configuration"
+                category="configuration"
                 value={item.configuration}
-                options={[
-                  "door-drawer",
-                  "single-door",
-                  "drawers",
-                  "open shelves",
-                ]}
                 disabled={locked}
                 onChange={(configuration) => patch({ configuration })}
               />
@@ -990,10 +990,10 @@ export function DesignerSidebarPrototype() {
             collapsible
             modified={item.finish !== "oak"}
           >
-            <Choice
+            <VisualChoice
               label={item.kind === "appliance" ? "Front finish" : "Material"}
+              category="object"
               value={item.finish}
-              options={["oak", "walnut", "white paint", "stainless"]}
               disabled={locked}
               onChange={(finish) => patch({ finish })}
               help="An object-specific finish. This does not edit a shared cabinet style."
@@ -1369,17 +1369,18 @@ export function DesignerSidebarPrototype() {
             />
             {(
               [
-                ["material", "Material", ["Oak", "Walnut", "White paint"]],
-                ["face", "Face profile", ["Shaker", "Slab", "Slim shaker"]],
-                ["overlay", "Overlay", ["Full overlay", "Inset"]],
-                ["grain", "Grain", ["Automatic", "Vertical", "Horizontal"]],
+                ["material", "Material", "material"],
+                ["color", "Color / finish", "color"],
+                ["face", "Door / drawer profile", "front"],
+                ["overlay", "Overlay", "overlay"],
+                ["grain", "Grain", "grain"],
               ] as const
-            ).map(([key, label, options]) => (
-              <Choice
+            ).map(([key, label, category]) => (
+              <VisualChoice
                 key={key}
                 label={label}
                 value={styleDraft[key]}
-                options={options}
+                category={category as keyof typeof swatches}
                 disabled={readOnly}
                 onChange={(value) =>
                   setStyleDraft({ ...styleDraft, [key]: value })
@@ -1445,15 +1446,10 @@ export function DesignerSidebarPrototype() {
                     ),
                   )}
                 />
-                <Choice
+                <VisualChoice
+                  category="configuration"
                   label="Front layout"
                   value={taskDraft.configuration}
-                  options={[
-                    "door-drawer",
-                    "single-door",
-                    "drawers",
-                    "open shelves",
-                  ]}
                   disabled={readOnly}
                   onChange={(configuration) =>
                     setTaskDraft({ ...taskDraft, configuration })

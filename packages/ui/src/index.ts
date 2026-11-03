@@ -30,3 +30,8 @@ export {
 export { List, type ListItem, type ListStatus, type ListProps } from "./List";
 export { InfoTooltip, type InfoTooltipProps } from "./InfoTooltip";
 export type { ParameterControlProps } from "./ParameterContext";
+export {
+  SwatchPicker,
+  type SwatchPickerProps,
+  type SwatchOption,
+} from "./SwatchPicker";

@@ -25,6 +25,7 @@ for (const path of [
   "src/Button.tsx",
   "src/List.tsx",
   "src/InfoTooltip.tsx",
+  "src/SwatchPicker.tsx",
   "tooling/vite.mjs",
 ])
   if (!packed.files.some((file) => file.path === path))

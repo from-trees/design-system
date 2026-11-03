@@ -1,3 +1,4 @@
+import { SwatchesDemo } from "./SwatchExamples";
 import { DesignerSidebarPrototype } from "./DesignerSidebarPrototype";
 import { useState } from "react";
 import * as stylex from "@stylexjs/stylex";
@@ -1052,6 +1053,8 @@ export function HelpDemo() {
 }
 export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
+    case "swatches":
+      return <SwatchesDemo />;
     case "sidebar":
       return <DesignerSidebarPrototype />;
     case "foundations":

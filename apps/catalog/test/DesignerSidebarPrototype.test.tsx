@@ -88,30 +88,30 @@ it("distinguishes assigning one object from saving or canceling a shared style e
   expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
     expect.stringContaining("affects 2 objects"),
   );
-  await user.selectOptions(
-    screen.getByRole("combobox", { name: "Material" }),
-    "Walnut",
+  await user.click(
+    screen.getByRole("button", { name: /^(?!About ).*Material$/ }),
   );
+  await user.click(screen.getByRole("option", { name: "Walnut" }));
   await user.click(
     screen.getByRole("button", { name: "Close Edit shared style" }),
   );
   await user.click(
     screen.getByRole("button", { name: "Edit assigned shared style" }),
   );
-  expect(screen.getByRole("combobox", { name: "Material" })).toHaveValue(
-    "White paint",
+  expect(
+    screen.getByRole("button", { name: /^(?!About ).*Material$/ }),
+  ).toHaveTextContent("Paint grade");
+  await user.click(
+    screen.getByRole("button", { name: /^(?!About ).*Material$/ }),
   );
-  await user.selectOptions(
-    screen.getByRole("combobox", { name: "Material" }),
-    "Walnut",
-  );
+  await user.click(screen.getByRole("option", { name: "Walnut" }));
   await user.click(screen.getByRole("button", { name: "Save shared style" }));
   await user.click(
     screen.getByRole("button", { name: "Edit assigned shared style" }),
   );
-  expect(screen.getByRole("combobox", { name: "Material" })).toHaveValue(
-    "Walnut",
-  );
+  expect(
+    screen.getByRole("button", { name: /^(?!About ).*Material$/ }),
+  ).toHaveTextContent("Walnut");
 });
 
 it("keeps object menu actions functional, including duplicate and confirmed removal", async () => {
@@ -243,4 +243,38 @@ it("keeps a focused task open when Save blurs an invalid numeric draft", async (
   await user.click(screen.getByRole("button", { name: "Save changes" }));
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: "Width" })).toHaveValue("42");
+});
+
+it("retains visual room and cabinet choices across contexts and respects read-only access", async () => {
+  const user = setup();
+  const picker = (label: string) =>
+    screen.getByRole("button", { name: new RegExp(`^(?!About ).*${label}$`) });
+  await user.click(section("Construction"));
+  await user.click(picker("Configuration"));
+  await user.click(
+    screen.getByRole("option", { name: "Drawers", exact: true }),
+  );
+  expect(picker("Configuration")).toHaveTextContent("Drawers");
+  await user.selectOptions(context(), "room");
+  await user.click(section("Surfaces"));
+  await user.click(picker("Walls"));
+  await user.click(screen.getByRole("option", { name: "Sage paint" }));
+  await user.click(section("Crown"));
+  await user.click(picker("Profile"));
+  await user.click(screen.getByRole("option", { name: "Ogee", exact: true }));
+  expect(picker("Finish")).toBeEnabled();
+  await user.selectOptions(context(), "selection");
+  await user.click(section("Construction"));
+  expect(picker("Configuration")).toHaveTextContent("Drawers");
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: "Access mode" }),
+    "read",
+  );
+  expect(picker("Configuration")).toBeDisabled();
+  await user.selectOptions(context(), "room");
+  await user.click(section("Surfaces"));
+  expect(picker("Walls")).toHaveTextContent("Sage paint");
+  expect(picker("Walls")).toBeDisabled();
+  await user.click(section("Crown"));
+  expect(picker("Profile")).toHaveTextContent("Ogee");
 });

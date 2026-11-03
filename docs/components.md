@@ -171,3 +171,30 @@ Schemas remain supported. A `CustomParameter` has the usual `id`, `label`, optio
 Keep exactly one editor in each row. The row owns layout and accessible labeling; it does not change a select or switch into a numeric input, or apply measurement parsing to custom controls. Review **Mixed parameter editors** on the Parameters page and the expanded **Appearance** and **Construction** sections on Panels & sections before app adoption.
 
 Parameter groups accept optional `help` and `helpLabel`. The help icon sits at the right edge of the group heading, above the editor column. Use the first group for instructions shared by the whole parameter set, such as measurement syntax; keep per-property help beside its row label. The catalog app supplies that guidance, not the generic library.
+
+## Visual choices
+
+`SwatchPicker` is the shared single-choice visual selector. Its trigger shows the current preview and name; opening it shows a compact grid with named previews, selected checkmark, keyboard focus and disabled options. Arrow keys, Home/End and typeahead navigate; Enter selects; Escape dismisses without changing the value and returns focus to the trigger. It works inside shared overlays and native dialogs.
+
+```tsx
+<ParameterRow
+  label="Material"
+  help="Choose the material independently from the finish."
+>
+  <SwatchPicker
+    value={materialId}
+    options={materials.map((material) => ({
+      id: material.id,
+      label: material.name,
+      preview: <img src={material.thumbnail} alt="" />,
+      description: material.description,
+      disabled: !material.available,
+    }))}
+    onChange={setMaterialId}
+  />
+</ParameterRow>
+```
+
+The picker inherits the row's label, contextual help and error description. Outside a row, supply `label`. Control the value in the caller; empty collections disable the trigger. Previews are decorative React nodes: applications own image loading/fallbacks, geometric drawings, option data, availability and persistence. Keep previews noninteractive and sized to fill the available space. Do not infer configuration or profile behavior from thumbnail geometry.
+
+Use it for materials, colors, profiles, cabinet configurations and other choices distinguished visually. Keep ordinary selects for nonvisual choices. See **Swatches & previews** for the isolated component and **Designer sidebar** for shared-style drafts, room surfaces/crown and cabinet configurations. Catalog textures retain their CC0 provenance in `apps/catalog/public/swatches/provenance.json`; stone and finish samples are representative, not exact product or fabrication references.
