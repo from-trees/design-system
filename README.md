@@ -20,7 +20,7 @@ The catalog imports the native source package. Changes to library components hav
 ## Install in our stack
 
 ```sh
-pnpm add @stylexjs/stylex@0.19.1 https://github.com/from-trees/design-system/releases/download/v0.2.0/from-trees-ui-0.2.0.tgz
+pnpm add @stylexjs/stylex@0.19.1 https://github.com/from-trees/design-system/releases/download/v0.2.1/from-trees-ui-0.2.1.tgz
 pnpm add -D @stylexjs/unplugin@0.19.1
 ```
 
@@ -59,6 +59,18 @@ export function App() {
 ```
 
 Never import `@from-trees/ui/styles.css`; that entry point was removed in 0.2.0. The package ships TypeScript/TSX and `.stylex.ts` token sources. The app owns compilation, generated CSS, geometry adapters, permissions, persistence and unsaved changes.
+
+## Shared spacing and layout
+
+```tsx
+import {layout, gap, padding} from '@from-trees/ui/utilities';
+
+<div {...stylex.props(layout.stack, gap.lg, padding.xl)}>
+  <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>…</div>
+</div>
+```
+
+Apps should compose these shared classes instead of repeating spacing and flex definitions. See the Foundations catalog and [utility API](docs/components.md#stylex-utilities).
 
 ## Conventions and review
 
