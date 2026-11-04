@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
   Button,
@@ -39,10 +39,11 @@ const styles = stylex.create({
     alignItems: "center",
     gap: 12,
     flexWrap: "wrap",
+  },
+  divider: {
     borderTopWidth: 1,
     borderTopStyle: "solid",
     borderTopColor: color.border,
-    paddingTop: 16,
   },
   check: {
     display: "flex",
@@ -53,6 +54,14 @@ const styles = stylex.create({
   },
   review: { display: "flex", alignItems: "end", flexWrap: "wrap", gap: 12 },
 });
+function ActionFooter({ children }: { children: ReactNode }) {
+  return (
+    <div {...stylex.props(layout.stack, gap.sm)}>
+      <div aria-hidden="true" {...stylex.props(styles.divider)} />
+      <div {...stylex.props(styles.actions)}>{children}</div>
+    </div>
+  );
+}
 type Scenario =
   | "Ready to review"
   | "Approval only"
@@ -356,7 +365,7 @@ export function CustomerJourneyPrototype() {
               Continuing records only your place in this example. Viewing a
               document does not approve the estimate or sign an agreement.
             </InfoTooltip>
-            <div {...stylex.props(styles.actions)}>
+            <ActionFooter>
               <p {...stylex.props(styles.text)}>
                 Questions? Contact Sample Cabinet Shop.
               </p>
@@ -375,7 +384,7 @@ export function CustomerJourneyPrototype() {
                     : "Continue to approval"}
                 </Button>
               )}
-            </div>
+            </ActionFooter>
           </>
         ) : selected === "approval" ? (
           approved ? (
@@ -391,14 +400,14 @@ export function CustomerJourneyPrototype() {
                 View signed agreement
               </Button>
               {payment && (
-                <div {...stylex.props(styles.actions)}>
+                <ActionFooter>
                   <Button onPress={() => go("review")}>Back to estimate</Button>
                   <Button variant="primary" onPress={() => go("deposit")}>
                     {paid || noDeposit
                       ? "View payment status"
                       : "Continue to deposit"}
                   </Button>
-                </div>
+                </ActionFooter>
               )}
             </>
           ) : blocked ? (
@@ -455,7 +464,7 @@ export function CustomerJourneyPrototype() {
                 final confirmation. This example illustrates their location; it
                 is not a replacement signing implementation.
               </InfoTooltip>
-              <div {...stylex.props(styles.actions)}>
+              <ActionFooter>
                 <Button onPress={() => go("review")}>Back to estimate</Button>
                 <Button
                   variant="primary"
@@ -464,7 +473,7 @@ export function CustomerJourneyPrototype() {
                 >
                   Review approval
                 </Button>
-              </div>
+              </ActionFooter>
             </>
           )
         ) : (
@@ -511,7 +520,7 @@ export function CustomerJourneyPrototype() {
                 </Button>
               </>
             )}
-            <div {...stylex.props(styles.actions)}>
+            <ActionFooter>
               <Button onPress={() => go("approval")}>
                 View signed agreement
               </Button>
@@ -520,7 +529,7 @@ export function CustomerJourneyPrototype() {
                   Refresh payment status
                 </Button>
               )}
-            </div>
+            </ActionFooter>
           </>
         )}
       </div>
