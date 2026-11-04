@@ -1,6 +1,12 @@
 import * as stylex from "@stylexjs/stylex";
 const styles = stylex.create({ icon: { flexShrink: 0 } });
 import {
+  Camera,
+  ZoomIn,
+  ZoomOut,
+  Focus,
+  Hand,
+  Layers,
   ArrowDownToLine,
   ArrowLeftRight,
   ArrowUpDown,
@@ -32,6 +38,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 const icons = {
+  camera: Camera,
+  zoomIn: ZoomIn,
+  zoomOut: ZoomOut,
+  fit: Focus,
+  pan: Hand,
+  parts: Layers,
   add: Plus,
   close: X,
   copy: Copy,

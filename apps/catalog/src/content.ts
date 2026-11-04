@@ -12,6 +12,8 @@ export type PageId =
   | "panels"
   | "overlays"
   | "feedback"
+  | "toolbars"
+  | "designer-toolbars"
   | "sidebar"
   | "patterns"
   | "adoption";
@@ -119,6 +121,22 @@ export const pages: {
       "Show what happened beside the task. Distinguish progress, success, warnings and errors without relying on color alone.",
   },
   {
+    id: "toolbars",
+    title: "Headers & toolbars",
+    icon: "more",
+    group: "Components",
+    description:
+      "A clear identity, stable status and at most one direct command plus a menu. Task headers keep Save and Cancel together.",
+  },
+  {
+    id: "designer-toolbars",
+    title: "Designer toolbars",
+    icon: "settings",
+    group: "Patterns",
+    description:
+      "A complete Cabinitron header and toolbar prototype: project actions, plan tools, viewport navigation, saved views, elevations and cabinet customization.",
+  },
+  {
     id: "sidebar",
     title: "Designer sidebar",
     icon: "settings",
@@ -149,6 +167,19 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "SwatchPicker inherits ParameterRow labeling, help and errors; applications supply option identity, labels, preview components and eligibility.",
     "Materials and colors are separate choices. Front and crown profile previews describe geometry independently from finish.",
     "Keyboard navigation, typeahead, Escape cancellation, disabled choices and modal focus follow accessible select behavior. Catalog artwork is illustrative; applications can supply real material images.",
+  ],
+  toolbars: [
+    "CommandBar owns action grouping: at most one direct command plus one menu. Children are input controls, not additional action rows.",
+    "WorkspaceHeader supplies one identity and command area. TaskHeader supplies one task title and exactly Cancel/Save; do not duplicate a surrounding overlay header.",
+    "Status text has reserved width, truncates visually and retains its full accessible text and native tooltip. Its changing length does not shift commands.",
+    "Tab reaches controls; Left/Right and Home/End navigate enabled toolbar buttons. Native select keys and menu keyboard behavior remain intact.",
+  ],
+  "designer-toolbars": [
+    "One project header replaces duplicated host/document identity. Project actions retain their business-project, anonymous-draft and customer-view eligibility.",
+    "View and tool choices use selectors. Add commands and viewport navigation use menus; no rows of three or more exposed action buttons.",
+    "Photo capture is a direct icon action. Saved-view selection has one management menu, including render options, first customer view and deletion.",
+    "Customization owns a single Save/Cancel task header, a view/tool/snap command bar and focused part selection. This prototype does not replace the existing advanced editor.",
+    "Review controls exercise save failures, read-only access, drafts and busy photos. All operations use synthetic local state; real geometry and external tasks are not implemented.",
   ],
   sidebar: [
     "Cabinitron-specific schemas and workflows live in this catalog example. The shared package remains domain-neutral.",
