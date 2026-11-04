@@ -233,3 +233,5 @@ Use it for materials, colors, profiles, cabinet configurations and other choices
 ```
 
 Placeholders are hidden from assistive technology; the owning region supplies one loading announcement and busy state. Replace the entire loading region with real content when the request resolves; on failure, replace it with `Status tone="danger"` and a retry action. A shimmer is never proof that data exists or that a request has completed. Applications own loading, cancellation, retries and errors. See Status & feedback for the isolated shapes and Designer toolbars for the dialog composition.
+
+The [advanced cabinet customizer inspector exploration](customizer-inspector-prototype.md) composes the existing parameter, panel, menu, list and swatch components around cabinet, part and drawer contexts. Its cabinet schema stays in the catalog; app adoption is a separate reviewed change.

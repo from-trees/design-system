@@ -14,6 +14,7 @@ export type PageId =
   | "feedback"
   | "toolbars"
   | "designer-toolbars"
+  | "customizer"
   | "sidebar"
   | "patterns"
   | "adoption";
@@ -137,6 +138,14 @@ export const pages: {
       "A complete Cabinitron header and toolbar prototype: project actions, plan tools, viewport navigation, saved views, elevations and cabinet customization.",
   },
   {
+    id: "customizer",
+    title: "Cabinet customizer",
+    icon: "parts",
+    group: "Patterns",
+    description:
+      "The advanced cabinet inspector: consistent parameter rows, explicit part and drawer identity, common controls first and focused construction details.",
+  },
+  {
     id: "sidebar",
     title: "Designer sidebar",
     icon: "settings",
@@ -162,6 +171,13 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  customizer: [
+    "Cabinet, Selected part and Preview are explicit inspector contexts. Size and position stay visible; uncommon controls live in named sections.",
+    "Numeric drafts remain untouched while typing. Enter or blur commits; Escape resets. Each constrained field explains its limits in info help.",
+    "Drawer rows are top to bottom. Defaults and individual overrides have separate identity; inherited values follow array settings and Reset restores inheritance.",
+    "Preview finishes never dirty the configuration. Save and Cancel exercise local catalog snapshots; domain geometry and permission enforcement stay app-owned.",
+    "Review Room cabinet, Standalone and Read only. Actual app adoption preserves real swatches, sink/library tasks, geometry and saved revisions.",
+  ],
   swatches: [
     "The field shows the current preview and label. The popup shows a visual grid with selected and keyboard-focus indicators.",
     "SwatchPicker inherits ParameterRow labeling, help and errors; applications supply option identity, labels, preview components and eligibility.",
