@@ -59,3 +59,7 @@ Parameter validation and normalization are deferred until blur. Enter ends editi
 ### Parameter editor composition (0.5.0)
 
 Shared ParameterRow now owns the layout for numeric and component editors. Panels & sections uses it for every Appearance and Construction choice; Parameters includes a mixed-editor example and custom control binding. Confirm this catalog behavior before adopting it in Cabinitron.
+
+## 0.8.0 customer journey exploration
+
+WorkflowProgress and the Customer estimates catalog pattern cover Review → Approve & sign → Deposit → Production queue → Production → Delivery. Customer UI adoption follows confirmation in a separate Cabinitron diff. Queue, production and delivery integrations remain future work; their visible steps must not invent confirmed shop status. The next cleanup priority is the customer estimate/approval/payment journey before the remaining admin surfaces. See [journey review and integration checklist](customer-estimate-journey.md).

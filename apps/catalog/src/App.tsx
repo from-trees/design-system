@@ -43,7 +43,8 @@ export default function App() {
     page === "patterns" ||
     page === "sidebar" ||
     page === "designer-toolbars" ||
-    page === "customizer";
+    page === "customizer" ||
+    page === "customer-journey";
   const hasStates = [
     "lists",
     "buttons",
@@ -91,7 +92,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.7.0</Badge>
+            <Badge>v0.8.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -125,7 +126,8 @@ export default function App() {
               <Badge tone="warning">
                 {page === "sidebar" ||
                 page === "designer-toolbars" ||
-                page === "customizer"
+                page === "customizer" ||
+                page === "customer-journey"
                   ? "Prototype"
                   : "Initial release"}
               </Badge>
@@ -137,7 +139,8 @@ export default function App() {
               <div
                 {...stylex.props(
                   s.workspace,
-                  page === "customizer" && s.wideWorkspace,
+                  (page === "customizer" || page === "customer-journey") &&
+                    s.wideWorkspace,
                 )}
               >
                 <div {...stylex.props(s.stack)}>
@@ -159,9 +162,12 @@ export default function App() {
                       <h2 {...stylex.props(s.cardTitle)}>
                         {page === "sidebar" ||
                         page === "designer-toolbars" ||
-                        page === "customizer"
-                          ? page === "customizer"
-                            ? "Cabinitron · customizer inspector"
+                        page === "customizer" ||
+                        page === "customer-journey"
+                          ? page === "customizer" || page === "customer-journey"
+                            ? page === "customer-journey"
+                              ? "Customer estimate · progress and next steps"
+                              : "Cabinitron · customizer inspector"
                             : page === "designer-toolbars"
                               ? "Cabinitron · toolbar prototype"
                               : "Cabinitron · sidebar prototype"
