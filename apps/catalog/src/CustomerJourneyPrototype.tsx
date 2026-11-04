@@ -185,6 +185,13 @@ export function CustomerJourneyPrototype() {
         : "After approval & deposit",
     },
     {
+      id: "final-design",
+      label: "Final design confirmation",
+      status: "upcoming",
+      available: true,
+      detail: "Confirm details before production",
+    },
+    {
       id: "production",
       label: "Production",
       status: "upcoming",
@@ -283,18 +290,24 @@ export function CustomerJourneyPrototype() {
                 ? "Your deposit"
                 : selected === "queue"
                   ? "Production queue"
-                  : selected === "production"
-                    ? "Production"
-                    : "Delivery"}
+                  : selected === "final-design"
+                    ? "Final design confirmation"
+                    : selected === "production"
+                      ? "Production"
+                      : "Delivery"}
         </h3>
-        {["queue", "production", "delivery"].includes(selected) ? (
+        {["queue", "final-design", "production", "delivery"].includes(
+          selected,
+        ) ? (
           <>
             <p {...stylex.props(styles.text)}>
               {selected === "queue"
                 ? "After approval and any required deposit, your cabinetmaker confirms your place in the production queue. A paid deposit alone does not confirm a queue position or start date."
-                : selected === "production"
-                  ? "Your cabinetmaker will confirm when fabrication begins and provide progress updates. This estimate does not currently track production automatically."
-                  : "Your cabinetmaker will contact you to arrange delivery or installation. This estimate does not currently track delivery automatically."}
+                : selected === "final-design"
+                  ? "Before production begins, you and your cabinetmaker will confirm the final drawings, dimensions, materials and details. This is a separate confirmation from approving the estimate. Your cabinetmaker will contact you when the final design is ready to review."
+                  : selected === "production"
+                    ? "Your cabinetmaker will confirm when fabrication begins and provide progress updates. This estimate does not currently track production automatically."
+                    : "Your cabinetmaker will contact you to arrange delivery or installation. This estimate does not currently track delivery automatically."}
             </p>
             <Status>
               Shop updates for this stage are not connected yet. Contact Sample

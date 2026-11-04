@@ -1,10 +1,10 @@
 # Customer estimate journey · 0.8.0
 
-Review **Patterns → Customer estimates** (`#customer-journey`) before a separate application integration. The path is **Review → Approve & sign → Deposit → Production queue → Production → Delivery**. The last three stages are visible even though shop integrations are not built.
+Review **Patterns → Customer estimates** (`#customer-journey`) before a separate application integration. The path is **Review → Approve & sign → Deposit → Production queue → Final design confirmation → Production → Delivery**. The last four stages are visible even though shop integrations are not built.
 
 ## Shared component
 
-`WorkflowProgress` receives `label`, app-defined `steps`, `selectedId`, and `onSelect`. Each step supplies a stable `id`, concise `label`, `status` (`complete`, `current`, `upcoming`, `attention`), `detail`, and `available`. Selecting a step only navigates; it never changes completion. The selected view and next due step are distinct. Status is conveyed with text and icons, not color alone. The current task uses `aria-current="step"`; unavailable steps are descriptive and not keyboard actions. Steps form one horizontal sequence of numbered circles joined by a dotted line, with completed steps shown as filled checkmarks and labels underneath. On narrow screens all markers remain visible, with the viewed step label below the line instead of six crowded text columns.
+`WorkflowProgress` receives `label`, app-defined `steps`, `selectedId`, and `onSelect`. Each step supplies a stable `id`, concise `label`, `status` (`complete`, `current`, `upcoming`, `attention`), `detail`, and `available`. Selecting a step only navigates; it never changes completion. The selected view and next due step are distinct. Status is conveyed with text and icons, not color alone. The current task uses `aria-current="step"`; unavailable steps are descriptive and not keyboard actions. Steps form one horizontal sequence of numbered circles joined by a dotted line, with completed steps shown as filled checkmarks and labels underneath. On narrow screens all markers remain visible, with the viewed step label below the line instead of seven crowded text columns.
 
 The shared package contains no estimate, signing, payment, queue or delivery schema. The catalog supplies those meanings and a synthetic local state machine.
 
@@ -18,12 +18,14 @@ Deposit checkout must retain both card and ACH and the provider-hosted payment f
 
 ## Future shop stages
 
-Production queue becomes the next stage after approval and any required deposit, but displays **Awaiting shop confirmation**. This does not assert a queue position, a scheduled date or production readiness. Production and Delivery remain upcoming, with explanatory content and a contact route. The UI must not fabricate dates, mark these stages complete, or imply live tracking. Later integrations can supply authoritative queue/production/delivery events to the same generic progress component.
+Production queue becomes the next stage after approval and any required deposit, but displays **Awaiting shop confirmation**. This does not assert a queue position, a scheduled date or production readiness. Final design confirmation, Production and Delivery remain upcoming, with explanatory content and a contact route. The UI must not fabricate dates, mark these stages complete, or imply live tracking. Later integrations can supply authoritative queue/production/delivery events to the same generic progress component.
+
+Final design confirmation is a separate review of final drawings, dimensions, materials and details before fabrication begins. It must not be inferred from initial estimate approval or deposit payment. Its future integration must bind confirmation to the exact final design revision.
 
 ## Scenarios and integration checklist
 
 - Review, prepared agreement, signed/deposit due, open checkout, processing, paid, failed, unresolved payment, no deposit required, expired and superseded versions.
-- Approval-only links omit deposit navigation according to existing feature availability; this must not imply that a financial deposit is waived. Full payment-enabled journeys display all six stages.
+- Approval-only links omit deposit navigation according to existing feature availability; this must not imply that a financial deposit is waived. Full payment-enabled journeys display all seven stages.
 - Expired/superseded versions retain document access and disable new signing/payment. Preserve archive/signed-document behavior and application feature gates.
 - Scope navigation state to business, estimate identity and revision. A new revision must not inherit review acknowledgment or signature completion from another version.
 - Preserve backend eligibility, immutable totals/terms/design snapshots, access controls and internal-cost privacy. No navigation change should mutate a design or create revisions.

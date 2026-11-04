@@ -101,18 +101,24 @@ it("keeps blocked estimates readable and omits payment for approval-only flows",
   ).not.toBeInTheDocument();
 });
 
-it("shows all six stages without claiming future production or delivery updates", async () => {
+it("shows all seven stages without claiming future production or delivery updates", async () => {
   const user = setup();
   const nav = screen.getByRole("navigation", {
     name: "Your estimate progress",
   });
-  expect(within(nav).getAllByRole("listitem")).toHaveLength(6);
+  expect(within(nav).getAllByRole("listitem")).toHaveLength(7);
   await user.selectOptions(scenario(), "Deposit paid");
   await user.click(
     screen.getByRole("button", { name: /Production queue: Next step/ }),
   );
   expect(
     screen.getByText(/A paid deposit alone does not confirm/),
+  ).toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: /Final design confirmation: Upcoming/ }),
+  );
+  expect(
+    screen.getByText(/separate confirmation from approving the estimate/),
   ).toBeInTheDocument();
   await user.click(
     screen.getByRole("button", { name: /Production: Upcoming/ }),
