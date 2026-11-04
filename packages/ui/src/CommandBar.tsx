@@ -4,10 +4,12 @@ import type { IconName } from "./Icon";
 import { Button, IconButton } from "./Button";
 import { MenuButton, type Action } from "./MenuButton";
 import { color, metrics } from "./tokens.stylex";
+import { Badge } from "./Feedback";
 import { layout, gap } from "./utilities";
 export type CommandAction = Action & { busy?: boolean };
 export type CommandStatus = {
   label: string;
+  description?: string;
   tone?: "neutral" | "success" | "warning" | "danger";
 };
 export type CommandBarProps = {
@@ -19,6 +21,7 @@ export type CommandBarProps = {
   menuIcon?: IconName;
   menuText?: string;
   status?: CommandStatus;
+  inline?: boolean;
 };
 const styles = stylex.create({
   bar: {
@@ -30,6 +33,17 @@ const styles = stylex.create({
     width: "100%",
     boxSizing: "border-box",
   },
+  inline: {
+    flexWrap: { default: "nowrap", "@media (max-width: 700px)": "wrap" },
+  },
+  inlineLeading: { flexShrink: 0 },
+  workspace: {
+    display: "grid",
+    gridTemplateColumns: {
+      default: "minmax(80px,1fr) minmax(0,auto)",
+      "@media (max-width: 700px)": "minmax(0,1fr)",
+    },
+  },
   leading: {
     display: "flex",
     alignItems: "center",
@@ -39,7 +53,7 @@ const styles = stylex.create({
     flexGrow: 1,
   },
   trailing: {
-    minWidth:0,
+    minWidth: 0,
     display: "flex",
     alignItems: "center",
     gap: 10,
@@ -47,19 +61,12 @@ const styles = stylex.create({
     flexShrink: 1,
   },
   status: {
-    display: "block",
-    width: 160,
+    display: "flex",
+    justifyContent: "flex-end",
+    width: 112,
     minWidth: 0,
-    fontSize: 12,
-    lineHeight: 1.4,
-    whiteSpace: "nowrap",
     overflow: "hidden",
-    textOverflow: "ellipsis",
-    color: color.muted,
   },
-  success: { color: color.success },
-  warning: { color: color.warning },
-  danger: { color: color.danger },
   header: {
     display: "flex",
     alignItems: "center",
@@ -145,29 +152,30 @@ export function CommandBar({
   menuIcon,
   menuText,
   status,
+  inline = false,
 }: CommandBarProps) {
   return (
     <div
       role="toolbar"
       aria-label={label}
       onKeyDown={arrowNavigation}
-      {...stylex.props(layout.row, gap.md, styles.bar)}
+      {...stylex.props(layout.row, gap.md, styles.bar, inline && styles.inline)}
     >
-      {children && <div {...stylex.props(styles.leading)}>{children}</div>}
+      {children && (
+        <div {...stylex.props(styles.leading, inline && styles.inlineLeading)}>
+          {children}
+        </div>
+      )}
       <div {...stylex.props(styles.trailing)}>
         {status && (
           <span
             role="status"
             aria-live="polite"
-            title={status.label}
-            {...stylex.props(
-              styles.status,
-              status.tone === "success" && styles.success,
-              status.tone === "warning" && styles.warning,
-              status.tone === "danger" && styles.danger,
-            )}
+            aria-label={status.description ?? status.label}
+            title={status.description ?? status.label}
+            {...stylex.props(styles.status)}
           >
-            {status.label}
+            <Badge tone={status.tone}>{status.label}</Badge>
           </span>
         )}
         {primary &&
@@ -219,7 +227,11 @@ export function WorkspaceHeader({
   return (
     <header
       aria-labelledby={id}
-      {...stylex.props(styles.header, compact && styles.compact)}
+      {...stylex.props(
+        styles.header,
+        styles.workspace,
+        compact && styles.compact,
+      )}
     >
       <div {...stylex.props(styles.identity)}>
         <Heading id={id} title={title} {...stylex.props(styles.title)}>
@@ -232,7 +244,7 @@ export function WorkspaceHeader({
         )}
       </div>
       <div {...stylex.props(styles.commands)}>
-        <CommandBar {...commands} />
+        <CommandBar {...commands} inline />
       </div>
     </header>
   );

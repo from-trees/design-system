@@ -176,7 +176,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   ],
   "designer-toolbars": [
     "One project header replaces duplicated host/document identity. Project actions retain their business-project, anonymous-draft and customer-view eligibility.",
-    "View and tool choices use selectors. Add commands and viewport navigation use menus; no rows of three or more exposed action buttons.",
+    "Plan/Split/3D use the existing segmented control inside the project header. Elevations opens from its menu in a dialog with shimmer placeholders, errors and retry. The existing save badge sits beside Undo.",
     "Photo capture is a direct icon action. Saved-view selection has one management menu, including render options, first customer view and deletion.",
     "Customization owns a single Save/Cancel task header, a view/tool/snap command bar and focused part selection. This prototype does not replace the existing advanced editor.",
     "Review controls exercise save failures, read-only access, drafts and busy photos. All operations use synthetic local state; real geometry and external tasks are not implemented.",
@@ -239,6 +239,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   feedback: [
     "Errors use alert announcements. Status updates use polite announcements.",
     "Messages belong beside their action. Badges carry a text label as well as color.",
+    "Shimmer placeholders match the incoming content. The owning region announces loading; reduced-motion preferences disable animation. Replace placeholders with content or an error and retry.",
   ],
   patterns: [
     "All state is synthetic and browser-local. No customer records or external share links are created.",
@@ -302,5 +303,5 @@ const groups: ParameterGroup[] = [
 // <CabinetParameters values={dimensions} onChange={changeDimension} />`,
   panels: `<Panel title="Base cabinet" actions={<MenuButton actions={actions} />}>\n  <Parameters groups={parameterGroups} />\n  <Section title="Appearance" collapsible>\n    <ParameterRow label="Finish">\n      <Select value={finish} onChange={e => setFinish(e.currentTarget.value)}>\n        <option value="oak">Natural oak</option>\n        <option value="paint">Paint</option>\n      </Select>\n    </ParameterRow>\n  </Section>\n  <Section title="Construction" collapsible modified>…</Section>\n</Panel>`,
   overlays: `<SidePanel title="History & sharing" open={open}\n  onOpenChange={setOpen} description={project.name}>\n  <ProjectHistory project={project} />\n</SidePanel>\n\n// Use Dialog for focused forms and confirmations.\n// The application guards unsaved changes before closing.`,
-  feedback: `<Status tone="success">Link copied</Status>\n<Status tone="danger">Unable to save. Try again.</Status>\n<Badge tone="warning">Unsaved</Badge>`,
+  feedback: `<Status tone="success">Link copied</Status>\n<Status tone="danger">Unable to save. Try again.</Status>\n<Badge tone="warning">Unsaved</Badge>\n<div role="status" aria-label="Loading preview" aria-busy="true">\n  <Shimmer width="40%" />\n  <Shimmer variant="block" />\n</div>`,
 };

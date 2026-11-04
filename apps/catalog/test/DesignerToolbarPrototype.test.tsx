@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { ThemeProvider } from "@from-trees/ui";
@@ -14,6 +14,13 @@ const setup = () => {
 const select = (name: string) => screen.getByRole("combobox", { name });
 it("places through one add menu, supports cancel/undo/redo and retains state across views", async () => {
   const user = setup();
+  const commands = screen.getByRole("toolbar", { name: "Project commands" });
+  expect(
+    within(commands).getByRole("radiogroup", { name: "Workspace view" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("toolbar", { name: "Workspace commands" }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Add to room" }));
   await user.click(screen.getByRole("menuitem", { name: "Cabinet" }));
   expect(
@@ -32,11 +39,36 @@ it("places through one add menu, supports cancel/undo/redo and retains state acr
   await user.click(screen.getByRole("button", { name: "Project actions" }));
   await user.click(screen.getByRole("menuitem", { name: "Redo" }));
   expect(screen.getByText(/4 objects/)).toBeInTheDocument();
-  await user.selectOptions(select("Workspace view"), "Elevation");
+  await user.click(screen.getByRole("button", { name: "Project actions" }));
+  await user.click(
+    screen.getByRole("menuitem", { name: "Elevations", exact: true }),
+  );
   expect(
-    screen.getByRole("heading", { name: "Elevations" }),
+    screen.getByRole("dialog", { name: "Elevations", exact: true }),
   ).toBeInTheDocument();
-  await user.selectOptions(select("Workspace view"), "Split");
+  expect(
+    screen.getByRole("status", { name: "Loading elevations" }),
+  ).toHaveAttribute("aria-busy", "true");
+  expect(
+    screen.queryByRole("radio", { name: "Elevation" }),
+  ).not.toBeInTheDocument();
+  expect(
+    await screen.findByRole(
+      "img",
+      { name: "Wall A elevation" },
+      { timeout: 2500 },
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("status", { name: "Loading elevations" }),
+  ).not.toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Project actions" }),
+    ).toHaveFocus(),
+  );
+  expect(screen.getByRole("radio", { name: "Split" })).toBeChecked();
   expect(screen.getByText(/4 objects/)).toBeInTheDocument();
 });
 it("keeps public/customer capabilities distinct and recovers failed saves through the menu", async () => {
@@ -100,7 +132,7 @@ it("saves views through a focused task and confirms deletion", async () => {
 it("customizer has one task header and discards or saves its part draft", async () => {
   const user = setup();
   const open = async () => {
-    await user.click(screen.getByRole("button", { name: "Workspace tools" }));
+    await user.click(screen.getByRole("button", { name: "Project actions" }));
     await user.click(
       screen.getByRole("menuitem", { name: "Customize cabinet" }),
     );
@@ -127,4 +159,44 @@ it("customizer has one task header and discards or saves its part draft", async 
   await user.click(screen.getByRole("button", { name: "Save" }));
   await open();
   expect(screen.getByText(/9 parts/)).toBeInTheDocument();
+});
+
+it("keeps elevations pending until resolved, cancels on close and allows retry after failure", async () => {
+  const user = setup();
+  const open = async () => {
+    await user.click(screen.getByRole("button", { name: "Project actions" }));
+    await user.click(
+      screen.getByRole("menuitem", { name: "Elevations", exact: true }),
+    );
+  };
+  await user.selectOptions(select("Elevation response"), "pending");
+  await open();
+  expect(
+    screen.getByRole("status", { name: "Loading elevations" }),
+  ).toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Project actions" }),
+    ).toHaveFocus(),
+  );
+  await user.selectOptions(select("Elevation response"), "error");
+  await open();
+  expect(
+    await screen.findByRole("alert", {}, { timeout: 2500 }),
+  ).toHaveTextContent("Unable to load elevations");
+  expect(
+    screen.queryByRole("status", { name: "Loading elevations" }),
+  ).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Retry", exact: true }));
+  expect(
+    screen.getByRole("status", { name: "Loading elevations" }),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByRole(
+      "img",
+      { name: "Wall A elevation" },
+      { timeout: 2500 },
+    ),
+  ).toBeInTheDocument();
 });

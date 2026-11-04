@@ -44,3 +44,5 @@ export {
   type CommandAction,
   type CommandStatus,
 } from "./CommandBar";
+
+export { Shimmer, type ShimmerProps } from "./Shimmer";

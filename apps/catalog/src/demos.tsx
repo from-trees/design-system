@@ -25,6 +25,7 @@ import {
   Select,
   SidePanel,
   Status,
+  Shimmer,
   Switch,
   TextInput,
   type Action,
@@ -1110,6 +1111,17 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
           </Status>
           <Status tone="danger">Unable to save. Try again.</Status>
           <Status>Preparing your export…</Status>
+          <section
+            aria-label="Loading content"
+            aria-busy="true"
+            {...stylex.props(layout.stack, gap.md)}
+          >
+            <span role="status">Loading preview…</span>
+            <Shimmer variant="circle" />
+            <Shimmer width="40%" />
+            <Shimmer width="70%" />
+            <Shimmer variant="block" />
+          </section>
         </Stack>
       );
     default:
