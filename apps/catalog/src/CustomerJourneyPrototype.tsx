@@ -199,6 +199,13 @@ export function CustomerJourneyPrototype() {
       detail: "Updates from your cabinetmaker",
     },
     {
+      id: "final-payment",
+      label: "Final Production Payment Due",
+      status: "upcoming",
+      available: true,
+      detail: "Requested after production",
+    },
+    {
       id: "delivery",
       label: "Delivery",
       status: "upcoming",
@@ -294,11 +301,17 @@ export function CustomerJourneyPrototype() {
                     ? "Final design confirmation"
                     : selected === "production"
                       ? "Production"
-                      : "Delivery"}
+                      : selected === "final-payment"
+                        ? "Final Production Payment Due"
+                        : "Delivery"}
         </h3>
-        {["queue", "final-design", "production", "delivery"].includes(
-          selected,
-        ) ? (
+        {[
+          "queue",
+          "final-design",
+          "production",
+          "final-payment",
+          "delivery",
+        ].includes(selected) ? (
           <>
             <p {...stylex.props(styles.text)}>
               {selected === "queue"
@@ -307,7 +320,9 @@ export function CustomerJourneyPrototype() {
                   ? "Before production begins, you and your cabinetmaker will confirm the final drawings, dimensions, materials and details. This is a separate confirmation from approving the estimate. Your cabinetmaker will contact you when the final design is ready to review."
                   : selected === "production"
                     ? "Your cabinetmaker will confirm when fabrication begins and provide progress updates. This estimate does not currently track production automatically."
-                    : "Your cabinetmaker will contact you to arrange delivery or installation. This estimate does not currently track delivery automatically."}
+                    : selected === "final-payment"
+                      ? "When production is complete, your cabinetmaker will confirm the remaining balance and send the final payment request before delivery. No final payment has been requested in this example."
+                      : "Your cabinetmaker will contact you to arrange delivery or installation. This estimate does not currently track delivery automatically."}
             </p>
             <Status>
               Shop updates for this stage are not connected yet. Contact Sample

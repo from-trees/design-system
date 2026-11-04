@@ -101,12 +101,12 @@ it("keeps blocked estimates readable and omits payment for approval-only flows",
   ).not.toBeInTheDocument();
 });
 
-it("shows all seven stages without claiming future production or delivery updates", async () => {
+it("shows all eight stages without claiming future production or delivery updates", async () => {
   const user = setup();
   const nav = screen.getByRole("navigation", {
     name: "Your estimate progress",
   });
-  expect(within(nav).getAllByRole("listitem")).toHaveLength(7);
+  expect(within(nav).getAllByRole("listitem")).toHaveLength(8);
   await user.selectOptions(scenario(), "Deposit paid");
   await user.click(
     screen.getByRole("button", { name: /Production queue: Next step/ }),
@@ -126,6 +126,17 @@ it("shows all seven stages without claiming future production or delivery update
   expect(
     screen.getByText(/does not currently track production automatically/),
   ).toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", {
+      name: /Final Production Payment Due: Upcoming/,
+    }),
+  );
+  expect(
+    screen.getByText(/No final payment has been requested in this example/),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /Pay final/ }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: /Delivery: Upcoming/ }));
   expect(
     screen.getByText(/does not currently track delivery automatically/),

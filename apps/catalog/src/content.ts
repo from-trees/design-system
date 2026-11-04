@@ -184,7 +184,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "The shared WorkflowProgress component receives app-defined steps, availability and completion. Navigation never completes approval or payment.",
     "Keep the estimate identity, total and progress above the active stage. Show one focused stage and a short next action, with saved documents available for review.",
     "Review is a local navigation acknowledgment. Signature and payment completion must come from server-confirmed records for this exact estimate revision.",
-    "The full path continues through Production queue, Final design confirmation, Production and Delivery. Future shop stages remain visible without invented dates or automatic completion.",
+    "The full path continues through Production queue, Final design confirmation, Production, Final Production Payment Due and Delivery. Future shop stages remain visible without invented dates or automatic completion.",
     "Card and ACH checkout stay in the existing provider flow. Processing, failure and unresolved payment states must not be presented as paid.",
     "Approval-only estimates omit the payment step. Expired and superseded estimates remain readable, with signing and payment unavailable.",
     "This synthetic catalog flow does not implement legal consent, identity verification, document generation or payment. Preserve those app capabilities in a separate adoption review.",
