@@ -303,6 +303,7 @@ export const s = stylex.create({
     gap: 24,
     marginTop: 30,
   },
+  wideWorkspace: { gridTemplateColumns: "minmax(0, 1fr)" },
   stack: {
     boxSizing: "border-box",
     display: "flex",

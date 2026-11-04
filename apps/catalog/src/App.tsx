@@ -42,7 +42,8 @@ export default function App() {
     page === "overview" ||
     page === "patterns" ||
     page === "sidebar" ||
-    page === "designer-toolbars";
+    page === "designer-toolbars" ||
+    page === "customizer";
   const hasStates = [
     "lists",
     "buttons",
@@ -122,7 +123,9 @@ export default function App() {
                   : current.title}
               </h1>
               <Badge tone="warning">
-                {page === "sidebar" || page === "designer-toolbars"
+                {page === "sidebar" ||
+                page === "designer-toolbars" ||
+                page === "customizer"
                   ? "Prototype"
                   : "Initial release"}
               </Badge>
@@ -131,7 +134,12 @@ export default function App() {
             {page === "adoption" ? (
               <Adoption />
             ) : (
-              <div {...stylex.props(s.workspace)}>
+              <div
+                {...stylex.props(
+                  s.workspace,
+                  page === "customizer" && s.wideWorkspace,
+                )}
+              >
                 <div {...stylex.props(s.stack)}>
                   {page === "overview" && (
                     <div {...stylex.props(s.notice)}>
@@ -149,10 +157,14 @@ export default function App() {
                   >
                     <header {...stylex.props(s.cardHeader)}>
                       <h2 {...stylex.props(s.cardTitle)}>
-                        {page === "sidebar" || page === "designer-toolbars"
-                          ? page === "designer-toolbars"
-                            ? "Cabinitron · toolbar prototype"
-                            : "Cabinitron · sidebar prototype"
+                        {page === "sidebar" ||
+                        page === "designer-toolbars" ||
+                        page === "customizer"
+                          ? page === "customizer"
+                            ? "Cabinitron · customizer inspector"
+                            : page === "designer-toolbars"
+                              ? "Cabinitron · toolbar prototype"
+                              : "Cabinitron · sidebar prototype"
                           : isComposition
                             ? "Cabinitron · composed examples"
                             : "Interactive example"}
