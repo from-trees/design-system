@@ -1,3 +1,7 @@
+import {
+  CommandBarsDemo,
+  DesignerToolbarPrototype,
+} from "./DesignerToolbarPrototype";
 import { SwatchesDemo } from "./SwatchExamples";
 import { DesignerSidebarPrototype } from "./DesignerSidebarPrototype";
 import { useState } from "react";
@@ -1055,6 +1059,10 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
     case "swatches":
       return <SwatchesDemo />;
+    case "toolbars":
+      return <CommandBarsDemo />;
+    case "designer-toolbars":
+      return <DesignerToolbarPrototype />;
     case "sidebar":
       return <DesignerSidebarPrototype />;
     case "foundations":

@@ -39,7 +39,10 @@ export default function App() {
     document.title = `${current.title} · From Trees design system`;
   }, [current.title]);
   const isComposition =
-    page === "overview" || page === "patterns" || page === "sidebar";
+    page === "overview" ||
+    page === "patterns" ||
+    page === "sidebar" ||
+    page === "designer-toolbars";
   const hasStates = [
     "lists",
     "buttons",
@@ -87,7 +90,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.6.0</Badge>
+            <Badge>v0.7.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -119,7 +122,9 @@ export default function App() {
                   : current.title}
               </h1>
               <Badge tone="warning">
-                {page === "sidebar" ? "Prototype" : "Initial release"}
+                {page === "sidebar" || page === "designer-toolbars"
+                  ? "Prototype"
+                  : "Initial release"}
               </Badge>
             </div>
             <p {...stylex.props(s.lede)}>{current.description}</p>
@@ -144,8 +149,10 @@ export default function App() {
                   >
                     <header {...stylex.props(s.cardHeader)}>
                       <h2 {...stylex.props(s.cardTitle)}>
-                        {page === "sidebar"
-                          ? "Cabinitron · sidebar prototype"
+                        {page === "sidebar" || page === "designer-toolbars"
+                          ? page === "designer-toolbars"
+                            ? "Cabinitron · toolbar prototype"
+                            : "Cabinitron · sidebar prototype"
                           : isComposition
                             ? "Cabinitron · composed examples"
                             : "Interactive example"}

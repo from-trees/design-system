@@ -198,3 +198,25 @@ Parameter groups accept optional `help` and `helpLabel`. The help icon sits at t
 The picker inherits the row's label, contextual help and error description. Outside a row, supply `label`. Control the value in the caller; empty collections disable the trigger. Previews are decorative React nodes: applications own image loading/fallbacks, geometric drawings, option data, availability and persistence. Keep previews noninteractive and sized to fill the available space. Do not infer configuration or profile behavior from thumbnail geometry.
 
 Use it for materials, colors, profiles, cabinet configurations and other choices distinguished visually. Keep ordinary selects for nonvisual choices. See **Swatches & previews** for the isolated component and **Designer sidebar** for shared-style drafts, room surfaces/crown and cabinet configurations. Catalog textures retain their CC0 provenance in `apps/catalog/public/swatches/provenance.json`; stone and finish samples are representative, not exact product or fabrication references.
+
+## Headers and command bars
+
+```tsx
+<WorkspaceHeader
+  title={document.name}
+  metadata={workspace.name}
+  label="Document commands"
+  status={{ label: saveStatus, tone: saveFailed ? "danger" : "neutral" }}
+  primary={{ id: "undo", label: "Undo", icon: "undo", disabled: !canUndo, onAction: undo }}
+  menuLabel="Document actions"
+  actions={documentActions}
+/>
+<CommandBar label="Editing commands" menuLabel="Add items" menuIcon="add" menuText="Add" actions={addActions}>
+  <Select aria-label="View" value={view} onChange={changeView}>{viewOptions}</Select>
+</CommandBar>
+<TaskHeader title="Edit document" onCancel={discard} onSave={commit} disabled={!valid} busy={saving} error={error} />
+```
+
+`CommandBar` accepts input controls as children and owns its direct-action/menu layout. `primary` extends the shared Action shape with optional `busy`. `menuIcon`/`menuText` make contextual menus discoverable; ordinary overflow uses the existing ellipsis trigger. `status` retains a fixed width and the full accessible/native-tooltip text while visually truncating. Tab reaches controls, arrow/Home/End keys move between enabled toolbar buttons, native select keys remain native, and menus retain their own focus behavior.
+
+`WorkspaceHeader` supports title, optional metadata, heading `level` (1–3), `compact`, and the command-bar props. `TaskHeader` owns exactly Cancel and Save, optional description/error and save label. A task must have one owning header; do not add it underneath the header of an existing overlay. The designer catalog prototype and its full adoption inventory live in [designer-toolbar-prototype.md](designer-toolbar-prototype.md).

@@ -35,3 +35,12 @@ export {
   type SwatchPickerProps,
   type SwatchOption,
 } from "./SwatchPicker";
+
+export {
+  CommandBar,
+  WorkspaceHeader,
+  TaskHeader,
+  type CommandBarProps,
+  type CommandAction,
+  type CommandStatus,
+} from "./CommandBar";

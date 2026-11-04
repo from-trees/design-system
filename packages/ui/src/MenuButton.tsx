@@ -23,6 +23,8 @@ export type Action = {
   separatorBefore?: boolean;
 };
 const styles = stylex.create({
+  labeledTrigger: { width: "auto", paddingInline: 10, gap: 6 },
+  triggerContents: { display: "flex", alignItems: "center", gap: 4 },
   trigger: {
     boxSizing: "border-box",
     margin: 0,
@@ -83,17 +85,26 @@ const styles = stylex.create({
 });
 export function MenuButton({
   label = "Actions",
+  icon = "more",
+  text,
   actions,
 }: {
   label?: string;
+  icon?: IconName;
+  text?: string;
   actions: readonly Action[];
 }) {
   const theme = useThemeStyles();
   return (
     <MenuTrigger>
-      <AriaButton aria-label={label} {...stylex.props(styles.trigger)}>
-        <span title={label}>
-          <Icon name="more" size={18} />
+      <AriaButton
+        aria-label={label}
+        {...stylex.props(styles.trigger, !!text && styles.labeledTrigger)}
+      >
+        <span title={label} {...stylex.props(styles.triggerContents)}>
+          <Icon name={icon} size={18} />
+          {text && <span>{text}</span>}
+          {(text || icon !== "more") && <Icon name="chevronDown" size={12} />}
         </span>
       </AriaButton>
       <Popover
