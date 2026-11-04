@@ -1,3 +1,4 @@
+import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
 import { CustomizerInspectorPrototype } from "./CustomizerInspectorPrototype";
 import {
   CommandBarsDemo,
@@ -1065,6 +1066,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
       return <CommandBarsDemo />;
     case "designer-toolbars":
       return <DesignerToolbarPrototype />;
+    case "customer-journey":
+      return <CustomerJourneyPrototype />;
     case "customizer":
       return <CustomizerInspectorPrototype />;
     case "sidebar":

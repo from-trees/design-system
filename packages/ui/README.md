@@ -27,3 +27,8 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 `InfoTooltip` provides optional non-interactive elaboration on hover, keyboard focus or tap. Parameters use it for reference/help details while validation remains inline. Review this behavior in the catalog before app adoption.
 
 `Parameters` renders ordered app-defined groups and fields. Define the specific schema, grouping, order and units in an app wrapper, as the catalog's CabinetParameters does. The UI package provides no cabinet preset or default units.
+
+
+### Workflow progress (0.8.0)
+
+`WorkflowProgress` accepts app-defined `steps`, `selectedId`, `onSelect` and an accessible `label`. Steps provide `id`, `label`, `status`, `detail` and `available`. The app owns eligibility and completion. Navigation only changes the displayed stage; it does not sign, pay or advance production. See the Customer estimates catalog pattern before app adoption.

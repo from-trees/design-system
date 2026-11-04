@@ -46,3 +46,9 @@ export {
 } from "./CommandBar";
 
 export { Shimmer, type ShimmerProps } from "./Shimmer";
+
+export {
+  WorkflowProgress,
+  type WorkflowStep,
+  type WorkflowProgressProps,
+} from "./WorkflowProgress";
