@@ -14,6 +14,13 @@ const setup = () => {
 const select = (name: string) => screen.getByRole("combobox", { name });
 it("places through one add menu, supports cancel/undo/redo and retains state across views", async () => {
   const user = setup();
+  const commands = screen.getByRole("toolbar", { name: "Project commands" });
+  expect(
+    within(commands).getByRole("radiogroup", { name: "Workspace view" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("toolbar", { name: "Workspace commands" }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Add to room" }));
   await user.click(screen.getByRole("menuitem", { name: "Cabinet" }));
   expect(
@@ -32,11 +39,11 @@ it("places through one add menu, supports cancel/undo/redo and retains state acr
   await user.click(screen.getByRole("button", { name: "Project actions" }));
   await user.click(screen.getByRole("menuitem", { name: "Redo" }));
   expect(screen.getByText(/4 objects/)).toBeInTheDocument();
-  await user.selectOptions(select("Workspace view"), "Elevation");
+  await user.click(screen.getByRole("radio", { name: "Elevation" }));
   expect(
     screen.getByRole("heading", { name: "Elevations" }),
   ).toBeInTheDocument();
-  await user.selectOptions(select("Workspace view"), "Split");
+  await user.click(screen.getByRole("radio", { name: "Split" }));
   expect(screen.getByText(/4 objects/)).toBeInTheDocument();
 });
 it("keeps public/customer capabilities distinct and recovers failed saves through the menu", async () => {
@@ -100,7 +107,7 @@ it("saves views through a focused task and confirms deletion", async () => {
 it("customizer has one task header and discards or saves its part draft", async () => {
   const user = setup();
   const open = async () => {
-    await user.click(screen.getByRole("button", { name: "Workspace tools" }));
+    await user.click(screen.getByRole("button", { name: "Project actions" }));
     await user.click(
       screen.getByRole("menuitem", { name: "Customize cabinet" }),
     );

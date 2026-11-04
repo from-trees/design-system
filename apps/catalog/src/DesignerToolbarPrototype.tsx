@@ -6,6 +6,7 @@ import {
   WorkspaceHeader,
   TaskHeader,
   Select,
+  SegmentedControl,
   Dialog,
   SidePanel,
   TextInput,
@@ -801,13 +802,10 @@ export function DesignerToolbarPrototype() {
                 onAction: undoAction,
               }}
               menuLabel="Project actions"
-              actions={projectActions}
-            />
-            <div {...stylex.props(styles.bar)}>
-              <CommandBar
-                label="Workspace commands"
-                menuLabel="Workspace tools"
-                actions={[
+              compact
+              actions={[
+                ...projectActions,
+                ...[
                   action(
                     "customize",
                     "Customize cabinet",
@@ -843,24 +841,25 @@ export function DesignerToolbarPrototype() {
                     () => open("Designer help"),
                     "info",
                   ),
-                ]}
-              >
-                {choose(
-                  "Workspace view",
-                  view,
-                  (value) => {
-                    setView(value);
-                    setPending(undefined);
-                  },
-                  ["Plan", "Split", "3D", "Elevation"],
-                )}
-                <InfoTooltip label="Workspace views">
-                  Plan and 3D share the same design. View changes do not edit
-                  the saved room. Elevations describe cabinetry-facing views;
-                  dimensions require field verification.
-                </InfoTooltip>
-              </CommandBar>
-            </div>
+                ].map((item, index) => ({
+                  ...item,
+                  separatorBefore: index === 0,
+                })),
+              ]}
+            >
+              <SegmentedControl
+                label="Workspace view"
+                value={view}
+                onChange={(value) => {
+                  setView(value);
+                  setPending(undefined);
+                }}
+                options={["Plan", "Split", "3D", "Elevation"].map((value) => ({
+                  value,
+                  label: value,
+                }))}
+              />
+            </WorkspaceHeader>
             {view === "Elevation" ? (
               <>
                 <WorkspaceHeader

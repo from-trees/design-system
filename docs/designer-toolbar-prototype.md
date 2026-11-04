@@ -5,7 +5,7 @@ Review **Components → Headers & toolbars** (`#toolbars`) and **Patterns → De
 ## Shared components
 
 - `WorkspaceHeader`: one identity and command area. Title and metadata truncate without dropping their full text. Compact mode suits viewport headers. Avoid stacking host branding, document identity and a repeated marketing heading.
-- `CommandBar`: leading input controls, a reserved status slot, and at most one direct action plus a menu. Use familiar icons for direct commands; use a named/icon menu such as **Add** or **Parts** where an ellipsis would conceal the purpose. Native selects own view/tool decisions. Children must not smuggle in another action row.
+- `CommandBar`: leading input controls, a reserved status slot, and at most one direct action plus a menu. Use familiar icons for direct commands; use a named/icon menu such as **Add** or **Parts** where an ellipsis would conceal the purpose. Use segmented choices for workspace modes and native selects for other view/tool decisions. Children must not smuggle in another action row.
 - `TaskHeader`: one task title and exactly Cancel/Save. Busy disables repeat commit and dismissal; invalid drafts disable Save and retain visible error text. Replace a task's old header; do not nest this under another dialog header.
 - `MenuButton` adds optional `icon`/`text` triggers. Its existing ellipsis default remains unchanged for lists and ordinary overflow menus.
 
@@ -15,9 +15,9 @@ Applications own command eligibility, data, callbacks and persistence. None of t
 
 | Current Cabinitron surface | Proposed organization | Adoption obligations |
 | --- | --- | --- |
-| Public/embedded designer host header and business identity | One project identity, compact business/revision/access metadata, contextual project menu | Preserve workspace/site/sign-in links, embedded behavior and private customer-copy identity; suppress duplicate branding |
+| Public/embedded designer host header and business identity | One project identity, compact business/revision/access metadata, segmented views and merged project/workspace menu | Preserve workspace/site/sign-in links, embedded behavior and private customer-copy identity; suppress duplicate branding |
 | Project action bar | Undo icon plus Project actions; fixed-width save status | Preserve saved-project promotion, customer-package eligibility, room share/range/history, New room, conflict recovery and retry; never shift controls when status text changes |
-| Plan / Split / 3D / Elevation button row | One view selector | Keep the current view/selection state and all geometry intact |
+| Plan / Split / 3D / Elevation button row | Existing segmented view-mode control in the project header | Keep the current view/selection state and all geometry intact |
 | Plan viewport header and navigation | Compact Plan identity and navigation menu | Zoom in/out, Fit and Pan remain reachable; preserve keyboard/mouse alternatives |
 | Add cabinet / fixture / library / room-panel row | Named Add menu with the real libraries in focused selectors | Preserve existing generated 3D previews and all catalog categories; no illustrative geometry replaces them |
 | Outline editing toolbar | Outline mode plus named Tools menu; short placement status and info help | Retain add/split/merge/remove walls, doors/windows/openings, recess removal, eligibility checks, previews, Command modifiers and Escape cancellation |
@@ -34,7 +34,7 @@ Applications own command eligibility, data, callbacks and persistence. None of t
 
 ## Review scenarios
 
-1. Compare Plan, Split, 3D and Elevation. Their selectors retain state without pretending to edit geometry.
+1. Compare Plan, Split, 3D and Elevation. Their segmented choices retain state without pretending to edit geometry.
 2. Open Add, start a synthetic placement, cancel with Escape, then place and Undo/Redo. Repeat in outline mode.
 3. Change save state through Saved, Unsaved, Saving and the long error. Recover via Project actions. Direct command bounds must remain unchanged after fonts load.
 4. Compare business project, staff draft, public anonymous draft, customer view with/without copy permission, and editable customer copy. Public customers must not gain staff commands by creating a copy.
@@ -51,3 +51,5 @@ Focused tests exercise generic command grouping/keyboard behavior, unchanged exi
 The viewport drawings and object/part counts are schematic review aids. Photo completion is controlled manually. History, sharing, rendering options, customer packages and navigation open illustrative task surfaces; their existing app implementations are not recreated here. The app adoption must bind the confirmed chrome to real commands and keep the whole geometry/material/saved-revision model. Do not use this catalog's fixture state as product logic.
 
 Follow-up delivery is a separate Cabinitron diff after the user confirms this catalog behavior. No package publication, Cabinitron integration or production release is part of this PR.
+
+The project header owns the existing segmented view-mode control. There is no separate workspace selector/menu row. Workspace commands join the project menu after a separator; the segmented choices are modes, not command buttons. Regular widths keep this in one compact header; narrow screens reflow within that same header.

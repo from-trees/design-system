@@ -176,7 +176,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   ],
   "designer-toolbars": [
     "One project header replaces duplicated host/document identity. Project actions retain their business-project, anonymous-draft and customer-view eligibility.",
-    "View and tool choices use selectors. Add commands and viewport navigation use menus; no rows of three or more exposed action buttons.",
+    "Workspace view modes use the existing segmented control inside the project header. Workspace commands join its menu; there is no separate selector toolbar. Other tool choices use selectors.",
     "Photo capture is a direct icon action. Saved-view selection has one management menu, including render options, first customer view and deletion.",
     "Customization owns a single Save/Cancel task header, a view/tool/snap command bar and focused part selection. This prototype does not replace the existing advanced editor.",
     "Review controls exercise save failures, read-only access, drafts and busy photos. All operations use synthetic local state; real geometry and external tasks are not implemented.",

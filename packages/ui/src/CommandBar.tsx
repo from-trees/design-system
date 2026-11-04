@@ -19,6 +19,7 @@ export type CommandBarProps = {
   menuIcon?: IconName;
   menuText?: string;
   status?: CommandStatus;
+  inline?: boolean;
 };
 const styles = stylex.create({
   bar: {
@@ -30,6 +31,17 @@ const styles = stylex.create({
     width: "100%",
     boxSizing: "border-box",
   },
+  inline: {
+    flexWrap: { default: "nowrap", "@media (max-width: 700px)": "wrap" },
+  },
+  inlineLeading: { flexShrink: 0 },
+  workspace: {
+    display: "grid",
+    gridTemplateColumns: {
+      default: "minmax(80px,1fr) minmax(0,auto)",
+      "@media (max-width: 700px)": "minmax(0,1fr)",
+    },
+  },
   leading: {
     display: "flex",
     alignItems: "center",
@@ -39,7 +51,7 @@ const styles = stylex.create({
     flexGrow: 1,
   },
   trailing: {
-    minWidth:0,
+    minWidth: 0,
     display: "flex",
     alignItems: "center",
     gap: 10,
@@ -145,15 +157,20 @@ export function CommandBar({
   menuIcon,
   menuText,
   status,
+  inline = false,
 }: CommandBarProps) {
   return (
     <div
       role="toolbar"
       aria-label={label}
       onKeyDown={arrowNavigation}
-      {...stylex.props(layout.row, gap.md, styles.bar)}
+      {...stylex.props(layout.row, gap.md, styles.bar, inline && styles.inline)}
     >
-      {children && <div {...stylex.props(styles.leading)}>{children}</div>}
+      {children && (
+        <div {...stylex.props(styles.leading, inline && styles.inlineLeading)}>
+          {children}
+        </div>
+      )}
       <div {...stylex.props(styles.trailing)}>
         {status && (
           <span
@@ -219,7 +236,11 @@ export function WorkspaceHeader({
   return (
     <header
       aria-labelledby={id}
-      {...stylex.props(styles.header, compact && styles.compact)}
+      {...stylex.props(
+        styles.header,
+        styles.workspace,
+        compact && styles.compact,
+      )}
     >
       <div {...stylex.props(styles.identity)}>
         <Heading id={id} title={title} {...stylex.props(styles.title)}>
@@ -232,7 +253,7 @@ export function WorkspaceHeader({
         )}
       </div>
       <div {...stylex.props(styles.commands)}>
-        <CommandBar {...commands} />
+        <CommandBar {...commands} inline />
       </div>
     </header>
   );
