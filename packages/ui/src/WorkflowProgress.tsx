@@ -15,63 +15,82 @@ export type WorkflowProgressProps = {
   onSelect: (id: string) => void;
 };
 const styles = stylex.create({
-  list: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 8,
-    padding: 0,
-    margin: 0,
-    listStyleType: "none",
+  list: { display: "flex", padding: 0, margin: 0, listStyleType: "none" },
+  item: { position: "relative", flexGrow: 1, flexBasis: 0, minWidth: 0 },
+  connector: {
+    position: "absolute",
+    top: 15,
+    insetInlineStart: "50%",
+    width: "100%",
+    borderTopWidth: 2,
+    borderTopStyle: "dotted",
+    borderTopColor: color.border,
   },
-  long: {
-    display: "grid",
-    gridTemplateColumns: {
-      default: "repeat(3,minmax(0,1fr))",
-      "@media (max-width: 600px)": "repeat(2,minmax(0,1fr))",
-    },
-  },
-  item: { flexGrow: 1, flexBasis: 160, minWidth: 0 },
   control: {
+    position: "relative",
     boxSizing: "border-box",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
     width: "100%",
     height: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: color.border,
-    borderRadius: metrics.radius,
-    backgroundColor: color.surface,
+    paddingBlock: 0,
+    paddingInline: 6,
+    borderWidth: 0,
+    backgroundColor: "transparent",
     color: color.ink,
     fontFamily: "inherit",
     fontSize: metrics.small,
-    textAlign: "start",
+    textAlign: "center",
+    borderRadius: metrics.radius,
   },
   button: {
     cursor: "pointer",
-    backgroundColor: { default: color.surface, ":hover": color.hovered },
     outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
-    outlineOffset: 2,
+    outlineOffset: 4,
   },
-  selected: { borderColor: color.accent, backgroundColor: color.subtle },
   mark: {
+    boxSizing: "border-box",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     flexShrink: 0,
     borderRadius: "50%",
-    backgroundColor: color.subtle,
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: color.border,
     fontWeight: 650,
   },
-  complete: { color: color.accent },
-  unavailable: { color: color.muted },
-  copy: { display: "flex", flexDirection: "column", gap: 3, minWidth: 0 },
-  title: { fontWeight: 650 },
+  current: { borderWidth: 2, borderColor: color.ink },
+  viewing: { outline: `2px solid ${color.focus}`, outlineOffset: 3 },
+  complete: {
+    color: color.onAccent,
+    backgroundColor: color.accent,
+    borderColor: color.accent,
+  },
+  attention: { borderColor: color.danger, color: color.danger },
+  upcoming: { color: color.muted },
+  copy: {
+    display: { default: "flex", "@media (max-width: 600px)": "none" },
+    flexDirection: "column",
+    gap: 4,
+    minWidth: 0,
+  },
+  title: { fontWeight: 650, fontSize: 12, lineHeight: 1.4 },
   detail: { fontSize: 11, color: color.muted, lineHeight: 1.4 },
+  mobile: {
+    display: { default: "none", "@media (max-width: 600px)": "block" },
+    marginTop: 16,
+    marginBottom: 0,
+    fontSize: metrics.small,
+    color: color.ink,
+    textAlign: "center",
+    lineHeight: 1.5,
+  },
 });
 const statusLabel = {
   complete: "Complete",
@@ -88,7 +107,7 @@ export function WorkflowProgress({
 }: WorkflowProgressProps) {
   return (
     <nav aria-label={label}>
-      <ol {...stylex.props(styles.list, steps.length > 3 && styles.long)}>
+      <ol {...stylex.props(styles.list)}>
         {steps.map((step, index) => {
           const content = (
             <>
@@ -97,6 +116,9 @@ export function WorkflowProgress({
                 {...stylex.props(
                   styles.mark,
                   step.status === "complete" && styles.complete,
+                  step.status === "current" && styles.current,
+                  step.status === "attention" && styles.attention,
+                  step.id === selectedId && styles.viewing,
                 )}
               >
                 {step.status === "complete" ? (
@@ -121,6 +143,9 @@ export function WorkflowProgress({
               aria-current={step.status === "current" ? "step" : undefined}
               {...stylex.props(styles.item)}
             >
+              {index < steps.length - 1 && (
+                <span aria-hidden="true" {...stylex.props(styles.connector)} />
+              )}
               {step.available ? (
                 <button
                   type="button"
@@ -129,15 +154,17 @@ export function WorkflowProgress({
                   {...stylex.props(
                     styles.control,
                     styles.button,
-                    step.id === selectedId && styles.selected,
+                    step.status === "upcoming" && styles.upcoming,
                   )}
                 >
                   {content}
                 </button>
               ) : (
                 <div
+                  role="group"
+                  aria-label={`${step.label}: ${statusLabel[step.status]}. ${step.detail ?? ""}`}
                   aria-disabled="true"
-                  {...stylex.props(styles.control, styles.unavailable)}
+                  {...stylex.props(styles.control, styles.upcoming)}
                 >
                   {content}
                 </div>
@@ -146,6 +173,12 @@ export function WorkflowProgress({
           );
         })}
       </ol>
+      {steps.some((step) => step.id === selectedId) && (
+        <p {...stylex.props(styles.mobile)}>
+          Step {steps.findIndex((step) => step.id === selectedId) + 1} of{" "}
+          {steps.length} · {steps.find((step) => step.id === selectedId)?.label}
+        </p>
+      )}
     </nav>
   );
 }

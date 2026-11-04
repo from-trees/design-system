@@ -4,7 +4,7 @@ Review **Patterns → Customer estimates** (`#customer-journey`) before a separa
 
 ## Shared component
 
-`WorkflowProgress` receives `label`, app-defined `steps`, `selectedId`, and `onSelect`. Each step supplies a stable `id`, concise `label`, `status` (`complete`, `current`, `upcoming`, `attention`), `detail`, and `available`. Selecting a step only navigates; it never changes completion. The selected view and next due step are distinct. Status is conveyed with text and icons, not color alone. The current task uses `aria-current="step"`; unavailable steps are descriptive and not keyboard actions. Six-stage layouts use three columns at regular widths and two on narrow screens.
+`WorkflowProgress` receives `label`, app-defined `steps`, `selectedId`, and `onSelect`. Each step supplies a stable `id`, concise `label`, `status` (`complete`, `current`, `upcoming`, `attention`), `detail`, and `available`. Selecting a step only navigates; it never changes completion. The selected view and next due step are distinct. Status is conveyed with text and icons, not color alone. The current task uses `aria-current="step"`; unavailable steps are descriptive and not keyboard actions. Steps form one horizontal sequence of numbered circles joined by a dotted line, with completed steps shown as filled checkmarks and labels underneath. On narrow screens all markers remain visible, with the viewed step label below the line instead of six crowded text columns.
 
 The shared package contains no estimate, signing, payment, queue or delivery schema. The catalog supplies those meanings and a synthetic local state machine.
 
