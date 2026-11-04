@@ -4,10 +4,12 @@ import type { IconName } from "./Icon";
 import { Button, IconButton } from "./Button";
 import { MenuButton, type Action } from "./MenuButton";
 import { color, metrics } from "./tokens.stylex";
+import { Badge } from "./Feedback";
 import { layout, gap } from "./utilities";
 export type CommandAction = Action & { busy?: boolean };
 export type CommandStatus = {
   label: string;
+  description?: string;
   tone?: "neutral" | "success" | "warning" | "danger";
 };
 export type CommandBarProps = {
@@ -59,19 +61,12 @@ const styles = stylex.create({
     flexShrink: 1,
   },
   status: {
-    display: "block",
-    width: 160,
+    display: "flex",
+    justifyContent: "flex-end",
+    width: 112,
     minWidth: 0,
-    fontSize: 12,
-    lineHeight: 1.4,
-    whiteSpace: "nowrap",
     overflow: "hidden",
-    textOverflow: "ellipsis",
-    color: color.muted,
   },
-  success: { color: color.success },
-  warning: { color: color.warning },
-  danger: { color: color.danger },
   header: {
     display: "flex",
     alignItems: "center",
@@ -176,15 +171,11 @@ export function CommandBar({
           <span
             role="status"
             aria-live="polite"
-            title={status.label}
-            {...stylex.props(
-              styles.status,
-              status.tone === "success" && styles.success,
-              status.tone === "warning" && styles.warning,
-              status.tone === "danger" && styles.danger,
-            )}
+            aria-label={status.description ?? status.label}
+            title={status.description ?? status.label}
+            {...stylex.props(styles.status)}
           >
-            {status.label}
+            <Badge tone={status.tone}>{status.label}</Badge>
           </span>
         )}
         {primary &&

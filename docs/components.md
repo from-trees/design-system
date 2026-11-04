@@ -217,6 +217,19 @@ Use it for materials, colors, profiles, cabinet configurations and other choices
 <TaskHeader title="Edit document" onCancel={discard} onSave={commit} disabled={!valid} busy={saving} error={error} />
 ```
 
-`CommandBar` accepts input controls as children and owns its direct-action/menu layout. `inline` keeps its control and action groups together above 700 px, wrapping on narrow screens. `primary` extends the shared Action shape with optional `busy`. `menuIcon`/`menuText` make contextual menus discoverable; ordinary overflow uses the existing ellipsis trigger. `status` retains a fixed width and the full accessible/native-tooltip text while visually truncating. Tab reaches controls, arrow/Home/End keys move between enabled toolbar buttons, native select keys remain native, and menus retain their own focus behavior.
+`CommandBar` accepts input controls as children and owns its direct-action/menu layout. `inline` keeps its control and action groups together above 700 px, wrapping on narrow screens. `primary` extends the shared Action shape with optional `busy`. `menuIcon`/`menuText` make contextual menus discoverable; ordinary overflow uses the existing ellipsis trigger. `status` uses the existing `Badge` in a fixed-width slot aligned immediately beside the direct command. Keep its `label` concise; optional `description` carries full accessible/native-tooltip detail without moving actions. Tab reaches controls, arrow/Home/End keys move between enabled toolbar buttons, native select keys remain native, and menus retain their own focus behavior.
 
 `WorkspaceHeader` supports title, optional metadata, heading `level` (1–3), `compact`, and the command-bar props. It places identity and commands in one desktop row and stacks them on narrow screens. Place mode choices in its children using the shared `SegmentedControl`; merge workspace commands into its action menu instead of adding another toolbar. `TaskHeader` owns exactly Cancel and Save, optional description/error and save label. A task must have one owning header; do not add it underneath the header of an existing overlay. The designer catalog prototype and its full adoption inventory live in [designer-toolbar-prototype.md](designer-toolbar-prototype.md).
+
+## Shimmer loading placeholders
+
+`Shimmer` is a decorative, theme-aware skeleton with `variant="line" | "block" | "circle"`, optional `width` (pixels or a CSS length) and `height` (pixels). Defaults are a full-width 14 px line, a full-width 160 px block or a 32 px circle. Compose placeholders to match the content that will replace them, keeping dimensions stable. Reduced-motion preferences disable the sweep.
+
+```tsx
+<div role="status" aria-label="Loading elevations" aria-busy="true">
+  <Shimmer width="35%" height={18} />
+  <Shimmer variant="block" height={160} />
+</div>
+```
+
+Placeholders are hidden from assistive technology; the owning region supplies one loading announcement and busy state. Replace the entire loading region with real content when the request resolves; on failure, replace it with `Status tone="danger"` and a retry action. A shimmer is never proof that data exists or that a request has completed. Applications own loading, cancellation, retries and errors. See Status & feedback for the isolated shapes and Designer toolbars for the dialog composition.

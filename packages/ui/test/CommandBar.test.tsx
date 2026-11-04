@@ -67,13 +67,18 @@ it("retains complete identity/status text while status changes", () => {
         label="Commands"
         primary={action}
         status={{
-          label: "Unable to save. Reconnect and retry from the document menu.",
+          label: "Unable to save",
+          description:
+            "Unable to save. Reconnect and retry from the document menu.",
           tone: "danger",
         }}
       />
     </ThemeProvider>,
   );
-  expect(screen.getByRole("status")).toHaveTextContent("Reconnect and retry");
+  expect(screen.getByRole("status")).toHaveTextContent("Unable to save");
+  expect(screen.getByRole("status")).toHaveAccessibleName(
+    "Unable to save. Reconnect and retry from the document menu.",
+  );
   expect(screen.getByRole("status")).toHaveAttribute(
     "title",
     "Unable to save. Reconnect and retry from the document menu.",

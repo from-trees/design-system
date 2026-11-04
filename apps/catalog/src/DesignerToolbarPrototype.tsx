@@ -13,6 +13,7 @@ import {
   InfoTooltip,
   List,
   Status,
+  Shimmer,
   type Action,
   type CommandStatus,
 } from "@from-trees/ui";
@@ -65,6 +66,8 @@ const styles = stylex.create({
     boxSizing: "border-box",
   },
   drawing: { width: "100%", maxWidth: 320, height: 220, display: "block" },
+  elevationFigure: { margin: 0, fontSize: 13 },
+  elevationSheet: { width: "100%", height: 160, display: "block" },
   caption: { fontSize: 12, color: color.muted, margin: 0 },
   stats: {
     display: "grid",
@@ -111,10 +114,11 @@ const styles = stylex.create({
 });
 const statuses: Record<string, CommandStatus> = {
   saved: { label: "Saved", tone: "success" },
-  unsaved: { label: "Unsaved changes", tone: "warning" },
+  unsaved: { label: "Unsaved", tone: "warning" },
   saving: { label: "Saving…" },
   error: {
-    label: "Unable to save. Reconnect, then retry from Project actions.",
+    label: "Unable to save",
+    description: "Unable to save. Reconnect, then retry from Project actions.",
     tone: "danger",
   },
 };
@@ -282,6 +286,22 @@ export function DesignerToolbarPrototype() {
   const [draftPast, setDraftPast] = useState<number[]>([]),
     [draftFuture, setDraftFuture] = useState<number[]>([]);
   const [projectName, setProjectName] = useState("Kitchen renovation");
+  const [elevationsOpen, setElevationsOpen] = useState(false);
+  const [elevationResponse, setElevationResponse] = useState("ready");
+  const [elevationState, setElevationState] = useState("loading");
+  useEffect(() => {
+    if (!elevationsOpen) return;
+    // A synthetic delayed response lets the catalog exercise pending and failed requests.
+    // App adoption supplies the real elevation loader and cancels stale requests.
+    const timer = window.setTimeout(() => {
+      if (elevationResponse !== "pending") setElevationState(elevationResponse);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [elevationsOpen, elevationResponse]);
+  const showElevations = () => {
+    setElevationState("loading");
+    setElevationsOpen(true);
+  };
   const nextViewId = useRef(3);
   const canvas = useRef<HTMLButtonElement>(null),
     readOnly = access.startsWith("Customer view"),
@@ -805,6 +825,7 @@ export function DesignerToolbarPrototype() {
               compact
               actions={[
                 ...projectActions,
+                action("elevations", "Elevations", showElevations, "view"),
                 ...[
                   action(
                     "customize",
@@ -854,48 +875,18 @@ export function DesignerToolbarPrototype() {
                   setView(value);
                   setPending(undefined);
                 }}
-                options={["Plan", "Split", "3D", "Elevation"].map((value) => ({
+                options={["Plan", "Split", "3D"].map((value) => ({
                   value,
                   label: value,
                 }))}
               />
             </WorkspaceHeader>
-            {view === "Elevation" ? (
-              <>
-                <WorkspaceHeader
-                  title="Elevations"
-                  compact
-                  metadata="Cabinetry-facing views"
-                  label="Elevation commands"
-                  actions={[
-                    action(
-                      "fit",
-                      "Fit sheet",
-                      () => setNotice("Elevation fitted"),
-                      "fit",
-                    ),
-                    action(
-                      "help",
-                      "Dimension guidance",
-                      () => open("Dimension guidance"),
-                      "info",
-                    ),
-                  ]}
-                  menuLabel="Elevation actions"
-                />
-                <div {...stylex.props(styles.preview)}>{drawing()}</div>
-              </>
-            ) : (
-              <div
-                {...stylex.props(
-                  styles.views,
-                  view !== "Split" && styles.single,
-                )}
-              >
-                {view !== "3D" && viewport(false)}
-                {view !== "Plan" && viewport(true)}
-              </div>
-            )}
+            <div
+              {...stylex.props(styles.views, view !== "Split" && styles.single)}
+            >
+              {view !== "3D" && viewport(false)}
+              {view !== "Plan" && viewport(true)}
+            </div>
             <div {...stylex.props(styles.stats)}>
               <span>
                 {count} objects · {zoom}% · {pan ? "Pan" : "Select"}
@@ -921,6 +912,7 @@ export function DesignerToolbarPrototype() {
             setPending(undefined);
             setAdvanced(false);
             setTask(undefined);
+            setElevationsOpen(false);
           }}
         >
           {[
@@ -933,6 +925,15 @@ export function DesignerToolbarPrototype() {
           ].map((v) => (
             <option key={v}>{v}</option>
           ))}
+        </Select>
+        <Select
+          label="Elevation response"
+          value={elevationResponse}
+          onChange={(e) => setElevationResponse(e.currentTarget.value)}
+        >
+          <option value="ready">Load after delay</option>
+          <option value="pending">Keep loading</option>
+          <option value="error">Fail after delay</option>
         </Select>
         <Select
           label="Save state"
@@ -1074,6 +1075,70 @@ export function DesignerToolbarPrototype() {
           </Status>
         )}
       </SidePanel>
+      <Dialog
+        title="Elevations"
+        description="Cabinetry-facing views"
+        open={elevationsOpen}
+        onOpenChange={setElevationsOpen}
+        footer={
+          <InfoTooltip label="Elevation dimensions">
+            Concept only. Verify dimensions in the field. The catalog uses
+            schematic sheets; Cabinitron supplies the real elevations.
+          </InfoTooltip>
+        }
+      >
+        {elevationState === "loading" ? (
+          <div
+            role="status"
+            aria-label="Loading elevations"
+            aria-busy="true"
+            {...stylex.props(layout.stack, gap.lg)}
+          >
+            {["wall-a", "wall-b"].map((id) => (
+              <div key={id} {...stylex.props(layout.stack, gap.sm)}>
+                <Shimmer width="35%" height={18} />
+                <Shimmer variant="block" height={160} />
+              </div>
+            ))}
+          </div>
+        ) : elevationState === "error" ? (
+          <div {...stylex.props(layout.stack, gap.md)}>
+            <Status tone="danger">Unable to load elevations.</Status>
+            <Button
+              onClick={() => {
+                setElevationState("loading");
+                setElevationResponse("ready");
+              }}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : (
+          <div {...stylex.props(layout.stack, gap.lg)}>
+            {["Wall A", "Wall B"].map((wall) => (
+              <figure
+                key={wall}
+                {...stylex.props(layout.stack, gap.sm, styles.elevationFigure)}
+              >
+                <figcaption>{wall}</figcaption>
+                <svg
+                  viewBox="0 0 420 180"
+                  role="img"
+                  aria-label={`${wall} elevation`}
+                  {...stylex.props(styles.elevationSheet)}
+                >
+                  <path
+                    d="M10 165H410 M30 165V30H390V165 M150 30V165 M270 30V165 M30 80H390 M30 95H390"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                </svg>
+              </figure>
+            ))}
+          </div>
+        )}
+      </Dialog>
       <Dialog
         title={`${confirm ?? "Confirm"}?`}
         open={!!confirm}

@@ -16,14 +16,14 @@ Applications own command eligibility, data, callbacks and persistence. None of t
 | Current Cabinitron surface | Proposed organization | Adoption obligations |
 | --- | --- | --- |
 | Public/embedded designer host header and business identity | One project identity, compact business/revision/access metadata, segmented views and merged project/workspace menu | Preserve workspace/site/sign-in links, embedded behavior and private customer-copy identity; suppress duplicate branding |
-| Project action bar | Undo icon plus Project actions; fixed-width save status | Preserve saved-project promotion, customer-package eligibility, room share/range/history, New room, conflict recovery and retry; never shift controls when status text changes |
-| Plan / Split / 3D / Elevation button row | Existing segmented view-mode control in the project header | Keep the current view/selection state and all geometry intact |
+| Project action bar | Undo icon plus Project actions; fixed-width, right-aligned save badge beside Undo | Preserve saved-project promotion, customer-package eligibility, room share/range/history, New room, conflict recovery and retry; never shift controls when status text changes |
+| Plan / Split / 3D button row | Existing segmented view-mode control in the project header | Keep the current view/selection state and all geometry intact |
 | Plan viewport header and navigation | Compact Plan identity and navigation menu | Zoom in/out, Fit and Pan remain reachable; preserve keyboard/mouse alternatives |
 | Add cabinet / fixture / library / room-panel row | Named Add menu with the real libraries in focused selectors | Preserve existing generated 3D previews and all catalog categories; no illustrative geometry replaces them |
 | Outline editing toolbar | Outline mode plus named Tools menu; short placement status and info help | Retain add/split/merge/remove walls, doors/windows/openings, recess removal, eligibility checks, previews, Command modifiers and Escape cancellation |
 | 3D viewport header | Compact 3D identity, direct Photo icon, navigation menu | Keep photo settings reachable explicitly; preserve current capture, rendering, progress, cancellation and camera readiness behavior |
 | Saved-camera toolbar and inline naming form | Saved-view selector plus one management menu; focused naming task | Keep stable view IDs even when names repeat; 50-view and 80-character app limits remain app-owned and appear in help; preserve render options, first customer view and deletion |
-| Elevation worksheet heading | One compact Elevations header and contextual dimension guidance | Preserve the generated wall/island sheets and field-verification requirements; do not invent a new export capability |
+| Elevation worksheet heading | Elevations menu action opens a Dialog with shared Shimmer placeholders until sheets resolve; contextual dimension guidance | Preserve the generated wall/island sheets and field-verification requirements; do not invent a new export capability |
 | ConfigurationSheet header | One TaskHeader with Cancel and Save at the upper right | Continue to use the existing advanced customizer, validation, sink attachment and complete draft; preserve save errors and focus restoration |
 | CustomUnitEditor standalone marketing/preset header | Compact workshop identity and named Presets menu (component example) | Preserve Blank, Vanity, Closet, Curved bookcase, End shelves and Stepped fronts using their actual definitions; keep this header absent when ConfigurationSheet owns it |
 | Cabinet Add part / Parts row | Named Parts command menu and focused part list | Retain every actual part tool, identity, size and selection behavior; use the existing component geometry |
@@ -34,7 +34,7 @@ Applications own command eligibility, data, callbacks and persistence. None of t
 
 ## Review scenarios
 
-1. Compare Plan, Split, 3D and Elevation. Their segmented choices retain state without pretending to edit geometry.
+1. Compare Plan, Split and 3D. Open Elevations from Project actions; the dialog preserves the active workspace mode. Review pending, loaded and failed elevation responses, then retry.
 2. Open Add, start a synthetic placement, cancel with Escape, then place and Undo/Redo. Repeat in outline mode.
 3. Change save state through Saved, Unsaved, Saving and the long error. Recover via Project actions. Direct command bounds must remain unchanged after fonts load.
 4. Compare business project, staff draft, public anonymous draft, customer view with/without copy permission, and editable customer copy. Public customers must not gain staff commands by creating a copy.
@@ -48,8 +48,8 @@ Applications own command eligibility, data, callbacks and persistence. None of t
 
 Focused tests exercise generic command grouping/keyboard behavior, unchanged existing menu/list behavior, status text, task commits, access scenarios, placement, saved views and customizer drafts. Browser evidence must include desktop, a contextual menu, narrow layout, customizer header, and stable save-status command bounds after `document.fonts.ready`.
 
-The viewport drawings and object/part counts are schematic review aids. Photo completion is controlled manually. History, sharing, rendering options, customer packages and navigation open illustrative task surfaces; their existing app implementations are not recreated here. The app adoption must bind the confirmed chrome to real commands and keep the whole geometry/material/saved-revision model. Do not use this catalog's fixture state as product logic.
+The viewport drawings and object/part counts are schematic review aids. Photo completion is controlled manually. Elevation sheets use a synthetic 1.2-second response; review controls can keep it pending or fail it. Closing the dialog cancels the pending callback; real loading and cancellation stay in the app. History, sharing, rendering options, customer packages and navigation open illustrative task surfaces; their existing app implementations are not recreated here. The app adoption must bind the confirmed chrome to real commands and keep the whole geometry/material/saved-revision model. Do not use this catalog's fixture state as product logic.
 
 Follow-up delivery is a separate Cabinitron diff after the user confirms this catalog behavior. No package publication, Cabinitron integration or production release is part of this PR.
 
-The project header owns the existing segmented view-mode control. There is no separate workspace selector/menu row. Workspace commands join the project menu after a separator; the segmented choices are modes, not command buttons. Regular widths keep this in one compact header; narrow screens reflow within that same header.
+The project header owns the existing Plan/Split/3D segmented view-mode control. Elevations is a menu-launched dialog, with shimmer placeholders and loading/error/retry states. There is no separate workspace selector/menu row. Workspace commands join the project menu after a separator; the segmented choices are modes, not command buttons. Regular widths keep this in one compact header; narrow screens reflow within that same header.
