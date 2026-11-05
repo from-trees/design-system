@@ -105,7 +105,8 @@ export function WorkspaceNavigationPrototype({
   standalone = false,
 }: { standalone?: boolean } = {}) {
   const [route, setRoute] = useState(() => readWorkspace()),
-    [copied, setCopied] = useState(false);
+    [copied, setCopied] = useState(false),
+    [longContent, setLongContent] = useState(false);
   // Direct child URLs must establish the parent modal scope before opening the child.
   const [mountedRecord, setMountedRecord] = useState<string | null>(null);
   useEffect(
@@ -243,6 +244,11 @@ export function WorkspaceNavigationPrototype({
         Interactive navigation exploration. Records are examples; navigation
         does not save, approve or charge.
       </Status>
+      <Switch
+        label="Long content"
+        selected={longContent}
+        onChange={setLongContent}
+      />
       <div {...stylex.props(styles.canvas, standalone && styles.fullCanvas)}>
         <WorkspaceLayout
           title="Sample Cabinet Shop"
@@ -399,6 +405,21 @@ export function WorkspaceNavigationPrototype({
                     </p>
                   </Panel>
                 )}
+              </>
+            )}
+            {longContent && (
+              <>
+                {Array.from({ length: 20 }, (_, i) => (
+                  <Panel key={i} title={`Content section ${i + 1}`}>
+                    <p {...stylex.props(styles.muted)}>
+                      Section {i + 1} of 20. The workspace content scrolls
+                      independently while the navigation remains available.
+                    </p>
+                  </Panel>
+                ))}
+                <Button onPress={() => heading.current?.focus()}>
+                  Back to page heading
+                </Button>
               </>
             )}
           </div>

@@ -197,3 +197,16 @@ it("keeps customer archive visibility and secondary-contact search in the URL", 
     screen.getByRole("button", { name: "Alex Morgan actions" }),
   ).toBeInTheDocument();
 });
+it("provides a long-content scrolling example with a reachable end action", async () => {
+  const user = userEvent.setup();
+  render(<WorkspaceNavigationPrototype />);
+  await user.click(screen.getByRole("switch", { name: "Long content" }));
+  const content = screen.getByRole("region", { name: "Workspace content" });
+  expect(
+    within(content).getByRole("heading", { name: "Content section 20" }),
+  ).toBeInTheDocument();
+  await user.click(
+    within(content).getByRole("button", { name: "Back to page heading" }),
+  );
+  expect(screen.getByRole("heading", { name: "Estimates" })).toHaveFocus();
+});
