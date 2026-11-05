@@ -97,3 +97,9 @@ See [API](docs/components.md), [conventions](docs/conventions.md), [adoption](do
 ### Standard admin tables (0.9.0 catalog review)
 
 The Tables catalog page exercises `DataTable`: search/filter, sortable typed columns, one action column, keyboard navigation, numbered pagination and row-shaped Shimmer loading. A pure `@from-trees/ui/table-query` entry point provides the shared request/response types and strict parser for app-owned endpoints. Review [the behavior and API contract](docs/admin-tables.md) before adoption. Cabinitron integration remains a separate change after catalog confirmation.
+
+### Grouped workspaces (0.10.0 catalog review)
+
+The Workspace navigation example composes native `WorkspaceLayout`, `GroupedNavigation`, `Breadcrumbs`, DataTable and contextual overlays. Work, Customers, Libraries and Settings replace the flat tab strip in the exploration. Customers reflects the landed Cabinitron directory: lifecycle/archive visibility, multiple contacts and addresses, and links to exact saved documents, design projects and inquiries.
+
+Open `#workspace-navigation` in the catalog, or `?example=workspace-navigation#workspace-navigation` for a full-size exploration. The example uses a business-scoped hash path so direct links survive refresh on GitHub Pages. Applications own their router and may use normal business-scoped path routes. This PR does not adopt the navigation in Cabinitron; behavior confirmation precedes a separate app review.

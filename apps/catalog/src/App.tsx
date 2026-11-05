@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
+import { useEffect, useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
   Badge,
@@ -14,7 +15,11 @@ import { s } from "./styles";
 import { pages, behavior, snippets, type PageId } from "./content";
 import { Demo, type ExampleState } from "./demos";
 function readPage(): PageId {
-  return pages.find((p) => p.id === location.hash.slice(1))?.id ?? "overview";
+  return (
+    pages.find(
+      (p) => p.id === location.hash.slice(1).split("/")[0].split("?")[0],
+    )?.id ?? "overview"
+  );
 }
 export default function App() {
   const [page, setPage] = useState<PageId>(readPage);
@@ -23,9 +28,13 @@ export default function App() {
   const [state, setState] = useState<ExampleState>("default");
   const [width, setWidth] = useState("fluid");
   const [tab, setTab] = useState("preview");
+  const activePage = useRef(page);
   useEffect(() => {
     const change = () => {
-      setPage(readPage());
+      const next = readPage();
+      if (next === activePage.current) return;
+      activePage.current = next;
+      setPage(next);
       setState("default");
       setTab("preview");
       document.getElementById("content")?.focus();
@@ -39,6 +48,7 @@ export default function App() {
     document.title = `${current.title} · From Trees design system`;
   }, [current.title]);
   const isComposition =
+    page === "workspace-navigation" ||
     page === "overview" ||
     page === "patterns" ||
     page === "sidebar" ||
@@ -54,6 +64,15 @@ export default function App() {
     "parameters",
     "panels",
   ].includes(page);
+  if (
+    new URLSearchParams(window.location.search).get("example") ===
+    "workspace-navigation"
+  )
+    return (
+      <ThemeProvider theme={theme} density={density}>
+        <WorkspaceNavigationPrototype standalone />
+      </ThemeProvider>
+    );
   return (
     <ThemeProvider theme={theme} density={density}>
       <a
@@ -93,7 +112,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.9.0</Badge>
+            <Badge>v0.10.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -128,7 +147,8 @@ export default function App() {
                 {page === "sidebar" ||
                 page === "designer-toolbars" ||
                 page === "customizer" ||
-                page === "customer-journey"
+                page === "customer-journey" ||
+                page === "workspace-navigation"
                   ? "Prototype"
                   : page === "tables"
                     ? "Catalog review"
@@ -136,6 +156,16 @@ export default function App() {
               </Badge>
             </div>
             <p {...stylex.props(s.lede)}>{current.description}</p>
+            {page === "workspace-navigation" && (
+              <a
+                href={`?example=workspace-navigation${window.location.hash}`}
+                target="_blank"
+                rel="noreferrer"
+                {...stylex.props(s.topLink)}
+              >
+                Open full-size exploration <Icon name="external" size={13} />
+              </a>
+            )}
             {page === "adoption" ? (
               <Adoption />
             ) : (
@@ -144,7 +174,8 @@ export default function App() {
                   s.workspace,
                   (page === "customizer" ||
                     page === "customer-journey" ||
-                    page === "tables") &&
+                    page === "tables" ||
+                    page === "workspace-navigation") &&
                     s.wideWorkspace,
                 )}
               >
@@ -176,9 +207,11 @@ export default function App() {
                             : page === "designer-toolbars"
                               ? "Cabinitron · toolbar prototype"
                               : "Cabinitron · sidebar prototype"
-                          : isComposition
-                            ? "Cabinitron · composed examples"
-                            : "Interactive example"}
+                          : page === "workspace-navigation"
+                            ? "Cabinitron · workspace navigation"
+                            : isComposition
+                              ? "Cabinitron · composed examples"
+                              : "Interactive example"}
                       </h2>
                       {snippets[page] && (
                         <SegmentedControl

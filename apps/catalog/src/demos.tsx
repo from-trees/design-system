@@ -1,3 +1,4 @@
+import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
 import { CustomizerInspectorPrototype } from "./CustomizerInspectorPrototype";
@@ -1061,6 +1062,8 @@ export function HelpDemo() {
 }
 export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
+    case "workspace-navigation":
+      return <WorkspaceNavigationPrototype />;
     case "tables":
       return <TablesDemo state={state} />;
     case "swatches":

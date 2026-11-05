@@ -1,5 +1,6 @@
 import type { IconName } from "@from-trees/ui";
 export type PageId =
+  | "workspace-navigation"
   | "overview"
   | "foundations"
   | "buttons"
@@ -180,6 +181,14 @@ export const pages: {
       "Review components together before integrating them. These synthetic workflows exercise selection controls, history, sharing and local feedback.",
   },
   {
+    id: "workspace-navigation",
+    title: "Workspace navigation",
+    icon: "folder",
+    group: "Patterns",
+    description:
+      "Grouped workspace navigation with direct links to pages, records and record sections. Refresh and browser history restore the same view.",
+  },
+  {
     id: "adoption",
     title: "Install & contribute",
     icon: "export",
@@ -189,6 +198,16 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  "workspace-navigation": [
+    "Four visible groups: Work, Customers, Libraries and Settings. Group headings link to their default page; leaf links open pages directly. Navigation uses anchors and aria-current, rather than action menus or tab roles.",
+    "The shared WorkspaceLayout, GroupedNavigation and Breadcrumbs own presentation and the narrow navigation drawer. Applications supply destinations, selection and navigation callbacks; business identity, permissions and persistence stay app-owned.",
+    "The catalog uses a hash route after #workspace-navigation to survive GitHub Pages refreshes. Production adoption will use business-scoped paths with equivalent page/record/query state; the component does not require hash routing or a particular router.",
+    "Copy any page or record URL, refresh, use Back/Forward, or open a link in a new tab. Record section, saved revision and namespaced table criteria are restored from the URL. Navigation never saves or completes business actions.",
+    "Closing a record returns to its list with search, filters, sort and pagination intact. Unavailable business/page/record links show an explicit unavailable state; invalid table criteria show a warning rather than silently selecting another record.",
+    "Website setup and Brand & embed share Website & branding. Cabinitron subscription billing remains distinct from customer invoices. Customer/contact records and related work share one source of truth in application adoption.",
+    "Customer navigation reflects Cabinitron approved main 5b45b169: lifecycle and archive visibility, multiple contacts and billing/project-site addresses, saved document revisions, projects and inquiries. Customer/contact/address links are business-scoped; historical documents do not resolve identity from mutable directory details.",
+    "Approve this exploration before a separate Cabinitron integration. No customer directory, permissions model, financial workflow or settings backend is implemented by this prototype.",
+  ],
   "customer-journey": [
     "The shared WorkflowProgress component receives app-defined steps, availability and completion. Navigation never completes approval or payment.",
     "Keep the estimate identity, total and progress above the active stage. Show one focused stage and a short next action, with saved documents available for review.",
@@ -369,3 +388,18 @@ const groups: ParameterGroup[] = [
   overlays: `<SidePanel title="History & sharing" open={open}\n  onOpenChange={setOpen} description={project.name}>\n  <ProjectHistory project={project} />\n</SidePanel>\n\n// Use Dialog for focused forms and confirmations.\n// The application guards unsaved changes before closing.`,
   feedback: `<Status tone="success">Link copied</Status>\n<Status tone="danger">Unable to save. Try again.</Status>\n<Badge tone="warning">Unsaved</Badge>\n<div role="status" aria-label="Loading preview" aria-busy="true">\n  <Shimmer width="40%" />\n  <Shimmer variant="block" />\n</div>`,
 };
+
+// URL handling is application code; the shared components accept normal links.
+snippets["workspace-navigation"] = `<WorkspaceLayout
+  title={business.name}
+  groups={authorizedGroups}
+  activeId={route.pageId}
+  onNavigate={({ href }) => router.navigate(href)}
+>
+  <Breadcrumbs items={route.breadcrumbs} onNavigate={navigate} />
+  <RecordsPage query={route.tableQuery} />
+</WorkspaceLayout>
+
+// Example app URL (catalog uses a hash route for static hosting):
+// /t/sample-shop/app/work/estimates/estimates-1?detail=activity&revision=2
+// App router owns parsing, canonical URLs, history, auth and record lookup.`;
