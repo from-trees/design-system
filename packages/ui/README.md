@@ -32,3 +32,23 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 ### Workflow progress (0.8.0)
 
 `WorkflowProgress` accepts app-defined `steps`, `selectedId`, `onSelect` and an accessible `label`. Steps provide `id`, `label`, `status`, `detail` and `available`. The app owns eligibility and completion. Navigation only changes the displayed stage; it does not sign, pay or advance production. See the Customer estimates catalog pattern before app adoption.
+
+### Grouped workspace navigation (0.10.0 catalog review)
+
+`WorkspaceLayout` supplies a grouped left navigation with independently scrolling navigation/content and a named navigation drawer at narrow container widths. `GroupedNavigation` and `Breadcrumbs` can also be used separately. All links retain real `href` values, accessible current-page state, keyboard activation and modified-click/new-tab behavior. Apps supply `NavigationGroup[]`, `activeId` and optionally `onNavigate`; the package does not parse or persist routes, authorize destinations, or load records.
+
+```tsx
+<WorkspaceLayout
+  title={business.name}
+  groups={authorizedGroups}
+  activeId={route.pageId}
+  onNavigate={({ href }) => router.navigate(href)}
+>
+  <Breadcrumbs items={route.breadcrumbs} onNavigate={navigate} />
+  <RecordsPage />
+</WorkspaceLayout>
+```
+
+Give the layout a bounded parent height for independent scrolling. Its mobile breakpoint follows its container width, so the same behavior works in the catalog and an application. Normal links work without a custom navigation callback. Do not turn application destinations into button rows or action menus.
+
+The workspace catalog example owns its synthetic routing model. Review refresh, copied/deep links, Back/Forward, list criteria, exact saved revisions, customer/contact/address identity and unavailable destinations there before application adoption. Existing Cabinitron customer editing/preparation, permissions, immutable snapshots and backend APIs remain application responsibilities.

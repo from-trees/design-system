@@ -1,6 +1,15 @@
 import * as stylex from "@stylexjs/stylex";
 const styles = stylex.create({ icon: { flexShrink: 0 } });
 import {
+  Menu,
+  Users,
+  Folder,
+  Inbox,
+  Library,
+  Globe,
+  CreditCard,
+  FileText,
+  Receipt,
   ArrowUp,
   ChevronLeft,
   ChevronsLeft,
@@ -43,6 +52,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 const icons = {
+  menu: Menu,
+  users: Users,
+  folder: Folder,
+  inbox: Inbox,
+  library: Library,
+  globe: Globe,
+  creditCard: CreditCard,
+  document: FileText,
+  receipt: Receipt,
   table: Table2,
   sortAscending: ArrowUp,
   previous: ChevronLeft,

@@ -70,3 +70,13 @@ export {
   type TableFilterValue,
   type TableFilterSchema,
 } from "./tableQuery";
+
+export {
+  GroupedNavigation,
+  WorkspaceLayout,
+  Breadcrumbs,
+  type NavigationItem,
+  type NavigationGroup,
+  type NavigationDestination,
+  type NavigationHandler,
+} from "./WorkspaceNavigation";
