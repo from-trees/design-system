@@ -1,6 +1,6 @@
 {
   "name": "@from-trees/ui",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Shared React and StyleX components for From Trees applications",
   "type": "module",
   "license": "UNLICENSED",
@@ -28,6 +28,10 @@
     "./utilities": {
       "types": "./src/utilities.ts",
       "import": "./src/utilities.ts"
+    },
+    "./table-query": {
+      "types": "./src/tableQuery.ts",
+      "import": "./src/tableQuery.ts"
     }
   },
   "sideEffects": false,

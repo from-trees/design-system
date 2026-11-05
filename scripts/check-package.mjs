@@ -24,9 +24,12 @@ for (const path of [
   "src/utilities.ts",
   "src/Button.tsx",
   "src/List.tsx",
+  "src/DataTable.tsx",
+  "src/TableFilters.tsx",
+  "src/tableQuery.ts",
   "src/InfoTooltip.tsx",
   "src/SwatchPicker.tsx",
-    "src/CommandBar.tsx",
+  "src/CommandBar.tsx",
   "tooling/vite.mjs",
 ])
   if (!packed.files.some((file) => file.path === path))
@@ -45,6 +48,10 @@ if (
 const manifest = JSON.parse(
   await readFile(resolve(root, "packages/ui/package.json"), "utf8"),
 );
+if (manifest.exports["./table-query"]?.import !== "./src/tableQuery.ts")
+  throw Error(
+    "Expose the pure table transport contract without importing React",
+  );
 if (manifest.exports["./styles.css"])
   throw Error("Remove the compiled CSS entry point");
 const index = await readFile(

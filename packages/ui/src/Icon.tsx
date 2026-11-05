@@ -1,6 +1,11 @@
 import * as stylex from "@stylexjs/stylex";
 const styles = stylex.create({ icon: { flexShrink: 0 } });
 import {
+  ArrowUp,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
+  Table2,
   Camera,
   ZoomIn,
   ZoomOut,
@@ -38,6 +43,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 const icons = {
+  table: Table2,
+  sortAscending: ArrowUp,
+  previous: ChevronLeft,
+  firstPage: ChevronsLeft,
+  lastPage: ChevronsRight,
   camera: Camera,
   zoomIn: ZoomIn,
   zoomOut: ZoomOut,

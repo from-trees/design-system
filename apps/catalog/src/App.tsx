@@ -46,6 +46,7 @@ export default function App() {
     page === "customizer" ||
     page === "customer-journey";
   const hasStates = [
+    "tables",
     "lists",
     "buttons",
     "menus",
@@ -92,7 +93,7 @@ export default function App() {
           </nav>
           <div {...stylex.props(s.navFooter)}>
             <span>React + StyleX</span>
-            <Badge>v0.8.0</Badge>
+            <Badge>v0.9.0</Badge>
           </div>
         </aside>
         <main {...stylex.props(s.main)}>
@@ -129,7 +130,9 @@ export default function App() {
                 page === "customizer" ||
                 page === "customer-journey"
                   ? "Prototype"
-                  : "Initial release"}
+                  : page === "tables"
+                    ? "Catalog review"
+                    : "Initial release"}
               </Badge>
             </div>
             <p {...stylex.props(s.lede)}>{current.description}</p>
@@ -139,7 +142,9 @@ export default function App() {
               <div
                 {...stylex.props(
                   s.workspace,
-                  (page === "customizer" || page === "customer-journey") &&
+                  (page === "customizer" ||
+                    page === "customer-journey" ||
+                    page === "tables") &&
                     s.wideWorkspace,
                 )}
               >
@@ -201,6 +206,7 @@ export default function App() {
                         <div
                           {...stylex.props(
                             !isComposition && s.canvasInner,
+                            page === "tables" && s.tableCanvas,
                             width === "narrow" && s.narrow,
                           )}
                         >
@@ -296,16 +302,22 @@ export default function App() {
                       >
                         <option value="default">Default</option>
                         <option value="disabled">Disabled</option>
-                        {["buttons", "fields", "lists"].includes(page) && (
+                        {["buttons", "fields", "lists", "tables"].includes(
+                          page,
+                        ) && (
                           <option value="loading">
-                            {page === "lists"
+                            {page === "lists" || page === "tables"
                               ? "Loading"
                               : "Loading / read-only"}
                           </option>
                         )}
-                        {["fields", "parameters", "lists"].includes(page) && (
+                        {["fields", "parameters", "lists", "tables"].includes(
+                          page,
+                        ) && (
                           <option value="error">
-                            {page === "lists" ? "Error" : "Validation"}
+                            {page === "lists" || page === "tables"
+                              ? "Error"
+                              : "Validation"}
                           </option>
                         )}
                       </Select>
@@ -394,10 +406,9 @@ function Adoption() {
       <section {...stylex.props(s.card, s.prose)}>
         <h2 {...stylex.props(s.heading)}>Next coverage</h2>
         <p {...stylex.props(s.text)}>
-          This initial release establishes the component and review foundation.
-          Dedicated table, visual picker, tabs, progress, toast and richer
-          toolbar components remain tracked in the repository roadmap.
-          Application migration has not started.
+          See the repository roadmap for component coverage and adoption status.
+          The Tables example adds the shared list-query contract; review its
+          behavior in the catalog before application adoption.
         </p>
       </section>
       <p {...stylex.props(s.small)}>

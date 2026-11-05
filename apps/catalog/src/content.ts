@@ -3,6 +3,7 @@ export type PageId =
   | "overview"
   | "foundations"
   | "buttons"
+  | "tables"
   | "lists"
   | "menus"
   | "fields"
@@ -65,6 +66,14 @@ export const pages: {
     group: "Components",
     description:
       "The shared list owns every row: title, one metadata line, and a right-aligned status or action menu. Apps provide data and actions, not row markup.",
+  },
+  {
+    id: "tables",
+    title: "Tables",
+    icon: "table",
+    group: "Components",
+    description:
+      "Search, filter, sort and navigate records in one consistent table. One action column, predictable formatting and server-owned pagination.",
   },
   {
     id: "fields",
@@ -223,6 +232,14 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Numeric validation and rounding wait for focus loss. Rules are explained in field help. Dialog and task drafts are discarded when dismissed.",
     "The external review controls represent plan selection. No geometry engine, production constraints, persistence or network mutations are implemented.",
   ],
+  tables: [
+    "Search applies on Enter or the search icon. The contract supports eq, contains, in and noteq per field. Initially Status uses in and every other field uses eq; single-operator fields hide the picker. Status opens with multi-selection: selected statuses match with OR; different fields combine with AND. Applying filters resets page one.",
+    "Arrow keys navigate cells; Enter opens a record when available. One sticky Actions column holds shared menus, including Open. Closing details restores focus to the same row/menu.",
+    "The table owns spacing, alignment and formatting: text/metadata, integer or decimal numbers, integer minor-unit money, date-only dates, timestamp dates and status badges. No app-defined cell layout or extra action columns.",
+    "Numbered pagination includes First, Previous, Next, Last and 10/25/50/100 rows per page. Server totals describe the filtered dataset, not just the visible page.",
+    "Shimmer rows match column structure while loading. Errors, no records and no matches are separate states. Responses echo their normalized query; mismatched results never appear under a new query.",
+    "The catalog simulates a paginated endpoint over synthetic records with delay, failure/retry and request cancellation. Apps own authorization, SQL allowlists, search fields, endpoints, URL state and stale-response protection. Confirm this example before Cabinitron API adoption.",
+  ],
   lists: [
     "Title and metadata stay together on the left. A status or menu stays on the right at every width.",
     "Rows have no separators, card borders, extra padding or exposed action buttons. Even one action uses the row menu.",
@@ -282,6 +299,19 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   ],
 };
 export const snippets: Partial<Record<PageId, string>> = {
+  tables: `import {DataTable, tableQueryKey, type TableQuery, type TablePage} from '@from-trees/ui';
+
+// App owns fetch, abort/stale-response protection and route state.
+const response = await fetch('/api/invoices?' + tableQueryKey(query), {signal});
+const page: TablePage<Invoice> = await response.json();
+// Commit only if this is still the active request.
+
+<DataTable label="Invoices" columns={invoiceColumns}
+  query={query} onQueryChange={setQuery} page={page}
+  loading={loading} error={error} onRetry={reload}
+  filters={invoiceFilters} getRowId={row => row.id}
+  getRowLabel={row => row.number}
+  onOpenRow={openInvoice} rowActions={invoiceActions} />`,
   lists: `import {List, type ListItem} from '@from-trees/ui';
 
 const items: ListItem[] = [
