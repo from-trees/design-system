@@ -6,7 +6,7 @@ DataTable is a package component; the Tables page is its live, synthetic example
 
 The shared table owns its markup, spacing, alignment, formatting, keyboard interaction, loading/error/empty presentation and exactly one trailing action column. Apps supply typed columns, rows, identifiers and callbacks, not arbitrary cells, extra action buttons, CSS or render-row functions. The action column stays visible while a narrow table scrolls horizontally. Headers stay visible within a bounded table body. Column data is never hidden on mobile.
 
-Search is an explicit submit: Enter or the search icon applies it. Filters and sortable column headers apply immediately. Search, filter, sort and page-size changes reset to page 1 atomically. Rows-per-page choices are 10, 25, 50 and 100; the default transport page size is 25. First/Previous, numbered pages, Next/Last use the exact filtered total. The component never sorts or filters a received page.
+Search is an explicit submit: Enter or the search icon applies it. Filters open a focused dialog and apply on Apply filter; sortable column headers apply immediately. Search, filter, sort and page-size changes reset to page 1 atomically. Rows-per-page choices are 10, 25, 50 and 100; the default transport page size is 25. First/Previous, numbered pages, Next/Last use the exact filtered total. The component never sorts or filters a received page.
 
 Keyboard behavior uses React Aria Table: Tab enters, arrow keys navigate, Home/End move within a row and Enter invokes the app's Open action. The shared menu in the single Actions column also exposes Open and secondary commands. Opening a row may navigate or open an app-owned contextual panel. It must not mutate a record. The example demonstrates the latter and focus return when closed. Bulk selection is deferred, not implied by row focus.
 
@@ -25,12 +25,12 @@ import {parseTableQuery, tableQueryKey,
 
 const invoiceSchema: TableQuerySchema = {
   sortKeys: ['number', 'customer', 'amount', 'status', 'due'],
-  filters: {status: ['draft', 'issued', 'paid']},
+  filters: {status: {operators: ['in'], values: ['draft', 'issued', 'paid']}, customer: {operators: ['eq']}},
   defaultSort: {key: 'number', direction: 'descending'},
 };
 
 // GET /t/:business/api/invoices?
-// q=oak&filter.status=issued&sort=amount&direction=descending&page=2&pageSize=25
+// q=oak&filter.status.in=draft&filter.status.in=issued&sort=amount&direction=descending&page=2&pageSize=25
 const query = parseTableQuery(new URL(request.url).searchParams, invoiceSchema);
 // The app authorizes the business, constructs allowlisted/bound SQL and fetches rows.
 const result: TablePage<InvoiceSummary> = {items, total, query};
@@ -38,7 +38,20 @@ const result: TablePage<InvoiceSummary> = {items, total, query};
 const requestUrl = endpoint + '?' + tableQueryKey(query);
 ```
 
-`TableQuery` contains `search`, `filters`, `sort`, `page` and `pageSize`. `sort` is `{key, direction: 'ascending' | 'descending'}` or null for an intentionally unsorted schema. Filters are single-value exact-match fields; the empty value means All and is omitted from canonical requests. `q` trims leading/trailing whitespace and permits up to 200 characters. Pagination uses positive safe integers and a page size from the shared choices. Unknown parameters, repeated parameters, unknown sort/filter keys, invalid filter values and ambiguous/missing sort direction are rejected. The app maps parse failures to a safe 400 response. An app with additional non-table parameters must extract its documented table parameters before parsing rather than silently accepting typos.
+`TableQuery` contains `search`, `filters`, `sort`, `page` and `pageSize`. `sort` is `{key, direction: 'ascending' | 'descending'}` or null for an intentionally unsorted schema. Filters are typed conditions: `{status: {operator: 'in', value: ['draft', 'issued']}, customer: {operator: 'contains', value: 'oak'}}`. Each endpoint allowlists operators and optional enumerated values per field. Only one operator may target a field in a request; different fields combine with AND. The operators are:
+
+| Operator | Meaning | Wire example |
+| --- | --- | --- |
+| `eq` | Exact scalar equality | `filter.status.eq=issued` |
+| `noteq` | Exact scalar inequality | `filter.status.noteq=paid` |
+| `contains` | Case-insensitive literal substring, not wildcard/regular-expression syntax | `filter.customer.contains=oak` |
+| `in` | Match any selected value (OR within that field) | `filter.status.in=draft&filter.status.in=issued` |
+
+Repeated parameters are accepted only for `in`. They form a nonempty array of at most 50 supplied values, are deduplicated/sorted canonically, and are not comma-delimited: a value containing a comma remains one value. Scalar operators require exactly one nonblank value. Each value permits up to 200 characters; literal values retain their spaces. Removing a filter omits its parameters; empty values are invalid. Null/missing field values match none of these operators, including `noteq`. `eq`, `noteq` and `in` use exact values, with case-sensitive text comparison; endpoints must choose matching database collation. `contains` case handling must be documented consistently for the endpoint's locale.
+
+The table provides a shared filter dialog with per-field operator choices, enum selection or text entry and multi-selection for `in`. Status uses Is any of (`in`) in the catalog, so choosing Draft and Issued is immediately available. Every other field starts with `eq`; the schema carries the explicit operator now, so enabling additional operators later does not change its shape. Single-operator fields hide the operator picker. Text-based `in` supports adding individual values, including commas, without ambiguous splitting. Draft edits commit only on Apply; dismissal cancels them. Clearing a field keeps the other filters. Every Apply/Clear resets page one.
+
+`q` trims leading/trailing whitespace and permits up to 200 characters. Pagination uses positive safe integers and a page size from the shared choices. Unknown fields/operators, unsupported values, repeated scalar parameters, conflicting operators on one field, empty/oversized lists and invalid pagination are rejected. The app maps parse failures to a safe 400 response. An app with additional non-table parameters must extract its documented table parameters before parsing rather than silently accepting typos.
 
 `TablePage<T>` contains `items`, exact `total` for the complete matching collection, and `query`, the normalized query that produced that page. Even an empty result echoes the query and returns total 0. Pages beyond the last return items [] and the real total, with explicit UI recovery; never silently return another page under the requested page number.
 
@@ -46,7 +59,7 @@ const requestUrl = endpoint + '?' + tableQueryKey(query);
 
 1. Authenticate and resolve business/role on the server before querying. Query parameters never authorize another business or expose owner-only fields.
 2. Apply the tenant/visibility predicate first, then search and filters, then ordering with a deterministic unique-ID tiebreaker, then OFFSET/LIMIT. Bind all values. Map sort keys to literal SQL expressions and directions to two fixed tokens; validation is not permission to interpolate an arbitrary string into SQL.
-3. Define the searched fields and case behavior per resource. For substring LIKE search, escape `%`, `_` and the escape character; search text must not silently become wildcard syntax. Numeric/date/status filtering must operate on stored values, not formatted text or derived labels.
+3. Define the searched fields and case behavior per resource. For `contains` and substring search, escape `%`, `_` and the escape character; search text must not silently become wildcard syntax. Map `eq` to bound equality, `noteq` to bound inequality, `in` to bounded bound placeholders, and `contains` to a bound escaped substring pattern. Exclude nulls; never interpolate an operator into SQL. Numeric/date/status filtering must operate on stored values, not formatted text or derived labels.
 4. Count with exactly the same tenant, search and filter predicates as the items query. Use a consistent read/snapshot where supported. Do not count records the caller cannot see. Fetch expensive payment/provider details only for the selected page, not for every matching invoice.
 5. Use the same deterministic sort in both directions and retain null-order policy. Stable sorting prevents equal-key rows from arbitrarily crossing page boundaries, but offset pages are not an immutable snapshot: concurrent inserts/deletes can shift them. Refresh after mutations; offer first-page recovery when the selected page empties.
 6. Abort superseded requests and check a request generation/query key before accepting a response or error. Clear loading only for the active request. The table's query-echo guard is additional protection, not a replacement for this application responsibility, especially for two requests for the same query.

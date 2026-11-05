@@ -1,3 +1,4 @@
+import { TableFilters, type TableFilter } from "./TableFilters";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -47,11 +48,7 @@ export type TableColumn<T> = BaseColumn &
         } | null;
       }
   );
-export type TableFilter = {
-  id: string;
-  label: string;
-  options: readonly { value: string; label: string }[];
-};
+export type { TableFilter } from "./TableFilters";
 export type DataTableProps<T> = {
   label: string;
   columns: readonly TableColumn<T>[];
@@ -361,27 +358,11 @@ export function DataTable<T>({
             apply. The application defines which fields are searched.
           </InfoTooltip>
         </form>
-        {filters.map((filter) => (
-          <div key={filter.id} {...stylex.props(styles.filter)}>
-            <Select
-              label={filter.label}
-              value={query.filters[filter.id] ?? ""}
-              onChange={(event) => {
-                const next = { ...query.filters };
-                if (event.target.value) next[filter.id] = event.target.value;
-                else delete next[filter.id];
-                change({ filters: next });
-              }}
-            >
-              <option value="">All</option>
-              {filter.options.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </div>
-        ))}
+        <TableFilters
+          filters={filters}
+          values={query.filters}
+          onChange={(values) => change({ filters: values })}
+        />
         {active && (
           <Button variant="ghost" icon="close" onPress={clear}>
             Clear filters

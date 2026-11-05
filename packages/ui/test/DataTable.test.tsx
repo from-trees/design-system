@@ -125,11 +125,15 @@ describe("DataTable", () => {
       page: 1,
       search: "oak",
     });
-    await user.selectOptions(screen.getByLabelText("Status filter"), "paid");
+    await user.click(
+      screen.getByRole("button", { name: "Status filter filter" }),
+    );
+    await user.selectOptions(screen.getByLabelText("Value"), "paid");
+    await user.click(screen.getByRole("button", { name: "Apply filter" }));
     expect(change).toHaveBeenLastCalledWith({
       ...query,
       page: 1,
-      filters: { status: "paid" },
+      filters: { status: { operator: "eq" as const, value: "paid" } },
     });
     await user.click(screen.getByRole("columnheader", { name: /Amount/ }));
     expect(change).toHaveBeenLastCalledWith({
@@ -151,7 +155,7 @@ describe("DataTable", () => {
       ...query,
       page: 3,
       search: "oak",
-      filters: { status: "paid" },
+      filters: { status: { operator: "eq" as const, value: "paid" } },
     };
     render(
       <DataTable
@@ -208,7 +212,11 @@ describe("DataTable", () => {
     const user = userEvent.setup(),
       change = vi.fn(),
       retry = vi.fn();
-    const intent = { ...query, search: "missing", filters: { status: "paid" } };
+    const intent = {
+      ...query,
+      search: "missing",
+      filters: { status: { operator: "eq" as const, value: "paid" } },
+    };
     const { rerender } = render(
       <DataTable
         {...base}
@@ -337,5 +345,59 @@ describe("DataTable", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Next page" }));
     expect(screen.getByRole("searchbox")).toHaveValue("unfinished");
+  });
+});
+
+it("keeps multi-status edits as a draft and clears only that field on apply", async () => {
+  const user = userEvent.setup(),
+    change = vi.fn();
+  const intent: TableQuery = {
+    ...query,
+    page: 3,
+    filters: {
+      status: { operator: "in", value: ["draft", "paid"] },
+      name: { operator: "contains", value: "oak" },
+    },
+  };
+  render(
+    <DataTable
+      {...base}
+      query={intent}
+      page={{ ...page, query: intent }}
+      onQueryChange={change}
+      filters={[
+        {
+          id: "status",
+          label: "Status",
+          operators: ["in", "eq", "noteq"],
+          options: [
+            { value: "draft", label: "Draft" },
+            { value: "paid", label: "Paid" },
+          ],
+        },
+      ]}
+    />,
+  );
+  await user.click(screen.getByRole("button", { name: "Status filter" }));
+  let dialog = screen.getByRole("dialog", { name: "Status filter" });
+  await user.click(within(dialog).getByRole("checkbox", { name: "Draft" }));
+  expect(change).not.toHaveBeenCalled();
+  await user.keyboard("{Escape}");
+  await act(async () => {
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
+  });
+  await user.click(screen.getByRole("button", { name: "Status filter" }));
+  dialog = screen.getByRole("dialog", { name: "Status filter" });
+  expect(within(dialog).getByRole("checkbox", { name: "Draft" })).toBeChecked();
+  expect(within(dialog).getByRole("checkbox", { name: "Paid" })).toBeChecked();
+  await user.click(
+    within(dialog).getByRole("button", { name: "Clear filter" }),
+  );
+  expect(change).toHaveBeenLastCalledWith({
+    ...intent,
+    page: 1,
+    filters: { name: { operator: "contains", value: "oak" } },
   });
 });

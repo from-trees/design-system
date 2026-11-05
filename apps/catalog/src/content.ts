@@ -233,7 +233,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "The external review controls represent plan selection. No geometry engine, production constraints, persistence or network mutations are implemented.",
   ],
   tables: [
-    "Search applies on Enter or the search icon. Filters, sorting and page size reset to page one. Sorting and filtering happen before pagination, across the complete result set.",
+    "Search applies on Enter or the search icon. The contract supports eq, contains, in and noteq per field. Initially Status uses in and every other field uses eq; single-operator fields hide the picker. Status opens with multi-selection: selected statuses match with OR; different fields combine with AND. Applying filters resets page one.",
     "Arrow keys navigate cells; Enter opens a record when available. One sticky Actions column holds shared menus, including Open. Closing details restores focus to the same row/menu.",
     "The table owns spacing, alignment and formatting: text/metadata, integer or decimal numbers, integer minor-unit money, date-only dates, timestamp dates and status badges. No app-defined cell layout or extra action columns.",
     "Numbered pagination includes First, Previous, Next, Last and 10/25/50/100 rows per page. Server totals describe the filtered dataset, not just the visible page.",

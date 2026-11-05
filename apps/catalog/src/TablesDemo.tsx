@@ -11,6 +11,7 @@ import {
   tableQueryKey,
   parseTableQuery,
   type TableColumn,
+  type TableFilter,
   type TablePage,
   type TableQuery,
   type TableQuerySchema,
@@ -29,7 +30,13 @@ type Invoice = {
 };
 const schema: TableQuerySchema = {
   sortKeys: ["number", "customer", "amount", "status", "due"],
-  filters: { status: ["draft", "issued", "paid"] },
+  filters: {
+    status: {
+      operators: ["in"],
+      values: ["draft", "issued", "paid"],
+    },
+    customer: { operators: ["eq"] },
+  },
   defaultSort: { key: "number", direction: "descending" },
 };
 const records: Invoice[] = Array.from({ length: 67 }, (_, index) => ({
@@ -53,15 +60,21 @@ const records: Invoice[] = Array.from({ length: 67 }, (_, index) => ({
   status: ["draft", "issued", "paid"][index % 3],
   due: `2026-12-${String(1 + (index % 28)).padStart(2, "0")}`,
 }));
-const filters = [
+const filters: TableFilter[] = [
   {
     id: "status",
     label: "Status",
+    operators: ["in"],
     options: [
       { value: "draft", label: "Draft" },
       { value: "issued", label: "Issued" },
       { value: "paid", label: "Paid" },
     ],
+  },
+  {
+    id: "customer",
+    label: "Customer",
+    operators: ["eq"],
   },
 ];
 const columns: TableColumn<Invoice>[] = [
@@ -123,7 +136,17 @@ export function queryDemoInvoices(
   const search = query.search.toLocaleLowerCase("en-US");
   const matching = data.filter(
     (row) =>
-      (!query.filters.status || row.status === query.filters.status) &&
+      Object.entries(query.filters).every(([key, filter]) => {
+        const value = String(row[key as "status" | "customer"]);
+        if (filter.operator === "in") return filter.value.includes(value);
+        if (filter.operator === "contains")
+          return value
+            .toLocaleLowerCase("en-US")
+            .includes(filter.value.toLocaleLowerCase("en-US"));
+        return filter.operator === "eq"
+          ? value === filter.value
+          : value !== filter.value;
+      }) &&
       `${row.number} ${row.customer} ${row.title}`
         .toLocaleLowerCase("en-US")
         .includes(search),

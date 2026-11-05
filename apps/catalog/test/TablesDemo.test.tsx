@@ -15,7 +15,7 @@ it("searches and filters the complete dataset before paging and reports the filt
   const result = queryDemoInvoices({
     ...query,
     search: "kitchen",
-    filters: { status: "paid" },
+    filters: { status: { operator: "in" as const, value: ["paid"] } },
   });
   expect(result.total).toBe(5);
   expect(result.items).toHaveLength(5);
@@ -109,4 +109,48 @@ it("cancels an older delayed failure so it cannot replace a newer successful que
   });
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.getByRole("grid")).toHaveTextContent("INV-1001");
+});
+
+it("selects multiple statuses in the filter dialog before paging and resets to page one", async () => {
+  const user = userEvent.setup();
+  render(<TablesDemo state="default" />);
+  await screen.findByText("67 results · Page 1 of 7");
+  await user.click(screen.getByRole("button", { name: "Next page" }));
+  await screen.findByText("67 results · Page 2 of 7");
+  await user.click(screen.getByRole("button", { name: "Status filter" }));
+  const dialog = screen.getByRole("dialog", { name: "Status filter" });
+  expect(within(dialog).queryByLabelText("Operator")).not.toBeInTheDocument();
+  await user.click(within(dialog).getByRole("checkbox", { name: "Draft" }));
+  await user.click(within(dialog).getByRole("checkbox", { name: "Issued" }));
+  await user.click(
+    within(dialog).getByRole("button", { name: "Apply filter" }),
+  );
+  await screen.findByText("45 results · Page 1 of 5");
+  expect(
+    within(screen.getByRole("grid")).queryByText("Paid"),
+  ).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Last page" }));
+  await screen.findByText("45 results · Page 5 of 5");
+  expect(within(screen.getByRole("grid")).getAllByRole("row")).toHaveLength(6);
+});
+it("combines multi-status IN with scalar customer equality and rejects operators not yet enabled for a field", () => {
+  const combined = queryDemoInvoices({
+    ...query,
+    filters: {
+      status: { operator: "in", value: ["draft", "issued"] },
+      customer: { operator: "eq", value: "Alex Morgan" },
+    },
+  });
+  expect(combined.total).toBe(9);
+  expect(
+    combined.items.every(
+      (row) => row.customer === "Alex Morgan" && row.status !== "paid",
+    ),
+  ).toBe(true);
+  expect(() =>
+    queryDemoInvoices({
+      ...query,
+      filters: { customer: { operator: "contains", value: "Alex" } },
+    }),
+  ).toThrow();
 });

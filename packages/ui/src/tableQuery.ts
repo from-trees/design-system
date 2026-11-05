@@ -1,7 +1,15 @@
 /** Transport-neutral list contract. Servers own authorization, filtering and ordering. */
+export type TableFilterOperator = "eq" | "contains" | "in" | "noteq";
+export type TableFilterValue =
+  | { operator: "eq" | "contains" | "noteq"; value: string }
+  | { operator: "in"; value: string[] };
+export type TableFilterSchema = {
+  operators: readonly TableFilterOperator[];
+  values?: readonly string[];
+};
 export type TableQuery = {
   search: string;
-  filters: Record<string, string>;
+  filters: Record<string, TableFilterValue>;
   sort: { key: string; direction: "ascending" | "descending" } | null;
   page: number;
   pageSize: number;
@@ -15,7 +23,7 @@ export type TablePage<T> = {
 export const tablePageSizes = [10, 25, 50, 100] as const;
 export type TableQuerySchema = {
   sortKeys: readonly string[];
-  filters: Readonly<Record<string, readonly string[]>>;
+  filters: Readonly<Record<string, TableFilterSchema>>;
   defaultSort: TableQuery["sort"];
 };
 export function tableQueryKey(query: TableQuery): string {
@@ -27,8 +35,16 @@ export function tableQueryKey(query: TableQuery): string {
     params.set("sort", query.sort.key);
     params.set("direction", query.sort.direction);
   }
-  for (const key of Object.keys(query.filters).sort())
-    if (query.filters[key]) params.set(`filter.${key}`, query.filters[key]);
+  for (const key of Object.keys(query.filters).sort()) {
+    const filter = query.filters[key];
+    const values =
+      filter.operator === "in"
+        ? [...new Set(filter.value)].sort()
+        : [filter.value];
+    if (!values.length) throw new Error(`Empty filter: ${key}`);
+    for (const value of values)
+      params.append(`filter.${key}.${filter.operator}`, value);
+  }
   return params.toString();
 }
 /** Strict parsing for application-owned endpoint schemas. Never interpolate keys into SQL. */
@@ -42,10 +58,15 @@ export function parseTableQuery(
     "pageSize",
     "sort",
     "direction",
-    ...Object.keys(schema.filters).map((key) => `filter.${key}`),
+    ...Object.entries(schema.filters).flatMap(([key, field]) =>
+      field.operators.map((operator) => `filter.${key}.${operator}`),
+    ),
   ]);
   for (const key of params.keys()) {
-    if (!allowed.has(key) || params.getAll(key).length !== 1)
+    if (
+      !allowed.has(key) ||
+      (!key.endsWith(".in") && params.getAll(key).length !== 1)
+    )
       throw new Error(`Unsupported or repeated table parameter: ${key}`);
   }
   const integer = (key: string, fallback: number) => {
@@ -84,14 +105,34 @@ export function parseTableQuery(
       !["ascending", "descending"].includes(sort.direction))
   )
     throw new Error("Invalid default sort schema");
-  const filters: Record<string, string> = {};
-  for (const key of Object.keys(schema.filters)) {
-    const value = params.get(`filter.${key}`);
-    if (value !== null && value !== "") {
-      if (!schema.filters[key].includes(value))
-        throw new Error(`Invalid filter: ${key}`);
-      filters[key] = value;
-    }
+  const filters: Record<string, TableFilterValue> = {};
+  for (const [key, field] of Object.entries(schema.filters)) {
+    const supplied = field.operators.filter((operator) =>
+      params.has(`filter.${key}.${operator}`),
+    );
+    if (supplied.length > 1)
+      throw new Error(`Only one operator per filter is allowed: ${key}`);
+    if (!supplied.length) continue;
+    const operator = supplied[0];
+    if (!["eq", "contains", "in", "noteq"].includes(operator))
+      throw new Error(`Invalid filter operator: ${key}`);
+    const values = params.getAll(`filter.${key}.${operator}`);
+    if (
+      values.length > 50 ||
+      values.some(
+        (value) =>
+          !value.trim() ||
+          value.length > 200 ||
+          (operator !== "contains" &&
+            field.values &&
+            !field.values.includes(value)),
+      )
+    )
+      throw new Error(`Invalid filter value: ${key}`);
+    filters[key] =
+      operator === "in"
+        ? { operator, value: [...new Set(values)].sort() }
+        : { operator, value: values[0] };
   }
   return { search, filters, sort, page, pageSize };
 }

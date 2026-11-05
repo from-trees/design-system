@@ -66,4 +66,7 @@ export {
   type TableQuery,
   type TablePage,
   type TableQuerySchema,
+  type TableFilterOperator,
+  type TableFilterValue,
+  type TableFilterSchema,
 } from "./tableQuery";

@@ -25,6 +25,7 @@ for (const path of [
   "src/Button.tsx",
   "src/List.tsx",
   "src/DataTable.tsx",
+  "src/TableFilters.tsx",
   "src/tableQuery.ts",
   "src/InfoTooltip.tsx",
   "src/SwatchPicker.tsx",

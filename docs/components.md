@@ -243,8 +243,10 @@ The [advanced cabinet customizer inspector exploration](customizer-inspector-pro
 
 ## Standard admin table (0.9.0)
 
-`DataTable<T>` accepts `label`, typed `columns`, controlled `query`, `onQueryChange`, `page`, `getRowId`, `getRowLabel`, optional `rowActions`, `onOpenRow`, enum `filters`, `primaryAction`, `loading`, `error`, `onRetry`, `locale` and `timeZone`. It owns cell formatting and a single sticky Actions column; it accepts no custom cell renderers or style overrides.
+`DataTable<T>` accepts `label`, typed `columns`, controlled `query`, `onQueryChange`, `page`, `getRowId`, `getRowLabel`, optional `rowActions`, `onOpenRow`, typed `filters`, `primaryAction`, `loading`, `error`, `onRetry`, `locale` and `timeZone`. It owns cell formatting and a single sticky Actions column; it accepts no custom cell renderers or style overrides.
 
 `TableColumn<T>` is a text, number, money, date or status column. Each has an `id`, `label`, optional `sortable` and a typed `value(item)` getter. Text may supply metadata; money supplies its currency. Money values are integer currency minor units. Optional per-resource status labels/tones are app-owned.
 
 `TableQuery`, `TablePage<T>`, `TableQuerySchema`, `parseTableQuery`, `tableQueryKey` and `tablePageSizes` are exported from the React entry point and the pure `@from-trees/ui/table-query` subpath. Search/filter/sort/page-size changes reset page 1. The table never performs whole-dataset operations on a received page. See [table behavior, API contract and endpoint adoption checklist](admin-tables.md) before integrating.
+
+Table filters carry `{operator, value}` conditions. Operators are `eq`, `contains`, `in` and `noteq`; applications allowlist them per field. `in` accepts a string array and matches any selected value, while conditions on separate fields combine with AND. TableFilter supplies `id`, `label`, optional `operators` (default eq), and optional enum `options`. A shared dialog owns operator/value editing and multi-status selection. Transport types `TableFilterOperator`, `TableFilterValue` and `TableFilterSchema` are also exported. See the API contract for wire encoding and null/case semantics.
