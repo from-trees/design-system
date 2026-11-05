@@ -93,3 +93,7 @@ Build shared UI changes in this repository and explore their behavior in the cat
 All changes require a PR with screenshots and behavior evidence where relevant. Main publishes the catalog automatically. Evaluation tarballs can be attached to prereleases for coordinated app review; package registry publication is a separate explicit maintainer workflow from main. Do not overwrite published versions.
 
 See [API](docs/components.md), [conventions](docs/conventions.md), [adoption](docs/adoption.md), and [roadmap](docs/roadmap.md).
+
+### Standard admin tables (0.9.0 catalog review)
+
+The Tables catalog page exercises `DataTable`: search/filter, sortable typed columns, one action column, keyboard navigation, numbered pagination and row-shaped Shimmer loading. A pure `@from-trees/ui/table-query` entry point provides the shared request/response types and strict parser for app-owned endpoints. Review [the behavior and API contract](docs/admin-tables.md) before adoption. Cabinitron integration remains a separate change after catalog confirmation.

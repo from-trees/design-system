@@ -1,4 +1,4 @@
-# Public component API, v0.5.0
+# Public component API, v0.9.0
 
 Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.stylex`, and common compiler setup from `@from-trees/ui/vite`. The consuming app compiles StyleX; there is no CSS entry point.
 
@@ -21,6 +21,7 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 | SegmentedControl | label, value, onChange, options                                       | Radio-group semantics for mutually exclusive modes                                   |
 | Badge            | tone, children                                                        | neutral/success/warning/danger, non-announcing label                                 |
 | Status           | tone, children                                                        | Error alert or polite status announcement                                            |
+| DataTable        | columns, query, page, onQueryChange, rowActions, onOpenRow              | Shared formatting, search/filter/sort, pagination, loading and one Actions column    |
 | parseMeasurement | raw string                                                            | Finite decimal/fraction parser; number or null                                       |
 
 ## Actions
@@ -239,3 +240,11 @@ The [advanced cabinet customizer inspector exploration](customizer-inspector-pro
 ## Workflow progress (0.8.0)
 
 `WorkflowProgress` renders an app-defined sequence of steps with completion, current, upcoming and attention states. Apps provide step eligibility and authoritative status; clicking a step only calls `onSelect`. The selected view is independent of the current task. See [customer journey behavior and adoption requirements](customer-estimate-journey.md).
+
+## Standard admin table (0.9.0)
+
+`DataTable<T>` accepts `label`, typed `columns`, controlled `query`, `onQueryChange`, `page`, `getRowId`, `getRowLabel`, optional `rowActions`, `onOpenRow`, enum `filters`, `primaryAction`, `loading`, `error`, `onRetry`, `locale` and `timeZone`. It owns cell formatting and a single sticky Actions column; it accepts no custom cell renderers or style overrides.
+
+`TableColumn<T>` is a text, number, money, date or status column. Each has an `id`, `label`, optional `sortable` and a typed `value(item)` getter. Text may supply metadata; money supplies its currency. Money values are integer currency minor units. Optional per-resource status labels/tones are app-owned.
+
+`TableQuery`, `TablePage<T>`, `TableQuerySchema`, `parseTableQuery`, `tableQueryKey` and `tablePageSizes` are exported from the React entry point and the pure `@from-trees/ui/table-query` subpath. Search/filter/sort/page-size changes reset page 1. The table never performs whole-dataset operations on a received page. See [table behavior, API contract and endpoint adoption checklist](admin-tables.md) before integrating.

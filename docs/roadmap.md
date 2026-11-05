@@ -21,7 +21,7 @@ This is a standalone first implementation. “Implemented” means available for
 | GitHub Pages publication                        | Infrastructure implemented | Verify workflow deployment and URL during bootstrap                                      |
 | Package distribution                            | Infrastructure implemented | CI tarballs, initial prerelease tarball; registry release is explicit                    |
 | Standard lists                                 | Implemented for catalog review | Fixed title/metadata rows, right-aligned status or menu; history demo uses the public List |
-| Dedicated table primitives                     | Planned                    | Responsive columns and selection |
+| Dedicated table primitives                     | Catalog review             | Search/filter, sortable typed columns, one Actions column, numbered paging, shimmer; app API adoption pending |
 | Navigation Tabs                                 | Planned                    | Correct tab-panel semantics; separate from mode selection                                |
 | Visual selectors and material previews          | Planned                    | Thumbnail choices, keyboard behavior and long lists                                      |
 | Toolbar and overflow measurement                | Planned                    | ActionGroup handles explicit action lists today                                          |
@@ -63,3 +63,7 @@ Shared ParameterRow now owns the layout for numeric and component editors. Panel
 ## 0.8.0 customer journey exploration
 
 WorkflowProgress and the Customer estimates catalog pattern cover Review → Approve & sign → Deposit → Production queue → Final design confirmation → Production → Final Production Payment Due → Delivery. Customer UI adoption follows confirmation in a separate Cabinitron diff. Queue, final design confirmation, production, final-payment and delivery integrations remain future work; their visible steps must not invent confirmed shop status. The next cleanup priority is the customer estimate/approval/payment journey before the remaining admin surfaces. See [journey review and integration checklist](customer-estimate-journey.md).
+
+## 0.9.0 admin table review
+
+DataTable and the Tables catalog page establish a controlled query/page contract, strict pure query helpers, consistent cell formatting, keyboard navigation, shared action menus and row-shaped Shimmer loading. Search/filter/sort/pagination operate over the full server-owned collection. See [admin table API and migration inventory](admin-tables.md). Confirm the catalog before Cabinitron endpoint/component adoption; no production APIs are migrated by this change. Bulk selection and richer data-grid features remain deferred.

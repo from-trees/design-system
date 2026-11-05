@@ -366,6 +366,7 @@ export const s = stylex.create({
     backgroundSize: "16px 16px",
     overflowX: "auto",
   },
+  tableCanvas: { maxWidth: "100%" },
   canvasInner: {
     boxSizing: "border-box",
     width: "100%",

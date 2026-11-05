@@ -1,3 +1,4 @@
+import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
 import { CustomizerInspectorPrototype } from "./CustomizerInspectorPrototype";
 import {
@@ -1060,6 +1061,8 @@ export function HelpDemo() {
 }
 export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
+    case "tables":
+      return <TablesDemo state={state} />;
     case "swatches":
       return <SwatchesDemo />;
     case "toolbars":
