@@ -313,7 +313,7 @@ export function WorkspaceLayout({
             onNavigate={onNavigate}
           />
         </aside>
-        <div>
+        <div {...stylex.props(styles.page)}>
           <header {...stylex.props(styles.mobile)}>
             <span {...stylex.props(styles.brand)}>{title}</span>
             <IconButton
@@ -322,7 +322,14 @@ export function WorkspaceLayout({
               onPress={() => setOpen(true)}
             />
           </header>
-          <div {...stylex.props(styles.content)}>{children}</div>
+          <div
+            role="region"
+            aria-label="Workspace content"
+            tabIndex={0}
+            {...stylex.props(styles.content)}
+          >
+            {children}
+          </div>
         </div>
       </div>
       <SidePanel

@@ -114,3 +114,30 @@ it("keeps breadcrumbs semantic and marks only the final destination current", ()
   fireEvent.click(screen.getByRole("link", { name: "Work" }));
   expect(navigate).toHaveBeenCalledWith({ id: "work", href: "#work" });
 });
+it("exposes a keyboard-focusable content region without changing navigation selection", async () => {
+  const user = userEvent.setup(),
+    navigate = vi.fn();
+  render(
+    <WorkspaceLayout
+      title="Example shop"
+      groups={groups}
+      activeId="estimates"
+      onNavigate={navigate}
+    >
+      <h1>Long page</h1>
+      <button>Last action</button>
+    </WorkspaceLayout>,
+  );
+  const region = screen.getByRole("region", { name: "Workspace content" });
+  expect(region).toContainElement(
+    screen.getByRole("button", { name: "Last action" }),
+  );
+  region.focus();
+  expect(region).toHaveFocus();
+  await user.keyboard("{PageDown}");
+  expect(screen.getByRole("link", { name: "Estimates" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  expect(navigate).not.toHaveBeenCalled();
+});
