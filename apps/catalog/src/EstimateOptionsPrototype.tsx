@@ -53,16 +53,9 @@ export const estimateChoices: Choice[] = [
         items: [
           {
             id: "cabinet",
-            description: "Floating vanity cabinet · walnut veneer",
+            description: "Floating vanity · walnut veneer, drawers and hardware",
             quantity: 1,
-            price: 420000,
-            taxable: true,
-          },
-          {
-            id: "hardware",
-            description: "Soft-close drawer hardware",
-            quantity: 4,
-            price: 12500,
+            price: 470000,
             taxable: true,
           },
         ],
@@ -76,16 +69,9 @@ export const estimateChoices: Choice[] = [
         items: [
           {
             id: "cabinet",
-            description: "Floating vanity cabinet · solid walnut",
+            description: "Floating vanity · solid walnut, drawers and hardware",
             quantity: 1,
-            price: 560000,
-            taxable: true,
-          },
-          {
-            id: "hardware",
-            description: "Soft-close drawer hardware",
-            quantity: 4,
-            price: 12500,
+            price: 610000,
             taxable: true,
           },
         ],

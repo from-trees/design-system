@@ -1,6 +1,6 @@
 # Customer estimate sections and choices
 
-Catalog review only. Open `#estimate-options` in the catalog or `?example=estimate-options#estimate-options` for the full-size example. All amounts and design previews use synthetic fixtures.
+Catalog behavior confirmed by the user on November 7, 2026; Cabinitron adoption remains a separate review. Open `#estimate-options` in the catalog or `?example=estimate-options#estimate-options` for the full-size example. All amounts and design previews use synthetic fixtures. Cabinet rows include drawers and hardware; internal hardware components are not separate customer charges. The application must render actual estimate lines without inventing component-level line items.
 
 The customer sees each alternative as a table with its title, description, design link and selection control in the header. Item, quantity, unit price and amount stay aligned. The footer shows the section subtotal, tax and total. A selected option has a checked radio, a “Selected” label and an accent border; unselected alternatives are identified as excluded. The radio group uses native keyboard navigation. Read-only mode replaces controls with selected/excluded labels; disabled mode prevents selection while saving.
 
@@ -14,7 +14,7 @@ The initial heading shows the lowest to highest valid total, including shared se
 
 `DocumentChoiceGroup` provides a fieldset, legend, description and consistent section spacing. The app supplies the choices and decides which groups are active.
 
-## Application adoption after behavior confirmation
+## Application adoption
 
 Cabinitron adoption is a separate versioned package change and review. This PR does not alter customer estimates, invoices, issued snapshots, signatures, PDFs or production data.
 

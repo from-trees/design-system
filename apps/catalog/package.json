@@ -1,6 +1,6 @@
 {
   "name": "@from-trees/catalog",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
-    "@from-trees/ui": "0.10.1",
+    "@from-trees/ui": "0.11.0",
     "@stylexjs/stylex": "0.19.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
