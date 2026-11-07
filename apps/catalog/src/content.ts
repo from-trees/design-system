@@ -17,6 +17,7 @@ export type PageId =
   | "toolbars"
   | "designer-toolbars"
   | "customer-journey"
+  | "estimate-options"
   | "customizer"
   | "sidebar"
   | "patterns"
@@ -147,6 +148,14 @@ export const pages: {
     group: "Patterns",
     description:
       "A complete Cabinitron header and toolbar prototype: project actions, plan tools, viewport navigation, saved views, elevations and cabinet customization.",
+  },
+  {
+    id: "estimate-options",
+    title: "Estimate options",
+    icon: "check",
+    group: "Patterns",
+    description:
+      "Compare section tables, open each design, and select options to turn a valid price range into an exact estimate.",
   },
   {
     id: "customer-journey",

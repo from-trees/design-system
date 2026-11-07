@@ -1,3 +1,4 @@
+import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
@@ -1072,6 +1073,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
       return <CommandBarsDemo />;
     case "designer-toolbars":
       return <DesignerToolbarPrototype />;
+    case "estimate-options":
+      return <EstimateOptionsPrototype />;
     case "customer-journey":
       return <CustomerJourneyPrototype />;
     case "customizer":
