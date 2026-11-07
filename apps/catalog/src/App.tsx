@@ -1,3 +1,4 @@
+import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { useEffect, useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
@@ -17,7 +18,10 @@ import { Demo, type ExampleState } from "./demos";
 function readPage(): PageId {
   return (
     pages.find(
-      (p) => p.id === location.hash.slice(1).split("/")[0].split("?")[0],
+      (p) =>
+        p.id ===
+        (new URLSearchParams(location.search).get("example") ??
+          location.hash.slice(1).split("/")[0].split("?")[0]),
     )?.id ?? "overview"
   );
 }
@@ -54,7 +58,8 @@ export default function App() {
     page === "sidebar" ||
     page === "designer-toolbars" ||
     page === "customizer" ||
-    page === "customer-journey";
+    page === "customer-journey" ||
+    page === "estimate-options";
   const hasStates = [
     "tables",
     "lists",
@@ -64,6 +69,15 @@ export default function App() {
     "parameters",
     "panels",
   ].includes(page);
+  if (
+    new URLSearchParams(window.location.search).get("example") ===
+    "estimate-options"
+  )
+    return (
+      <ThemeProvider theme={theme} density={density}>
+        <EstimateOptionsPrototype standalone />
+      </ThemeProvider>
+    );
   if (
     new URLSearchParams(window.location.search).get("example") ===
     "workspace-navigation"
@@ -148,6 +162,7 @@ export default function App() {
                 page === "designer-toolbars" ||
                 page === "customizer" ||
                 page === "customer-journey" ||
+                page === "estimate-options" ||
                 page === "workspace-navigation"
                   ? "Prototype"
                   : page === "tables"
@@ -156,9 +171,10 @@ export default function App() {
               </Badge>
             </div>
             <p {...stylex.props(s.lede)}>{current.description}</p>
-            {page === "workspace-navigation" && (
+            {(page === "workspace-navigation" ||
+              page === "estimate-options") && (
               <a
-                href={`?example=workspace-navigation${window.location.hash}`}
+                href={`?example=${page}${window.location.hash}`}
                 target="_blank"
                 rel="noreferrer"
                 {...stylex.props(s.topLink)}
@@ -174,6 +190,7 @@ export default function App() {
                   s.workspace,
                   (page === "customizer" ||
                     page === "customer-journey" ||
+                    page === "estimate-options" ||
                     page === "tables" ||
                     page === "workspace-navigation") &&
                     s.wideWorkspace,
@@ -196,22 +213,21 @@ export default function App() {
                   >
                     <header {...stylex.props(s.cardHeader)}>
                       <h2 {...stylex.props(s.cardTitle)}>
-                        {page === "sidebar" ||
-                        page === "designer-toolbars" ||
-                        page === "customizer" ||
-                        page === "customer-journey"
-                          ? page === "customizer" || page === "customer-journey"
-                            ? page === "customer-journey"
-                              ? "Customer estimate · progress and next steps"
-                              : "Cabinitron · customizer inspector"
-                            : page === "designer-toolbars"
-                              ? "Cabinitron · toolbar prototype"
-                              : "Cabinitron · sidebar prototype"
-                          : page === "workspace-navigation"
-                            ? "Cabinitron · workspace navigation"
-                            : isComposition
-                              ? "Cabinitron · composed examples"
-                              : "Interactive example"}
+                        {page === "estimate-options"
+                          ? "Customer estimate · sections and choices"
+                          : page === "customer-journey"
+                            ? "Customer estimate · progress and next steps"
+                            : page === "customizer"
+                              ? "Cabinitron · customizer inspector"
+                              : page === "designer-toolbars"
+                                ? "Cabinitron · toolbar prototype"
+                                : page === "sidebar"
+                                  ? "Cabinitron · sidebar prototype"
+                                  : page === "workspace-navigation"
+                                    ? "Cabinitron · workspace navigation"
+                                    : isComposition
+                                      ? "Cabinitron · composed examples"
+                                      : "Interactive example"}
                       </h2>
                       {snippets[page] && (
                         <SegmentedControl
