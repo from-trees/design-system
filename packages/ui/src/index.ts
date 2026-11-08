@@ -80,3 +80,9 @@ export {
   type NavigationDestination,
   type NavigationHandler,
 } from "./WorkspaceNavigation";
+
+export {
+  DocumentSection,
+  DocumentChoiceGroup,
+  type DocumentSectionProps,
+} from "./DocumentSection";
