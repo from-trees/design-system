@@ -4,7 +4,13 @@ export { Button, IconButton, type ButtonProps } from "./Button";
 export { MenuButton, ActionGroup, type Action } from "./MenuButton";
 export { TextInput, Select, Switch } from "./Field";
 export { Panel, Section } from "./Panel";
-export { Dialog, SidePanel, type OverlayProps } from "./Overlay";
+export {
+  Dialog,
+  SidePanel,
+  type OverlayProps,
+  type SidePanelProps,
+  type DialogProps,
+} from "./Overlay";
 export { Badge, Status } from "./Feedback";
 export { SegmentedControl } from "./SegmentedControl";
 export {
