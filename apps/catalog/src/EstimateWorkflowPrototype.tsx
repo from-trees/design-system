@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
   Button,
@@ -16,7 +16,7 @@ import {
   type WorkflowStep,
 } from "@from-trees/ui";
 import { layout, gap, padding } from "@from-trees/ui/utilities";
-import { color } from "@from-trees/ui/tokens.stylex";
+import { color, metrics } from "@from-trees/ui/tokens.stylex";
 
 type Row = {
   id: string;
@@ -147,6 +147,12 @@ const s = stylex.create({
     lineHeight: 1.5,
     overflowWrap: "anywhere",
   },
+  taxLabel: {
+    fontSize: metrics.small,
+    fontWeight: 550,
+    color: color.muted,
+    lineHeight: 1.4,
+  },
   field: { minWidth: 120 },
   qty: { width: 52 },
   rate: { width: 76 },
@@ -174,6 +180,7 @@ const s = stylex.create({
 
 /** Interactive catalog composition. All customers, prices, designs and delivery are synthetic. */
 export function EstimateWorkflowPrototype() {
+  const taxInputId = useId();
   const [draft, setDraft] = useState<Draft>(initial),
     [stored, setStored] = useState<Draft | null>(read),
     [open, setOpen] = useState(false),
@@ -317,12 +324,10 @@ export function EstimateWorkflowPrototype() {
   const designButton = (choiceId?: string, choiceTitle?: string) => {
     const text = choiceId ? "Add design option" : "Add Cabinitron design";
     return locked ? (
-      <Button icon="add" isDisabled>
-        {text}
-      </Button>
+      <Button isDisabled>{text}</Button>
     ) : (
       <MenuButton
-        icon="add"
+        icon={null}
         text={text}
         label={choiceId ? `Add design option to ${choiceTitle}` : text}
         actions={designs.map((name) => ({
@@ -592,70 +597,91 @@ export function EstimateWorkflowPrototype() {
       );
   const formattedRange = ([min, max]: [number, number]) =>
     min === max ? money(min) : `${money(min)}–${money(max)}`;
-  const renderSummary = (editable: boolean) => (
-    <section
-      aria-label="Estimate summary"
-      {...stylex.props(s.card, padding.md, layout.stack, gap.md)}
-    >
-      <div {...stylex.props(layout.row, layout.between, gap.sm)}>
-        <span>Subtotal</span>
-        <strong>{formattedRange(range(draft, subtotal))}</strong>
-      </div>
-      <div
-        {...stylex.props(
-          layout.row,
-          layout.wrap,
-          layout.between,
-          layout.alignCenter,
-          gap.sm,
-        )}
+  const renderSummary = (editable: boolean) => {
+    const taxAmount = formattedRange(
+      range(draft, (g) => total(g, draft.tax) - subtotal(g)),
+    );
+    return (
+      <section
+        aria-label="Estimate summary"
+        {...stylex.props(s.card, padding.md, layout.stack, gap.md)}
       >
+        <div {...stylex.props(layout.row, layout.between, gap.sm)}>
+          <span>Subtotal</span>
+          <strong>{formattedRange(range(draft, subtotal))}</strong>
+        </div>
         {editable ? (
+          <div {...stylex.props(layout.stack, gap.sm)}>
+            <label
+              id={`${taxInputId}-label`}
+              htmlFor={taxInputId}
+              {...stylex.props(s.taxLabel)}
+            >
+              Tax rate (%)
+            </label>
+            <div
+              {...stylex.props(
+                layout.row,
+                layout.wrap,
+                layout.between,
+                layout.alignCenter,
+                gap.sm,
+              )}
+            >
+              <div
+                {...stylex.props(
+                  layout.row,
+                  layout.wrap,
+                  layout.alignCenter,
+                  gap.sm,
+                )}
+              >
+                <TextInput
+                  id={taxInputId}
+                  aria-labelledby={`${taxInputId}-label`}
+                  inputMode="decimal"
+                  value={draft.tax}
+                  disabled={locked}
+                  onChange={(e) => patch({ tax: e.target.value })}
+                />
+                <Button
+                  isDisabled={locked}
+                  onPress={() => {
+                    setFound(false);
+                    setTaxOpen(true);
+                  }}
+                >
+                  Look up tax rate
+                </Button>
+                <InfoTooltip label="tax rate">
+                  One rate from zero to one hundred percent applies to taxable
+                  rows. California lookup returns a sample rate in this catalog;
+                  applying it requires Update tax rate.
+                </InfoTooltip>
+              </div>
+              <strong aria-label="Estimate tax amount">{taxAmount}</strong>
+            </div>
+          </div>
+        ) : (
           <div
             {...stylex.props(
               layout.row,
-              layout.wrap,
+              layout.between,
               layout.alignCenter,
               gap.sm,
             )}
           >
-            <TextInput
-              label="Tax rate (%)"
-              inputMode="decimal"
-              value={draft.tax}
-              disabled={locked}
-              onChange={(e) => patch({ tax: e.target.value })}
-            />
-            <Button
-              isDisabled={locked}
-              onPress={() => {
-                setFound(false);
-                setTaxOpen(true);
-              }}
-            >
-              Look up tax rate
-            </Button>
-            <InfoTooltip label="tax rate">
-              One rate from zero to one hundred percent applies to taxable rows.
-              California lookup returns a sample rate in this catalog; applying
-              it requires Update tax rate.
-            </InfoTooltip>
+            <span>Sales tax ({draft.tax}%)</span>
+            <strong aria-label="Estimate tax amount">{taxAmount}</strong>
           </div>
-        ) : (
-          <span>Sales tax ({draft.tax}%)</span>
         )}
-        <strong aria-label="Estimate tax amount">
-          {formattedRange(
-            range(draft, (g) => total(g, draft.tax) - subtotal(g)),
-          )}
-        </strong>
-      </div>
-      <div {...stylex.props(layout.row, layout.between, gap.sm)}>
-        <strong>Total</strong>
-        <strong>{formattedRange([low, high])}</strong>
-      </div>
-    </section>
-  );
+        <div {...stylex.props(layout.row, layout.between, gap.sm)}>
+          <strong>Total</strong>
+          <strong>{formattedRange([low, high])}</strong>
+        </div>
+      </section>
+    );
+  };
   return (
     <section {...stylex.props(layout.stack, gap.lg)}>
       <h1 {...stylex.props(s.heading)}>Create an estimate</h1>
