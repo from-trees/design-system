@@ -829,12 +829,6 @@ export function EstimateWorkflowPrototype() {
           )}
           {draft.step === 1 && (
             <>
-              <InfoTooltip label="line item values">
-                Use quantities greater than zero and prices at least zero.
-                Quantities round to three decimal places and USD prices round to
-                cents when leaving a field. Each choice requires at least two
-                complete alternatives. Tax applies only to taxable items.
-              </InfoTooltip>
               {renderBlocks()}
               <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
                 <Button
