@@ -233,13 +233,20 @@ describe("parameters", () => {
     expect(screen.getByLabelText("Width")).toHaveValue("36");
   });
 });
-function OverlayHarness({ side = false }: { side?: boolean }) {
+function OverlayHarness({
+  side = false,
+  fullScreen = false,
+}: {
+  side?: boolean;
+  fullScreen?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const Surface = side ? SidePanel : Dialog;
   return (
     <ThemeProvider theme="dark">
       <Button onPress={() => setOpen(true)}>Open task</Button>
       <Surface
+        {...(fullScreen ? { size: "fullscreen" as const } : {})}
         title="Example task"
         description="A contextual example"
         open={open}
@@ -251,11 +258,15 @@ function OverlayHarness({ side = false }: { side?: boolean }) {
   );
 }
 describe("overlays", () => {
-  it.each([false, true])(
-    "contains focus and returns it to the opener (side=%s)",
-    async (side) => {
+  it.each([
+    { side: false, fullScreen: false },
+    { side: true, fullScreen: false },
+    { side: false, fullScreen: true },
+  ])(
+    "contains focus and returns it to the opener (%j)",
+    async ({ side, fullScreen }) => {
       const user = userEvent.setup();
-      render(<OverlayHarness side={side} />);
+      render(<OverlayHarness side={side} fullScreen={fullScreen} />);
       const trigger = screen.getByRole("button", { name: "Open task" });
       await user.click(trigger);
       const dialog = await screen.findByRole("dialog", {

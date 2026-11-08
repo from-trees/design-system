@@ -1,4 +1,5 @@
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
+import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { useEffect, useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
@@ -76,6 +77,17 @@ export default function App() {
     return (
       <ThemeProvider theme={theme} density={density}>
         <EstimateOptionsPrototype standalone />
+      </ThemeProvider>
+    );
+  if (
+    new URLSearchParams(window.location.search).get("example") ===
+    "approval-workflow"
+  )
+    return (
+      <ThemeProvider theme={theme} density={density}>
+        <main {...stylex.props(s.content)}>
+          <ApprovalWorkflowPrototype />
+        </main>
       </ThemeProvider>
     );
   if (

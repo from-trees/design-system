@@ -1,4 +1,5 @@
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
+import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
@@ -1111,7 +1112,12 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
     case "panels":
       return <SidebarDemo state={state} />;
     case "overlays":
-      return <OverlayDemo />;
+      return (
+        <Stack>
+          <OverlayDemo />
+          <ApprovalWorkflowPrototype />
+        </Stack>
+      );
     case "feedback":
       return (
         <Stack>

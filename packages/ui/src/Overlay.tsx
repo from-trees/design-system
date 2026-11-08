@@ -18,6 +18,7 @@ export type OverlayProps = {
   footer?: ReactNode;
   dismissible?: boolean;
 };
+export type DialogProps = OverlayProps & { size?: "default" | "fullscreen" };
 const styles = stylex.create({
   overlay: {
     position: "fixed",
@@ -29,6 +30,14 @@ const styles = stylex.create({
     alignItems: "center",
     padding: 20,
     boxSizing: "border-box",
+  },
+  fullscreenOverlay: { padding: 0 },
+  fullscreen: {
+    width: "100vw",
+    height: "100dvh",
+    maxHeight: "100dvh",
+    borderWidth: 0,
+    borderRadius: 0,
   },
   drawerOverlay: { justifyContent: "flex-end", padding: 0 },
   modal: {
@@ -117,7 +126,8 @@ function Overlay({
   footer,
   dismissible = true,
   side = false,
-}: OverlayProps & { side?: boolean }) {
+  fullScreen = false,
+}: OverlayProps & { side?: boolean; fullScreen?: boolean }) {
   const theme = useThemeStyles();
   const descriptionId = useId();
   return (
@@ -127,12 +137,26 @@ function Overlay({
       onOpenChange={onOpenChange}
       isDismissable={dismissible}
       isKeyboardDismissDisabled={!dismissible}
-      {...stylex.props(theme, styles.overlay, side && styles.drawerOverlay)}
+      {...stylex.props(
+        theme,
+        styles.overlay,
+        side && styles.drawerOverlay,
+        fullScreen && styles.fullscreenOverlay,
+      )}
     >
-      <Modal {...stylex.props(styles.modal, side && styles.drawer)}>
+      <Modal
+        {...stylex.props(
+          styles.modal,
+          side && styles.drawer,
+          fullScreen && styles.fullscreen,
+        )}
+      >
         <AriaDialog
           aria-describedby={description ? descriptionId : undefined}
-          {...stylex.props(styles.dialog, side && styles.drawerDialog)}
+          {...stylex.props(
+            styles.dialog,
+            (side || fullScreen) && styles.drawerDialog,
+          )}
         >
           <header {...stylex.props(styles.header)}>
             <div>
@@ -161,8 +185,8 @@ function Overlay({
     </ModalOverlay>
   );
 }
-export function Dialog(props: OverlayProps) {
-  return <Overlay {...props} />;
+export function Dialog({ size = "default", ...props }: DialogProps) {
+  return <Overlay {...props} fullScreen={size === "fullscreen"} />;
 }
 export function SidePanel(props: OverlayProps) {
   return <Overlay {...props} side />;
