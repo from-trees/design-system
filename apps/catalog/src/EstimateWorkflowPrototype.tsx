@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import {
   Button,
@@ -6,6 +6,7 @@ import {
   DocumentChoiceGroup,
   DocumentSection,
   IconButton,
+  MenuButton,
   InfoTooltip,
   Select,
   SidePanel,
@@ -15,7 +16,7 @@ import {
   type WorkflowStep,
 } from "@from-trees/ui";
 import { layout, gap, padding } from "@from-trees/ui/utilities";
-import { color } from "@from-trees/ui/tokens.stylex";
+import { color, metrics } from "@from-trees/ui/tokens.stylex";
 
 type Row = {
   id: string;
@@ -146,6 +147,12 @@ const s = stylex.create({
     lineHeight: 1.5,
     overflowWrap: "anywhere",
   },
+  taxLabel: {
+    fontSize: metrics.small,
+    fontWeight: 550,
+    color: color.muted,
+    lineHeight: 1.4,
+  },
   field: { minWidth: 120 },
   qty: { width: 52 },
   rate: { width: 76 },
@@ -173,6 +180,7 @@ const s = stylex.create({
 
 /** Interactive catalog composition. All customers, prices, designs and delivery are synthetic. */
 export function EstimateWorkflowPrototype() {
+  const taxInputId = useId();
   const [draft, setDraft] = useState<Draft>(initial),
     [stored, setStored] = useState<Draft | null>(read),
     [open, setOpen] = useState(false),
@@ -313,6 +321,23 @@ export function EstimateWorkflowPrototype() {
     net: subtotal(g),
     tax: total(g, draft.tax) - subtotal(g),
   });
+  const designButton = (choiceId?: string, choiceTitle?: string) => {
+    const text = choiceId ? "Add design option" : "Add Cabinitron design";
+    return locked ? (
+      <Button isDisabled>{text}</Button>
+    ) : (
+      <MenuButton
+        icon={null}
+        text={text}
+        label={choiceId ? `Add design option to ${choiceTitle}` : text}
+        actions={designs.map((name) => ({
+          id: name,
+          label: name,
+          onAction: () => addDesign(name, choiceId),
+        }))}
+      />
+    );
+  };
   const renderGroup = (g: Group, review = false) => {
     const sums = amount(g);
     return (
@@ -553,17 +578,7 @@ export function EstimateWorkflowPrototype() {
                 >
                   Add item option
                 </Button>
-                <Select
-                  aria-label={`Add design option to ${b.title}`}
-                  value=""
-                  disabled={locked}
-                  onChange={(e) => addDesign(e.target.value, b.id)}
-                >
-                  <option value="">Add design option</option>
-                  {designs.map((name) => (
-                    <option key={name}>{name}</option>
-                  ))}
-                </Select>
+                {designButton(b.id, b.title)}
                 <Button
                   variant="ghost"
                   isDisabled={locked}
@@ -582,70 +597,91 @@ export function EstimateWorkflowPrototype() {
       );
   const formattedRange = ([min, max]: [number, number]) =>
     min === max ? money(min) : `${money(min)}–${money(max)}`;
-  const renderSummary = (editable: boolean) => (
-    <section
-      aria-label="Estimate summary"
-      {...stylex.props(s.card, padding.md, layout.stack, gap.md)}
-    >
-      <div {...stylex.props(layout.row, layout.between, gap.sm)}>
-        <span>Subtotal</span>
-        <strong>{formattedRange(range(draft, subtotal))}</strong>
-      </div>
-      <div
-        {...stylex.props(
-          layout.row,
-          layout.wrap,
-          layout.between,
-          layout.alignCenter,
-          gap.sm,
-        )}
+  const renderSummary = (editable: boolean) => {
+    const taxAmount = formattedRange(
+      range(draft, (g) => total(g, draft.tax) - subtotal(g)),
+    );
+    return (
+      <section
+        aria-label="Estimate summary"
+        {...stylex.props(s.card, padding.md, layout.stack, gap.md)}
       >
+        <div {...stylex.props(layout.row, layout.between, gap.sm)}>
+          <span>Subtotal</span>
+          <strong>{formattedRange(range(draft, subtotal))}</strong>
+        </div>
         {editable ? (
+          <div {...stylex.props(layout.stack, gap.sm)}>
+            <label
+              id={`${taxInputId}-label`}
+              htmlFor={taxInputId}
+              {...stylex.props(s.taxLabel)}
+            >
+              Tax rate (%)
+            </label>
+            <div
+              {...stylex.props(
+                layout.row,
+                layout.wrap,
+                layout.between,
+                layout.alignCenter,
+                gap.sm,
+              )}
+            >
+              <div
+                {...stylex.props(
+                  layout.row,
+                  layout.wrap,
+                  layout.alignCenter,
+                  gap.sm,
+                )}
+              >
+                <TextInput
+                  id={taxInputId}
+                  aria-labelledby={`${taxInputId}-label`}
+                  inputMode="decimal"
+                  value={draft.tax}
+                  disabled={locked}
+                  onChange={(e) => patch({ tax: e.target.value })}
+                />
+                <Button
+                  isDisabled={locked}
+                  onPress={() => {
+                    setFound(false);
+                    setTaxOpen(true);
+                  }}
+                >
+                  Look up tax rate
+                </Button>
+                <InfoTooltip label="tax rate">
+                  One rate from zero to one hundred percent applies to taxable
+                  rows. California lookup returns a sample rate in this catalog;
+                  applying it requires Update tax rate.
+                </InfoTooltip>
+              </div>
+              <strong aria-label="Estimate tax amount">{taxAmount}</strong>
+            </div>
+          </div>
+        ) : (
           <div
             {...stylex.props(
               layout.row,
-              layout.wrap,
+              layout.between,
               layout.alignCenter,
               gap.sm,
             )}
           >
-            <TextInput
-              label="Tax rate (%)"
-              inputMode="decimal"
-              value={draft.tax}
-              disabled={locked}
-              onChange={(e) => patch({ tax: e.target.value })}
-            />
-            <Button
-              isDisabled={locked}
-              onPress={() => {
-                setFound(false);
-                setTaxOpen(true);
-              }}
-            >
-              Look up tax rate
-            </Button>
-            <InfoTooltip label="tax rate">
-              One rate from zero to one hundred percent applies to taxable rows.
-              California lookup returns a sample rate in this catalog; applying
-              it requires Update tax rate.
-            </InfoTooltip>
+            <span>Sales tax ({draft.tax}%)</span>
+            <strong aria-label="Estimate tax amount">{taxAmount}</strong>
           </div>
-        ) : (
-          <span>Sales tax ({draft.tax}%)</span>
         )}
-        <strong aria-label="Estimate tax amount">
-          {formattedRange(
-            range(draft, (g) => total(g, draft.tax) - subtotal(g)),
-          )}
-        </strong>
-      </div>
-      <div {...stylex.props(layout.row, layout.between, gap.sm)}>
-        <strong>Total</strong>
-        <strong>{formattedRange([low, high])}</strong>
-      </div>
-    </section>
-  );
+        <div {...stylex.props(layout.row, layout.between, gap.sm)}>
+          <strong>Total</strong>
+          <strong>{formattedRange([low, high])}</strong>
+        </div>
+      </section>
+    );
+  };
   return (
     <section {...stylex.props(layout.stack, gap.lg)}>
       <h1 {...stylex.props(s.heading)}>Create an estimate</h1>
@@ -793,12 +829,6 @@ export function EstimateWorkflowPrototype() {
           )}
           {draft.step === 1 && (
             <>
-              <InfoTooltip label="line item values">
-                Use quantities greater than zero and prices at least zero.
-                Quantities round to three decimal places and USD prices round to
-                cents when leaving a field. Each choice requires at least two
-                complete alternatives. Tax applies only to taxable items.
-              </InfoTooltip>
               {renderBlocks()}
               <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
                 <Button
@@ -828,18 +858,9 @@ export function EstimateWorkflowPrototype() {
                 >
                   Add choice section
                 </Button>
+                {designButton()}
               </div>
-              <Select
-                label="Add Cabinitron design"
-                value=""
-                disabled={locked}
-                onChange={(e) => addDesign(e.target.value)}
-              >
-                <option value="">Choose a design</option>
-                {designs.map((name) => (
-                  <option key={name}>{name}</option>
-                ))}
-              </Select>
+
               {renderSummary(true)}
             </>
           )}

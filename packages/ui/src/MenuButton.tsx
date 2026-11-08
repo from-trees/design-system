@@ -29,6 +29,10 @@ const styles = stylex.create({
     boxSizing: "border-box",
     margin: 0,
     textTransform: "none",
+    fontFamily: "inherit",
+    fontSize: "inherit",
+    fontWeight: 550,
+    lineHeight: 1.3,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
@@ -90,7 +94,7 @@ export function MenuButton({
   actions,
 }: {
   label?: string;
-  icon?: IconName;
+  icon?: IconName | null;
   text?: string;
   actions: readonly Action[];
 }) {
@@ -102,9 +106,11 @@ export function MenuButton({
         {...stylex.props(styles.trigger, !!text && styles.labeledTrigger)}
       >
         <span title={label} {...stylex.props(styles.triggerContents)}>
-          <Icon name={icon} size={18} />
+          {icon && <Icon name={icon} size={18} />}
           {text && <span>{text}</span>}
-          {(text || icon !== "more") && <Icon name="chevronDown" size={12} />}
+          {(text || (icon && icon !== "more")) && (
+            <Icon name="chevronDown" size={12} />
+          )}
         </span>
       </AriaButton>
       <Popover
