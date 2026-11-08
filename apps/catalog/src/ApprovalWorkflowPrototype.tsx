@@ -421,9 +421,9 @@ export function ApprovalWorkflowPrototype() {
                   </label>
                   <InfoTooltip label="design document limits">
                     PDF, PNG or JPEG. Packages and uploads share a limit of 10
-                    files and 20 MB combined. Include a PDF when no Cabinitron
-                    designs are connected. This example retains file names only;
-                    Cabinitron will store uploaded files securely.
+                    files. Uploads allow 20 MB each. Include a PDF when no
+                    Cabinitron designs are connected. This example retains file
+                    names only; Cabinitron will store uploaded files securely.
                   </InfoTooltip>
                 </div>
                 <input
@@ -448,8 +448,7 @@ export function ApprovalWorkflowPrototype() {
                           ].includes(file.type),
                       ) ||
                       next.length + linked.length > 10 ||
-                      next.reduce((sum, file) => sum + file.size, 0) >
-                        20 * 1024 * 1024
+                      added.some((file) => file.size > 20 * 1024 * 1024)
                     ) {
                       setError(
                         "Use PDF, PNG or JPEG files within the file and size limits.",
