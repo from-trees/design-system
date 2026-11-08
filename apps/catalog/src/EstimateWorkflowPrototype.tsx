@@ -6,6 +6,7 @@ import {
   DocumentChoiceGroup,
   DocumentSection,
   IconButton,
+  MenuButton,
   InfoTooltip,
   Select,
   SidePanel,
@@ -313,6 +314,25 @@ export function EstimateWorkflowPrototype() {
     net: subtotal(g),
     tax: total(g, draft.tax) - subtotal(g),
   });
+  const designButton = (choiceId?: string, choiceTitle?: string) => {
+    const text = choiceId ? "Add design option" : "Add Cabinitron design";
+    return locked ? (
+      <Button icon="add" isDisabled>
+        {text}
+      </Button>
+    ) : (
+      <MenuButton
+        icon="add"
+        text={text}
+        label={choiceId ? `Add design option to ${choiceTitle}` : text}
+        actions={designs.map((name) => ({
+          id: name,
+          label: name,
+          onAction: () => addDesign(name, choiceId),
+        }))}
+      />
+    );
+  };
   const renderGroup = (g: Group, review = false) => {
     const sums = amount(g);
     return (
@@ -553,17 +573,7 @@ export function EstimateWorkflowPrototype() {
                 >
                   Add item option
                 </Button>
-                <Select
-                  aria-label={`Add design option to ${b.title}`}
-                  value=""
-                  disabled={locked}
-                  onChange={(e) => addDesign(e.target.value, b.id)}
-                >
-                  <option value="">Add design option</option>
-                  {designs.map((name) => (
-                    <option key={name}>{name}</option>
-                  ))}
-                </Select>
+                {designButton(b.id, b.title)}
                 <Button
                   variant="ghost"
                   isDisabled={locked}
@@ -828,18 +838,9 @@ export function EstimateWorkflowPrototype() {
                 >
                   Add choice section
                 </Button>
+                {designButton()}
               </div>
-              <Select
-                label="Add Cabinitron design"
-                value=""
-                disabled={locked}
-                onChange={(e) => addDesign(e.target.value)}
-              >
-                <option value="">Choose a design</option>
-                {designs.map((name) => (
-                  <option key={name}>{name}</option>
-                ))}
-              </Select>
+
               {renderSummary(true)}
             </>
           )}

@@ -106,9 +106,17 @@ it("edits rows directly, applies tax only through the lookup update and complete
 });
 it("adds read-only design rows immediately and invalidates the package when refreshing the design", async () => {
   const user = await start();
-  await user.selectOptions(
-    screen.getByLabelText("Add Cabinitron design"),
-    "Vanity — Design A",
+  expect(
+    screen.queryByRole("combobox", { name: "Add Cabinitron design" }),
+  ).not.toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: "Add Cabinitron design", exact: true }),
+  );
+  await user.click(
+    await screen.findByRole("menuitem", {
+      name: "Vanity — Design A",
+      exact: true,
+    }),
   );
   expect(screen.getByText("Vanity cabinet")).toBeVisible();
   const header = screen
@@ -188,13 +196,29 @@ it("adds arbitrary saved designs as options without assuming a finish or prebuil
   expect(
     screen.queryByRole("heading", { name: "Option 1" }),
   ).not.toBeInTheDocument();
-  await user.selectOptions(
-    screen.getByLabelText("Add design option to Design options"),
-    "Vanity — Design A",
+  await user.click(
+    screen.getByRole("button", {
+      name: "Add design option to Design options",
+      exact: true,
+    }),
   );
-  await user.selectOptions(
-    screen.getByLabelText("Add design option to Design options"),
-    "Vanity — Design B",
+  await user.click(
+    await screen.findByRole("menuitem", {
+      name: "Vanity — Design A",
+      exact: true,
+    }),
+  );
+  await user.click(
+    screen.getByRole("button", {
+      name: "Add design option to Design options",
+      exact: true,
+    }),
+  );
+  await user.click(
+    await screen.findByRole("menuitem", {
+      name: "Vanity — Design B",
+      exact: true,
+    }),
   );
   const choice = screen.getByRole("group", { name: "Design options" });
   expect(
