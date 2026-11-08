@@ -111,6 +111,16 @@ it("adds read-only design rows immediately and invalidates the package when refr
     "Vanity — Design A",
   );
   expect(screen.getByText("Vanity cabinet")).toBeVisible();
+  const header = screen
+    .getByRole("table", { name: "Vanity — Design A", exact: true })
+    .querySelector("thead")!;
+  expect(
+    within(header).getByRole("button", { name: "Update to latest revision" }),
+  ).toBeVisible();
+  expect(
+    within(header).getByRole("button", { name: "Remove design" }),
+  ).toBeVisible();
+
   expect(screen.getByText("Drawer fronts and hardware")).toBeVisible();
   expect(
     screen.queryByLabelText(/description in Vanity — Design A/),
@@ -200,4 +210,113 @@ it("adds arbitrary saved designs as options without assuming a finish or prebuil
     }),
   ).toBeVisible();
   expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
+});
+
+it("edits an option title and description in its header and cancels inline edits without closing the workflow", async () => {
+  const user = await start();
+  await user.click(screen.getByRole("button", { name: "Add choice section" }));
+  await user.click(screen.getByRole("button", { name: "Add item option" }));
+  let table = screen.getByRole("table", { name: "Option 1", exact: true });
+  expect(
+    screen.queryByRole("textbox", { name: "Section title", exact: true }),
+  ).not.toBeInTheDocument();
+  await user.click(
+    within(table).getByRole("button", {
+      name: "Edit section title",
+      exact: true,
+    }),
+  );
+  const title = screen.getByRole("textbox", {
+    name: "Section title",
+    exact: true,
+  });
+  await user.clear(title);
+  await user.type(title, "Wall-mounted option{Enter}");
+  table = screen.getByRole("table", {
+    name: "Wall-mounted option",
+    exact: true,
+  });
+  await user.click(
+    within(table).getByRole("button", {
+      name: "Edit section description",
+      exact: true,
+    }),
+  );
+  await user.type(
+    screen.getByRole("textbox", { name: "Section description", exact: true }),
+    "Extra floor clearance",
+  );
+  await user.tab();
+  expect(within(table).getByText("Extra floor clearance")).toBeVisible();
+  await user.click(
+    within(table).getByRole("button", {
+      name: "Edit section title",
+      exact: true,
+    }),
+  );
+  await user.type(
+    screen.getByRole("textbox", { name: "Section title", exact: true }),
+    " discarded{Escape}",
+  );
+  expect(
+    screen.getByRole("table", { name: "Wall-mounted option", exact: true }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("dialog", { name: "Bathroom vanity", exact: true }),
+  ).toBeVisible();
+  expect(
+    within(table).getByRole("button", { name: "Remove section", exact: true }),
+  ).toBeVisible();
+  expect(
+    screen
+      .getByRole("button", { name: "Add item to Wall-mounted option" })
+      .closest("section"),
+  ).toBe(table.closest("section"));
+});
+
+it("uses the same consolidated inline header and footer for regular sections", async () => {
+  const user = await start();
+  await user.click(screen.getByRole("button", { name: "Add section" }));
+  let table = screen.getByRole("table", { name: "New section", exact: true });
+  await user.click(
+    within(table).getByRole("button", {
+      name: "Edit section title",
+      exact: true,
+    }),
+  );
+  const field = screen.getByRole("textbox", {
+    name: "Section title",
+    exact: true,
+  });
+  await user.clear(field);
+  await user.type(field, "Installation{Enter}");
+  table = screen.getByRole("table", { name: "Installation", exact: true });
+  await user.click(
+    within(table).getByRole("button", {
+      name: "Edit section description",
+      exact: true,
+    }),
+  );
+  await user.type(
+    screen.getByRole("textbox", { name: "Section description", exact: true }),
+    "Install and level the vanity{Enter}",
+  );
+  expect(within(table).getByText("Install and level the vanity")).toBeVisible();
+  expect(
+    screen.queryByRole("textbox", { name: "Section title", exact: true }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen
+      .getByRole("button", { name: "Add item to Installation" })
+      .closest("section"),
+  ).toBe(table.closest("section"));
+  await user.click(
+    within(table).getByRole("button", { name: "Remove section", exact: true }),
+  );
+  expect(
+    screen.queryByRole("table", { name: "Installation", exact: true }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("table", { name: "Items", exact: true }),
+  ).toBeVisible();
 });

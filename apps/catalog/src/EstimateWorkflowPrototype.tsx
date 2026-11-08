@@ -317,51 +317,59 @@ export function EstimateWorkflowPrototype() {
     const sums = amount(g);
     return (
       <div key={g.id} {...stylex.props(layout.stack, gap.sm)}>
-        {!review && (
-          <div {...stylex.props(layout.stack, gap.sm)}>
-            {!g.design && !g.plain && (
-              <>
-                <TextInput
-                  label="Section title"
-                  value={g.title}
-                  disabled={locked}
-                  onChange={(e) => updateGroup(g.id, { title: e.target.value })}
-                />
-                <TextInput
-                  label="Section description"
-                  value={g.description}
-                  disabled={locked}
-                  onChange={(e) =>
-                    updateGroup(g.id, { description: e.target.value })
-                  }
-                />
-              </>
-            )}
-            <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
-              {g.design && (
-                <>
-                  <span {...stylex.props(s.copy)}>
-                    Saved design · revision {g.design.revision} · items are
-                    read-only
-                  </span>
-                  <Button isDisabled={locked} onPress={() => refresh(g)}>
-                    Update to latest revision
-                  </Button>
-                </>
-              )}
-              <Button
-                variant="ghost"
-                isDisabled={locked}
-                onPress={() => removeGroup(g.id)}
-              >
-                Remove {g.design ? "design" : "section"}
-              </Button>
-            </div>
-          </div>
-        )}
         <DocumentSection
           title={g.title || "Untitled section"}
-          description={g.description}
+          onTitleChange={
+            !review && !g.design
+              ? (title) => updateGroup(g.id, { title })
+              : undefined
+          }
+          onDescriptionChange={
+            !review && !g.design
+              ? (description) => updateGroup(g.id, { description })
+              : undefined
+          }
+          editingDisabled={locked}
+          footerActions={
+            !review && !g.design ? (
+              <Button
+                isDisabled={locked}
+                onPress={() => updateGroup(g.id, { rows: [...g.rows, row()] })}
+              >
+                Add item to {g.title || "section"}
+              </Button>
+            ) : undefined
+          }
+          description={
+            g.design
+              ? [
+                  g.description,
+                  `Saved design · revision ${g.design.revision} · items are read-only`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
+              : g.description
+          }
+          headerActions={
+            !review ? (
+              <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
+                {g.design && (
+                  <IconButton
+                    label="Update to latest revision"
+                    icon="rotation"
+                    isDisabled={locked}
+                    onPress={() => refresh(g)}
+                  />
+                )}
+                <IconButton
+                  label={g.design ? "Remove design" : "Remove section"}
+                  icon="delete"
+                  isDisabled={locked}
+                  onPress={() => removeGroup(g.id)}
+                />
+              </div>
+            ) : undefined
+          }
           columns={[
             { id: "item", label: "Item" },
             { id: "qty", label: "Qty", numeric: true },
@@ -481,16 +489,6 @@ export function EstimateWorkflowPrototype() {
             },
           ]}
         />
-        {!review && !g.design && (
-          <div {...stylex.props(layout.row)}>
-            <Button
-              isDisabled={locked}
-              onPress={() => updateGroup(g.id, { rows: [...g.rows, row()] })}
-            >
-              Add item to {g.title || "section"}
-            </Button>
-          </div>
-        )}
       </div>
     );
   };
@@ -503,39 +501,30 @@ export function EstimateWorkflowPrototype() {
             key={b.id}
             {...stylex.props(layout.stack, gap.md, s.card, padding.md)}
           >
-            {!review && (
-              <>
-                <TextInput
-                  label="Choice title"
-                  value={b.title}
-                  disabled={locked}
-                  onChange={(e) =>
-                    patch({
-                      blocks: draft.blocks.map((x) =>
-                        x.id === b.id ? { ...b, title: e.target.value } : x,
-                      ),
-                    })
-                  }
-                />
-                <TextInput
-                  label="Choice description"
-                  value={b.description}
-                  disabled={locked}
-                  onChange={(e) =>
-                    patch({
-                      blocks: draft.blocks.map((x) =>
-                        x.id === b.id
-                          ? { ...b, description: e.target.value }
-                          : x,
-                      ),
-                    })
-                  }
-                />
-              </>
-            )}
             <DocumentChoiceGroup
               title={b.title || "Choice"}
-              description={b.description || "Customer chooses one option."}
+              description={b.description}
+              disabled={locked}
+              onTitleChange={
+                !review
+                  ? (title) =>
+                      patch({
+                        blocks: draft.blocks.map((x) =>
+                          x.id === b.id ? { ...b, title } : x,
+                        ),
+                      })
+                  : undefined
+              }
+              onDescriptionChange={
+                !review
+                  ? (description) =>
+                      patch({
+                        blocks: draft.blocks.map((x) =>
+                          x.id === b.id ? { ...b, description } : x,
+                        ),
+                      })
+                  : undefined
+              }
             >
               {b.options.map((g) => renderGroup(g, review))}
             </DocumentChoiceGroup>
