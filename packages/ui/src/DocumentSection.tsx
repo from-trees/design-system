@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
 import { color } from "./tokens.stylex";
 import { layout, gap } from "./utilities";
@@ -6,6 +6,12 @@ import { layout, gap } from "./utilities";
 export type DocumentSectionProps = {
   title: string;
   description?: string;
+  /** Compact management controls beside the title, separate from choice selection. */
+  headerActions?: ReactNode;
+  onTitleChange?: (value: string) => void;
+  onDescriptionChange?: (value: string) => void;
+  editingDisabled?: boolean;
+  footerActions?: ReactNode;
   /** Links and document actions belong to this section, outside the radio label. */
   actions?: ReactNode;
   columns: readonly { id: string; label: string; numeric?: boolean }[];
@@ -26,6 +32,42 @@ export type DocumentSectionProps = {
   };
 };
 const s = stylex.create({
+  inlineButton: {
+    borderWidth: 0,
+    padding: 0,
+    margin: 0,
+    backgroundColor: "transparent",
+    color: "inherit",
+    font: "inherit",
+    textAlign: "start",
+    cursor: "text",
+    overflowWrap: "anywhere",
+    outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
+    outlineOffset: 3,
+    borderRadius: 2,
+  },
+  inlineInput: {
+    minWidth: 0,
+    width: "100%",
+    boxSizing: "border-box",
+    padding: 2,
+    margin: 0,
+    color: color.ink,
+    backgroundColor: color.surface,
+    font: "inherit",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: color.focus,
+    borderRadius: 3,
+    outline: "none",
+  },
+  editableTitle: { flexGrow: 1, flexBasis: 160, minWidth: 0 },
+  footerActions: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopStyle: "solid",
+    borderTopColor: color.border,
+  },
   frame: {
     minWidth: 0,
     borderWidth: 1,
@@ -122,10 +164,76 @@ const s = stylex.create({
   },
 });
 
+function InlineHeaderText({
+  value,
+  placeholder,
+  label,
+  disabled,
+  onChange,
+}: {
+  value: string;
+  placeholder: string;
+  label: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+}) {
+  const [editing, setEditing] = useState(false),
+    [text, setText] = useState(value);
+  const handled = useRef(false),
+    trigger = useRef<HTMLButtonElement>(null);
+  const finish = (save: boolean, restore = false) => {
+    if (handled.current) return;
+    handled.current = true;
+    setEditing(false);
+    if (save && text !== value) onChange(text);
+    if (restore) requestAnimationFrame(() => trigger.current?.focus());
+  };
+  return editing ? (
+    <input
+      aria-label={label}
+      autoFocus
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+      onBlur={() => finish(true)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          finish(true, true);
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          finish(false, true);
+        }
+      }}
+      {...stylex.props(s.inlineInput)}
+    />
+  ) : (
+    <button
+      ref={trigger}
+      type="button"
+      aria-label={`Edit ${label.toLowerCase()}`}
+      disabled={disabled}
+      onClick={() => {
+        handled.current = false;
+        setText(value);
+        setEditing(true);
+      }}
+      {...stylex.props(s.inlineButton)}
+    >
+      {value || placeholder}
+    </button>
+  );
+}
+
 /** Presentation only. The application supplies amounts, choice identity and persistence. */
 export function DocumentSection({
   title,
   description,
+  headerActions,
+  onTitleChange,
+  onDescriptionChange,
+  editingDisabled,
+  footerActions,
   actions,
   columns,
   rows,
@@ -157,8 +265,25 @@ export function DocumentSection({
               >
                 <div {...stylex.props(layout.stack, gap.sm)}>
                   <div {...stylex.props(s.headingRow)}>
-                    <h3 id={id} {...stylex.props(s.title)}>
-                      {title}
+                    <h3
+                      id={id}
+                      aria-label={title}
+                      {...stylex.props(
+                        s.title,
+                        !!onTitleChange && s.editableTitle,
+                      )}
+                    >
+                      {onTitleChange ? (
+                        <InlineHeaderText
+                          value={title}
+                          label="Section title"
+                          placeholder="Untitled section"
+                          disabled={editingDisabled}
+                          onChange={onTitleChange}
+                        />
+                      ) : (
+                        title
+                      )}
                     </h3>
                     {selection &&
                       (selection.onSelect ? (
@@ -184,9 +309,26 @@ export function DocumentSection({
                             : "Alternative · excluded"}
                         </span>
                       ))}
+                    {headerActions && (
+                      <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
+                        {headerActions}
+                      </div>
+                    )}
                   </div>
-                  {description && (
-                    <p {...stylex.props(s.description)}>{description}</p>
+                  {(description || onDescriptionChange) && (
+                    <p {...stylex.props(s.description)}>
+                      {onDescriptionChange ? (
+                        <InlineHeaderText
+                          value={description ?? ""}
+                          label="Section description"
+                          placeholder="Add description"
+                          disabled={editingDisabled}
+                          onChange={onDescriptionChange}
+                        />
+                      ) : (
+                        description
+                      )}
+                    </p>
                   )}
                   {actions && (
                     <div {...stylex.props(layout.row, layout.wrap, gap.md)}>
@@ -254,6 +396,13 @@ export function DocumentSection({
           </tfoot>
         </table>
       </div>
+      {footerActions && (
+        <div
+          {...stylex.props(s.footerActions, layout.row, layout.wrap, gap.sm)}
+        >
+          {footerActions}
+        </div>
+      )}
       {note && <p {...stylex.props(s.note)}>{note}</p>}
     </section>
   );
@@ -280,10 +429,14 @@ export function DocumentChoiceGroup({
   title,
   description,
   disabled,
+  onTitleChange,
+  onDescriptionChange,
   children,
 }: {
   title: string;
   description: string;
+  onTitleChange?: (value: string) => void;
+  onDescriptionChange?: (value: string) => void;
   disabled?: boolean;
   children: ReactNode;
 }) {
@@ -291,12 +444,35 @@ export function DocumentChoiceGroup({
   return (
     <fieldset
       disabled={disabled}
+      aria-label={title}
       aria-describedby={id}
       {...stylex.props(groupStyles.root)}
     >
-      <legend {...stylex.props(groupStyles.legend)}>{title}</legend>
+      <legend {...stylex.props(groupStyles.legend)}>
+        {onTitleChange ? (
+          <InlineHeaderText
+            value={title}
+            label="Choice title"
+            placeholder="Design options"
+            disabled={disabled}
+            onChange={onTitleChange}
+          />
+        ) : (
+          title
+        )}
+      </legend>
       <p id={id} {...stylex.props(groupStyles.description)}>
-        {description}
+        {onDescriptionChange ? (
+          <InlineHeaderText
+            value={description}
+            label="Choice description"
+            placeholder="Add description"
+            disabled={disabled}
+            onChange={onDescriptionChange}
+          />
+        ) : (
+          description
+        )}
       </p>
       <div {...stylex.props(layout.stack, gap.md)}>{children}</div>
     </fieldset>

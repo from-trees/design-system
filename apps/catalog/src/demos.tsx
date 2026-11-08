@@ -1,4 +1,6 @@
+import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
+import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
 import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
@@ -1073,6 +1075,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
       return <CommandBarsDemo />;
     case "designer-toolbars":
       return <DesignerToolbarPrototype />;
+    case "estimate-workflow":
+      return <EstimateWorkflowPrototype />;
     case "estimate-options":
       return <EstimateOptionsPrototype />;
     case "customer-journey":
@@ -1111,7 +1115,12 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
     case "panels":
       return <SidebarDemo state={state} />;
     case "overlays":
-      return <OverlayDemo />;
+      return (
+        <Stack>
+          <OverlayDemo />
+          <ApprovalWorkflowPrototype />
+        </Stack>
+      );
     case "feedback":
       return (
         <Stack>

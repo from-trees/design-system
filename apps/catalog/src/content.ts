@@ -18,6 +18,7 @@ export type PageId =
   | "designer-toolbars"
   | "customer-journey"
   | "estimate-options"
+  | "estimate-workflow"
   | "customizer"
   | "sidebar"
   | "patterns"
@@ -150,6 +151,14 @@ export const pages: {
       "A complete Cabinitron header and toolbar prototype: project actions, plan tools, viewport navigation, saved views, elevations and cabinet customization.",
   },
   {
+    id: "estimate-workflow",
+    title: "Create estimates",
+    icon: "receipt",
+    group: "Patterns",
+    description:
+      "Prepare an estimate in six resumable steps: customer, direct line items and choices, documents, terms, finalization and delivery.",
+  },
+  {
     id: "estimate-options",
     title: "Estimate options",
     icon: "check",
@@ -207,6 +216,12 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  "estimate-workflow": [
+    "Save the initial name, customer and expiration as a resumable draft.",
+    "Create sections and choices before adding their rows; imported design groups are read-only and refresh explicitly.",
+    "Generate packages for the pinned design revisions, attach external files, and review terms before finalizing.",
+    "Tax lookup requires an explicit Update action. Sending is a separate confirmed final step. This catalog uses synthetic records and local draft storage.",
+  ],
   "workspace-navigation": [
     "Four visible groups: Work, Customers, Libraries and Settings. Group headings link to their default page; leaf links open pages directly. Navigation uses anchors and aria-current, rather than action menus or tab roles.",
     "The shared WorkspaceLayout, GroupedNavigation and Breadcrumbs own presentation and the narrow navigation drawer. Applications supply destinations, selection and navigation callbacks; business identity, permissions and persistence stay app-owned.",

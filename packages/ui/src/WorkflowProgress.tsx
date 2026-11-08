@@ -14,12 +14,19 @@ export type WorkflowProgressProps = {
   selectedId: string;
   onSelect: (id: string) => void;
 };
+const narrow = "@container workflow-progress (max-width: 480px)";
 const styles = stylex.create({
+  container: {
+    containerType: "inline-size",
+    containerName: "workflow-progress",
+    width: "100%",
+    minWidth: 0,
+  },
   list: { display: "flex", padding: 0, margin: 0, listStyleType: "none" },
   item: { position: "relative", flexGrow: 1, flexBasis: 0, minWidth: 0 },
   connector: {
     position: "absolute",
-    top: { default: 15, "@media (max-width: 600px)": 11 },
+    top: { default: 15, [narrow]: 11 },
     insetInlineStart: "50%",
     width: "100%",
     borderTopWidth: 2,
@@ -55,8 +62,8 @@ const styles = stylex.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: { default: 32, "@media (max-width: 600px)": 24 },
-    height: { default: 32, "@media (max-width: 600px)": 24 },
+    width: { default: 32, [narrow]: 24 },
+    height: { default: 32, [narrow]: 24 },
     flexShrink: 0,
     borderRadius: "50%",
     backgroundColor: color.surface,
@@ -75,7 +82,7 @@ const styles = stylex.create({
   attention: { borderColor: color.danger, color: color.danger },
   upcoming: { color: color.muted },
   copy: {
-    display: { default: "flex", "@media (max-width: 600px)": "none" },
+    display: { default: "flex", [narrow]: "none" },
     flexDirection: "column",
     gap: 4,
     minWidth: 0,
@@ -83,7 +90,7 @@ const styles = stylex.create({
   title: { fontWeight: 650, fontSize: 12, lineHeight: 1.4 },
   detail: { fontSize: 11, color: color.muted, lineHeight: 1.4 },
   mobile: {
-    display: { default: "none", "@media (max-width: 600px)": "block" },
+    display: { default: "none", [narrow]: "block" },
     marginTop: 16,
     marginBottom: 0,
     fontSize: metrics.small,
@@ -106,7 +113,7 @@ export function WorkflowProgress({
   onSelect,
 }: WorkflowProgressProps) {
   return (
-    <nav aria-label={label}>
+    <nav aria-label={label} {...stylex.props(styles.container)}>
       <ol {...stylex.props(styles.list)}>
         {steps.map((step, index) => {
           const content = (
