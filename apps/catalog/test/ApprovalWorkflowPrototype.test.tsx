@@ -127,3 +127,36 @@ it("supports uploaded-only approvals and skips package generation in both direct
   ).toBeVisible();
   expect(screen.getByText("Architect drawings.pdf")).toBeVisible();
 });
+
+it("keeps a saved draft while comparing the side panel and padded dialog", async () => {
+  const user = userEvent.setup();
+  render(
+    <ThemeProvider>
+      <ApprovalWorkflowPrototype />
+    </ThemeProvider>,
+  );
+  expect(screen.getByRole("combobox", { name: "Workflow layout" })).toHaveValue(
+    "panel",
+  );
+  await user.click(screen.getByRole("button", { name: "Create new approval" }));
+  await user.type(screen.getByLabelText("Approval name"), "Compare surfaces");
+  await user.selectOptions(screen.getByLabelText("Customer"), "demo");
+  await user.click(screen.getByRole("button", { name: "Save and continue" }));
+  await screen.findByRole("heading", { name: "Connect designs" });
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  await user.selectOptions(screen.getByLabelText("Workflow layout"), "dialog");
+  await user.click(
+    screen.getByRole("button", { name: "Resume Compare surfaces" }),
+  );
+  await screen.findByRole("heading", { name: "Connect designs" });
+  await user.click(
+    screen.getByRole("button", { name: /Start approval: Complete/ }),
+  );
+  expect(screen.getByLabelText("Approval name")).toHaveValue(
+    "Compare surfaces",
+  );
+  expect(screen.getByLabelText("Customer")).toHaveValue("demo");
+});

@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 import {
   Button,
   Dialog,
+  SidePanel,
   InfoTooltip,
   Select,
   Status,
@@ -77,6 +78,8 @@ const styles = stylex.create({
 
 /** Catalog-only composition. Cabinitron owns real customer records, packages, drafts and delivery. */
 export function ApprovalWorkflowPrototype() {
+  const [surface, setSurface] = useState<"panel" | "dialog">("panel");
+  const Surface = surface === "panel" ? SidePanel : Dialog;
   const [draft, setDraft] = useState<Draft | null>(readDraft);
   const [open, setOpen] = useState(false),
     [step, setStep] = useState(0),
@@ -197,6 +200,14 @@ export function ApprovalWorkflowPrototype() {
         Interactive example with synthetic customer records and packages. Drafts
         stay in this browser; this example sends no email.
       </p>
+      <Select
+        label="Workflow layout"
+        value={surface}
+        onChange={(e) => setSurface(e.target.value as "panel" | "dialog")}
+      >
+        <option value="panel">Slide-out side panel</option>
+        <option value="dialog">Large padded dialog</option>
+      </Select>
       <div {...stylex.props(layout.row, layout.wrap, gap.sm)}>
         <Button variant="primary" onPress={() => begin(false)}>
           Create new approval
@@ -215,8 +226,8 @@ export function ApprovalWorkflowPrototype() {
           · {draft.title} · Step {draft.step + 1} of 5
         </Status>
       )}
-      <Dialog
-        size="fullscreen"
+      <Surface
+        size="workflow"
         title={started && open && title ? title : "New design approval"}
         description={
           started && customer
@@ -350,8 +361,8 @@ export function ApprovalWorkflowPrototype() {
                   </Button>
                 </div>
                 <p {...stylex.props(styles.copy)}>
-                  Completing this step saves the approval as a draft. Close the
-                  dialog at any time after that and resume later.
+                  Completing this step saves the approval as a draft. Close it
+                  at any time after that and resume later.
                 </p>
               </>
             )}
@@ -583,7 +594,7 @@ export function ApprovalWorkflowPrototype() {
             )}
           </section>
         </div>
-      </Dialog>
+      </Surface>
       <Dialog
         title="Create customer"
         open={newCustomer}

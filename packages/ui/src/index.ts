@@ -8,6 +8,7 @@ export {
   Dialog,
   SidePanel,
   type OverlayProps,
+  type SidePanelProps,
   type DialogProps,
 } from "./Overlay";
 export { Badge, Status } from "./Feedback";

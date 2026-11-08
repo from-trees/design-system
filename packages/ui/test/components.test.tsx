@@ -236,37 +236,53 @@ describe("parameters", () => {
 function OverlayHarness({
   side = false,
   fullScreen = false,
+  workflow = false,
 }: {
   side?: boolean;
   fullScreen?: boolean;
+  workflow?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const Surface = side ? SidePanel : Dialog;
+  const props = {
+    title: "Example task",
+    description: "A contextual example",
+    open,
+    onOpenChange: setOpen,
+    children: <Button>Inside task</Button>,
+  };
   return (
     <ThemeProvider theme="dark">
       <Button onPress={() => setOpen(true)}>Open task</Button>
-      <Surface
-        {...(fullScreen ? { size: "fullscreen" as const } : {})}
-        title="Example task"
-        description="A contextual example"
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <Button>Inside task</Button>
-      </Surface>
+      {side ? (
+        <SidePanel {...props} size={workflow ? "workflow" : "default"} />
+      ) : (
+        <Dialog
+          {...props}
+          size={fullScreen ? "fullscreen" : workflow ? "workflow" : "default"}
+        />
+      )}
     </ThemeProvider>
   );
 }
+
 describe("overlays", () => {
   it.each([
     { side: false, fullScreen: false },
     { side: true, fullScreen: false },
     { side: false, fullScreen: true },
+    { side: false, fullScreen: false, workflow: true },
+    { side: true, fullScreen: false, workflow: true },
   ])(
     "contains focus and returns it to the opener (%j)",
-    async ({ side, fullScreen }) => {
+    async ({ side, fullScreen, workflow }) => {
       const user = userEvent.setup();
-      render(<OverlayHarness side={side} fullScreen={fullScreen} />);
+      render(
+        <OverlayHarness
+          side={side}
+          fullScreen={fullScreen}
+          workflow={workflow}
+        />,
+      );
       const trigger = screen.getByRole("button", { name: "Open task" });
       await user.click(trigger);
       const dialog = await screen.findByRole("dialog", {

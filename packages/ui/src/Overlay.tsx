@@ -18,7 +18,18 @@ export type OverlayProps = {
   footer?: ReactNode;
   dismissible?: boolean;
 };
-export type DialogProps = OverlayProps & { size?: "default" | "fullscreen" };
+export type DialogProps = OverlayProps & {
+  size?: "default" | "fullscreen" | "workflow";
+};
+export type SidePanelProps = OverlayProps & { size?: "default" | "workflow" };
+const slideIn = stylex.keyframes({
+  from: { transform: "translateX(100%)" },
+  to: { transform: "translateX(0)" },
+});
+const slideOut = stylex.keyframes({
+  from: { transform: "translateX(0)" },
+  to: { transform: "translateX(100%)" },
+});
 const styles = stylex.create({
   overlay: {
     position: "fixed",
@@ -32,6 +43,17 @@ const styles = stylex.create({
     boxSizing: "border-box",
   },
   fullscreenOverlay: { padding: 0 },
+  workflowOverlay: {
+    padding: { default: 24, "@media (max-width: 640px)": 12 },
+  },
+  workflow: {
+    width: "min(1440px, 100%)",
+    height: {
+      default: "calc(100dvh - 48px)",
+      "@media (max-width: 640px)": "calc(100dvh - 24px)",
+    },
+    maxHeight: "100%",
+  },
   fullscreen: {
     width: "100vw",
     height: "100dvh",
@@ -60,6 +82,19 @@ const styles = stylex.create({
     borderTopWidth: 0,
     borderBottomWidth: 0,
     borderRightWidth: 0,
+  },
+  workflowDrawer: {
+    width: "min(640px, 100vw)",
+    animationName: {
+      default: "none",
+      ":is([data-entering])": slideIn,
+      ":is([data-exiting])": slideOut,
+    },
+    animationDuration: {
+      default: "220ms",
+      "@media (prefers-reduced-motion: reduce)": "0s",
+    },
+    animationTimingFunction: "cubic-bezier(0.2, 0, 0, 1)",
   },
   dialog: {
     display: "flex",
@@ -127,7 +162,14 @@ function Overlay({
   dismissible = true,
   side = false,
   fullScreen = false,
-}: OverlayProps & { side?: boolean; fullScreen?: boolean }) {
+  workflow = false,
+  workflowPanel = false,
+}: OverlayProps & {
+  side?: boolean;
+  fullScreen?: boolean;
+  workflow?: boolean;
+  workflowPanel?: boolean;
+}) {
   const theme = useThemeStyles();
   const descriptionId = useId();
   return (
@@ -142,6 +184,7 @@ function Overlay({
         styles.overlay,
         side && styles.drawerOverlay,
         fullScreen && styles.fullscreenOverlay,
+        workflow && styles.workflowOverlay,
       )}
     >
       <Modal
@@ -149,13 +192,15 @@ function Overlay({
           styles.modal,
           side && styles.drawer,
           fullScreen && styles.fullscreen,
+          workflow && styles.workflow,
+          workflowPanel && styles.workflowDrawer,
         )}
       >
         <AriaDialog
           aria-describedby={description ? descriptionId : undefined}
           {...stylex.props(
             styles.dialog,
-            (side || fullScreen) && styles.drawerDialog,
+            (side || fullScreen || workflow) && styles.drawerDialog,
           )}
         >
           <header {...stylex.props(styles.header)}>
@@ -186,8 +231,14 @@ function Overlay({
   );
 }
 export function Dialog({ size = "default", ...props }: DialogProps) {
-  return <Overlay {...props} fullScreen={size === "fullscreen"} />;
+  return (
+    <Overlay
+      {...props}
+      fullScreen={size === "fullscreen"}
+      workflow={size === "workflow"}
+    />
+  );
 }
-export function SidePanel(props: OverlayProps) {
-  return <Overlay {...props} side />;
+export function SidePanel({ size = "default", ...props }: SidePanelProps) {
+  return <Overlay {...props} side workflowPanel={size === "workflow"} />;
 }
