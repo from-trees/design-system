@@ -1,3 +1,4 @@
+import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
@@ -1074,6 +1075,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
       return <CommandBarsDemo />;
     case "designer-toolbars":
       return <DesignerToolbarPrototype />;
+    case "estimate-workflow":
+      return <EstimateWorkflowPrototype />;
     case "estimate-options":
       return <EstimateOptionsPrototype />;
     case "customer-journey":

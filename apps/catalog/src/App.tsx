@@ -1,3 +1,4 @@
+import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
@@ -60,7 +61,8 @@ export default function App() {
     page === "designer-toolbars" ||
     page === "customizer" ||
     page === "customer-journey" ||
-    page === "estimate-options";
+    page === "estimate-options" ||
+    page === "estimate-workflow";
   const hasStates = [
     "tables",
     "lists",
@@ -70,6 +72,17 @@ export default function App() {
     "parameters",
     "panels",
   ].includes(page);
+  if (
+    new URLSearchParams(window.location.search).get("example") ===
+    "estimate-workflow"
+  )
+    return (
+      <ThemeProvider theme={theme} density={density}>
+        <main {...stylex.props(s.content)}>
+          <EstimateWorkflowPrototype />
+        </main>
+      </ThemeProvider>
+    );
   if (
     new URLSearchParams(window.location.search).get("example") ===
     "estimate-options"
