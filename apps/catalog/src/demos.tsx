@@ -1,3 +1,4 @@
+import { ObstructionMenuExample } from "./ObstructionMenuExample";
 import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
@@ -452,6 +453,7 @@ export function MenusDemo({ state }: { state: ExampleState }) {
   ].map((a) => ({ ...a, disabled: state === "disabled" })) as Action[];
   return (
     <Stack>
+      <ObstructionMenuExample />
       <div {...stylex.props(s.row, s.between)}>
         <div>
           <h2 {...stylex.props(s.heading)}>Cabinet actions</h2>
