@@ -52,3 +52,20 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 Give the layout a bounded parent height for independent scrolling. Its mobile breakpoint follows its container width, so the same behavior works in the catalog and an application. Normal links work without a custom navigation callback. Do not turn application destinations into button rows or action menus.
 
 The workspace catalog example owns its synthetic routing model. Review refresh, copied/deep links, Back/Forward, list criteria, exact saved revisions, customer/contact/address identity and unavailable destinations there before application adoption. Existing Cabinitron customer editing/preparation, permissions, immutable snapshots and backend APIs remain application responsibilities.
+
+### Grouped swatch choices (0.12.0 catalog review)
+
+`SwatchPicker` accepts either the existing flat `options` or `groups` containing an `id`, visible `label`, and `options`. Both modes keep one controlled selection and display its preview in the field and popup. Group and option IDs must be unique throughout the picker. Applications supply all preview artwork, names, eligibility, saved choices and grouping; the UI package does not load material libraries or change finishes.
+
+```tsx
+<SwatchPicker
+  value={materialId}
+  onChange={setMaterialId}
+  groups={[
+    {id: 'built-in', label: 'Built-In', options: builtInChoices},
+    {id: 'library', label: 'Library', options: libraryChoices},
+  ]}
+/>
+```
+
+Groups have accessible headings. Keyboard navigation, typeahead, disabled choices, Escape cancellation and focus restoration apply across groups. An entirely empty picker stays disabled; callers can supply a disabled descriptive option when a group needs an empty-state message. Review the grouped material example in **Swatches & previews** before application adoption. The catalog uses illustrative wood/paint/library samples; it has no business data, pricing, sheen control or persistence migration.

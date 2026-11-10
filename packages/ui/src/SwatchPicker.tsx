@@ -1,6 +1,9 @@
 import { useId, useRef, useState, type ReactNode } from "react";
 import {
   Button,
+  Collection,
+  Header,
+  ListBoxSection,
   Label,
   ListBox,
   ListBoxItem,
@@ -22,14 +25,22 @@ export type SwatchOption = {
   description?: string;
   disabled?: boolean;
 };
+/** Option IDs are unique across every group in a picker. */
+export type SwatchGroup = {
+  id: string;
+  label: string;
+  options: readonly SwatchOption[];
+};
 export type SwatchPickerProps = {
   label?: string;
   value: string | null;
-  options: readonly SwatchOption[];
   onChange: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
-};
+} & (
+  | { options: readonly SwatchOption[]; groups?: never }
+  | { groups: readonly SwatchGroup[]; options?: never }
+);
 const styles = stylex.create({
   root: {
     display: "flex",
@@ -105,6 +116,22 @@ const styles = stylex.create({
     gap: 7,
     outline: "none",
   },
+  group: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gridColumnStart: 1,
+    gridColumnEnd: -1,
+    gap: 7,
+  },
+  groupHeading: {
+    gridColumnStart: 1,
+    gridColumnEnd: -1,
+    fontSize: metrics.small,
+    fontWeight: 650,
+    color: color.muted,
+    paddingBlock: 5,
+    paddingInline: 2,
+  },
   option: {
     boxSizing: "border-box",
     position: "relative",
@@ -168,7 +195,8 @@ const styles = stylex.create({
 export function SwatchPicker({
   label,
   value,
-  options,
+  options: ungroupedOptions,
+  groups,
   onChange,
   disabled = false,
   placeholder = "Choose…",
@@ -178,9 +206,46 @@ export function SwatchPicker({
   const trigger = useRef<HTMLButtonElement>(null);
   const [portal, setPortal] = useState<Element>();
   const theme = useThemeStyles();
+  const options =
+    groups?.flatMap((group) => group.options) ?? ungroupedOptions ?? [];
   const current = options.find((option) => option.id === value);
   if (!parameter && !label)
     throw new Error("Standalone swatch pickers require a label.");
+  const renderOption = (option: SwatchOption) => (
+    <ListBoxItem
+      id={option.id}
+      textValue={option.label}
+      className={({ isSelected, isFocused, isDisabled }) =>
+        stylex.props(
+          styles.option,
+          isSelected && styles.selected,
+          isFocused && styles.focused,
+          isDisabled && styles.disabled,
+        ).className ?? ""
+      }
+    >
+      {({ isSelected }) => (
+        <>
+          <span aria-hidden="true" {...stylex.props(styles.preview)}>
+            {option.preview}
+          </span>
+          <Text slot="label" {...stylex.props(styles.caption)}>
+            {option.label}
+          </Text>
+          {option.description && (
+            <Text slot="description" {...stylex.props(styles.hidden)}>
+              {option.description}
+            </Text>
+          )}
+          {isSelected && (
+            <span aria-hidden="true" {...stylex.props(styles.check)}>
+              <Icon name="check" size={14} />
+            </span>
+          )}
+        </>
+      )}
+    </ListBoxItem>
+  );
   return (
     <Select
       selectedKey={value}
@@ -227,43 +292,22 @@ export function SwatchPicker({
         UNSTABLE_portalContainer={portal}
         {...stylex.props(theme, styles.popover)}
       >
-        <ListBox layout="grid" items={options} {...stylex.props(styles.grid)}>
-          {(option) => (
-            <ListBoxItem
-              id={option.id}
-              textValue={option.label}
-              className={({ isSelected, isFocused, isDisabled }) =>
-                stylex.props(
-                  styles.option,
-                  isSelected && styles.selected,
-                  isFocused && styles.focused,
-                  isDisabled && styles.disabled,
-                ).className ?? ""
-              }
-            >
-              {({ isSelected }) => (
-                <>
-                  <span aria-hidden="true" {...stylex.props(styles.preview)}>
-                    {option.preview}
-                  </span>
-                  <Text slot="label" {...stylex.props(styles.caption)}>
-                    {option.label}
-                  </Text>
-                  {option.description && (
-                    <Text slot="description" {...stylex.props(styles.hidden)}>
-                      {option.description}
-                    </Text>
-                  )}
-                  {isSelected && (
-                    <span aria-hidden="true" {...stylex.props(styles.check)}>
-                      <Icon name="check" size={14} />
-                    </span>
-                  )}
-                </>
-              )}
-            </ListBoxItem>
-          )}
-        </ListBox>
+        {groups ? (
+          <ListBox layout="grid" items={groups} {...stylex.props(styles.grid)}>
+            {(group) => (
+              <ListBoxSection id={group.id} {...stylex.props(styles.group)}>
+                <Header {...stylex.props(styles.groupHeading)}>
+                  {group.label}
+                </Header>
+                <Collection items={group.options}>{renderOption}</Collection>
+              </ListBoxSection>
+            )}
+          </ListBox>
+        ) : (
+          <ListBox layout="grid" items={options} {...stylex.props(styles.grid)}>
+            {renderOption}
+          </ListBox>
+        )}
       </Popover>
     </Select>
   );

@@ -1,6 +1,6 @@
 {
   "name": "@from-trees/ui",
-  "version": "0.11.4",
+  "version": "0.12.0",
   "description": "Shared React and StyleX components for From Trees applications",
   "type": "module",
   "license": "UNLICENSED",
