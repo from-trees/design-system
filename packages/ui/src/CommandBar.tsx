@@ -1,3 +1,4 @@
+import { type MenuControlGroup } from "./MenuControls";
 import { useId, type ReactNode, type KeyboardEvent } from "react";
 import * as stylex from "@stylexjs/stylex";
 import type { IconName } from "./Icon";
@@ -20,6 +21,7 @@ export type CommandBarProps = {
   menuLabel?: string;
   menuIcon?: IconName;
   menuText?: string;
+  menuGroups?: readonly MenuControlGroup[];
   status?: CommandStatus;
   inline?: boolean;
 };
@@ -151,6 +153,7 @@ export function CommandBar({
   menuLabel = "More actions",
   menuIcon,
   menuText,
+  menuGroups = [],
   status,
   inline = false,
 }: CommandBarProps) {
@@ -197,12 +200,13 @@ export function CommandBar({
               {primary.label}
             </Button>
           ))}
-        {!!actions.length && (
+        {(!!actions.length || !!menuGroups.length) && (
           <MenuButton
             label={menuLabel}
             icon={menuIcon}
             text={menuText}
             actions={actions}
+            controlGroups={menuGroups}
           />
         )}
       </div>

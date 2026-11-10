@@ -93,3 +93,5 @@ export {
   DocumentChoiceGroup,
   type DocumentSectionProps,
 } from "./DocumentSection";
+
+export type { MenuControl, MenuControlGroup } from "./MenuControls";
