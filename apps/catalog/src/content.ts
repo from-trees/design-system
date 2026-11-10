@@ -251,7 +251,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
   swatches: [
     "The field shows the current preview and label. The popup shows a visual grid with selected and keyboard-focus indicators.",
     "SwatchPicker inherits ParameterRow labeling, help and errors; applications supply option identity, labels, preview components and eligibility.",
-    "Materials and colors are separate choices. Front and crown profile previews describe geometry independently from finish.",
+    "The material example combines complete named materials under Built-In and Library headings in one picker. Each choice carries its finish; front and crown profiles remain independent geometry choices.",
     "Keyboard navigation, typeahead, Escape cancellation, disabled choices and modal focus follow accessible select behavior. Catalog artwork is illustrative; applications can supply real material images.",
   ],
   toolbars: [

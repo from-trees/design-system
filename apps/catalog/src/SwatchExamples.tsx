@@ -433,7 +433,7 @@ export function VisualChoice({
 }
 export function SwatchesDemo() {
   const [values, setValues] = useState({
-    material: "Oak",
+    material: "walnut-natural",
     color: "Natural",
     front: "Shaker",
     crown: "Cove",
@@ -444,10 +444,42 @@ export function SwatchesDemo() {
   });
   return (
     <div {...stylex.props(styles.demo, layout.stack, gap.xl)}>
+      <ParameterRow
+        label="Material"
+        help="Choose a complete named material from Built-In or Library. Each choice includes its own finish."
+      >
+        <SwatchPicker
+          value={values.material}
+          onChange={(material) =>
+            setValues((current) => ({ ...current, material }))
+          }
+          groups={[
+            {
+              id: "built-in",
+              label: "Built-In",
+              options: [
+                option("walnut-natural", "walnut", "Walnut · Natural"),
+                option("oak-natural", "oak", "Oak · Natural"),
+                option("white-paint", "white", "White paint"),
+                option("sage-paint", "sage", "Sage green paint"),
+                option("warm-plaster", "plaster", "Warm white plaster"),
+                option("quartz", "quartz", "White quartz"),
+              ],
+            },
+            {
+              id: "library",
+              label: "Library",
+              options: [
+                option("library-walnut", "walnut", "Walnut veneer PBR"),
+                option("library-oak", "planks", "Oak floor PBR"),
+                option("library-granite", "granite", "Dark granite PBR"),
+              ],
+            },
+          ]}
+        />
+      </ParameterRow>
       {(
         [
-          ["material", "Material"],
-          ["color", "Color"],
           ["front", "Front profile"],
           ["configuration", "Configuration"],
           ["crown", "Crown profile"],

@@ -40,6 +40,7 @@ export {
   SwatchPicker,
   type SwatchPickerProps,
   type SwatchOption,
+  type SwatchGroup,
 } from "./SwatchPicker";
 
 export {

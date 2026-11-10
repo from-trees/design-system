@@ -158,3 +158,70 @@ it("keeps native-dialog pickers inside their modal and supports typeahead", asyn
   await user.keyboard("wal{Enter}");
   expect(change).toHaveBeenCalledExactlyOnceWith("walnut");
 });
+
+it("keeps grouped swatches in one modal picker with previews and disabled choices", async () => {
+  const user = userEvent.setup();
+  const library = {
+    id: "library-walnut",
+    label: "Walnut PBR",
+    preview: <img src="walnut.png" alt="" />,
+  };
+  function Example() {
+    const [value, setValue] = useState("oak");
+    return (
+      <ThemeProvider>
+        <dialog open aria-label="Grouped style">
+          <ParameterRow label="Material">
+            <SwatchPicker
+              value={value}
+              onChange={setValue}
+              groups={[
+                { id: "built-in", label: "Built-In", options },
+                { id: "library", label: "Library", options: [library] },
+              ]}
+            />
+          </ParameterRow>
+        </dialog>
+      </ThemeProvider>
+    );
+  }
+  render(<Example />);
+  const trigger = screen.getByRole("button", { name: /Material/ });
+  const modal = screen.getByRole("dialog", { name: "Grouped style" });
+  await user.click(trigger);
+  expect(screen.getByRole("group", { name: "Built-In" })).toBeInTheDocument();
+  expect(screen.getByRole("group", { name: "Library" })).toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "Paint" })).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  expect(screen.getByRole("listbox").closest("dialog")).toBe(modal);
+  await user.click(screen.getByRole("option", { name: "Walnut PBR" }));
+  expect(trigger).toHaveTextContent("Walnut PBR");
+  expect(trigger.querySelector("img")).toHaveAttribute("src", "walnut.png");
+  await waitFor(() => expect(trigger).toHaveFocus());
+  await user.keyboard("{ArrowDown}{Home}{Enter}");
+  expect(trigger).toHaveTextContent("Oak");
+  await waitFor(() => expect(trigger).toHaveFocus());
+  await user.keyboard("{ArrowDown}{End}{Escape}");
+  expect(trigger).toHaveTextContent("Oak");
+  await waitFor(() => expect(trigger).toHaveFocus());
+  await user.keyboard("{ArrowDown}{End}{Enter}");
+  expect(trigger).toHaveTextContent("Walnut PBR");
+});
+it("disables an empty grouped picker without inventing a selected option", () => {
+  render(
+    <ThemeProvider>
+      <SwatchPicker
+        label="Empty groups"
+        value={null}
+        groups={[{ id: "library", label: "Library", options: [] }]}
+        onChange={() => {}}
+      />
+    </ThemeProvider>,
+  );
+  expect(screen.getByRole("button", { name: /Empty groups/ })).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: /Empty groups/ }),
+  ).toHaveTextContent("No options");
+});
