@@ -1,6 +1,10 @@
 import { Fragment } from "react";
+import { MenuControls, type MenuControlGroup } from "./MenuControls";
+import { layout, gap } from "./utilities";
 import {
   MenuTrigger,
+  DialogTrigger,
+  Dialog,
   Menu,
   MenuItem,
   Popover,
@@ -85,6 +89,14 @@ const styles = stylex.create({
     backgroundColor: color.border,
     marginBlock: 5,
   },
+  controlsPopover: { minWidth: "min(300px, calc(100vw - 24px))" },
+  controlDialog: { outline: "none" },
+  actionButton: {
+    width: "100%",
+    justifyContent: "flex-start",
+    borderWidth: 0,
+    fontWeight: 400,
+  },
   group: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" },
 });
 export function MenuButton({
@@ -92,27 +104,85 @@ export function MenuButton({
   icon = "more",
   text,
   actions,
+  controlGroups = [],
 }: {
   label?: string;
   icon?: IconName | null;
   text?: string;
   actions: readonly Action[];
+  controlGroups?: readonly MenuControlGroup[];
 }) {
   const theme = useThemeStyles();
+  const trigger = (
+    <AriaButton
+      aria-label={label}
+      {...stylex.props(styles.trigger, !!text && styles.labeledTrigger)}
+    >
+      <span title={label} {...stylex.props(styles.triggerContents)}>
+        {icon && <Icon name={icon} size={18} />}
+        {text && <span>{text}</span>}
+        {(text || (icon && icon !== "more")) && (
+          <Icon name="chevronDown" size={12} />
+        )}
+      </span>
+    </AriaButton>
+  );
+  // Interactive controls need normal Tab/radio-group navigation, not nested
+  // widgets inside ARIA menuitems. Action-only menus keep their existing model.
+  if (controlGroups.length)
+    return (
+      <DialogTrigger>
+        {trigger}
+        <Popover
+          placement="bottom end"
+          offset={6}
+          {...stylex.props(theme, styles.popover, styles.controlsPopover)}
+        >
+          <Dialog aria-label={label} {...stylex.props(styles.controlDialog)}>
+            {({ close }) => (
+              <>
+                <div
+                  role="group"
+                  aria-label={`${label} actions`}
+                  {...stylex.props(layout.stack, gap.none)}
+                >
+                  {actions.map((action) => (
+                    <Fragment key={action.id}>
+                      {action.separatorBefore && (
+                        <Separator {...stylex.props(styles.separator)} />
+                      )}
+                      <AriaButton
+                        isDisabled={action.disabled}
+                        onPress={() => {
+                          close();
+                          action.onAction();
+                        }}
+                        {...stylex.props(
+                          styles.trigger,
+                          styles.item,
+                          styles.actionButton,
+                          action.destructive && styles.danger,
+                          action.disabled && styles.disabled,
+                        )}
+                      >
+                        {action.icon && <Icon name={action.icon} />}{" "}
+                        {action.label}
+                      </AriaButton>
+                    </Fragment>
+                  ))}
+                </div>
+                {controlGroups.map((group) => (
+                  <MenuControls key={group.id} group={group} />
+                ))}
+              </>
+            )}
+          </Dialog>
+        </Popover>
+      </DialogTrigger>
+    );
   return (
     <MenuTrigger>
-      <AriaButton
-        aria-label={label}
-        {...stylex.props(styles.trigger, !!text && styles.labeledTrigger)}
-      >
-        <span title={label} {...stylex.props(styles.triggerContents)}>
-          {icon && <Icon name={icon} size={18} />}
-          {text && <span>{text}</span>}
-          {(text || (icon && icon !== "more")) && (
-            <Icon name="chevronDown" size={12} />
-          )}
-        </span>
-      </AriaButton>
+      {trigger}
       <Popover
         placement="bottom end"
         offset={6}
