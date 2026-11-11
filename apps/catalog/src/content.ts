@@ -280,6 +280,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Arrow keys navigate cells; Enter opens a record when available. One sticky Actions column holds shared menus, including Open. Closing details restores focus to the same row/menu.",
     "The table owns spacing, alignment and formatting: text/metadata, integer or decimal numbers, integer minor-unit money, date-only dates, timestamp dates and status badges. No app-defined cell layout or extra action columns.",
     "Numbered pagination includes First, Previous, Next, Last and 10/25/50/100 rows per page. Server totals describe the filtered dataset, not just the visible page.",
+    "Text columns may add 48px decorative thumbnails beside their names and metadata. Images shimmer while downloading; loading also covers app-generated artwork. Missing or failed images use an icon. Preview loading never disables the row or changes its accessible name.",
     "Shimmer rows match column structure while loading. Errors, no records and no matches are separate states. Responses echo their normalized query; mismatched results never appear under a new query.",
     "The catalog simulates a paginated endpoint over synthetic records with delay, failure/retry and request cancellation. Apps own authorization, SQL allowlists, search fields, endpoints, URL state and stale-response protection. Confirm this example before Cabinitron API adoption.",
   ],

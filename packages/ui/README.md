@@ -69,3 +69,11 @@ The workspace catalog example owns its synthetic routing model. Review refresh, 
 ```
 
 Groups have accessible headings. Keyboard navigation, typeahead, disabled choices, Escape cancellation and focus restoration apply across groups. An entirely empty picker stays disabled; callers can supply a disabled descriptive option when a group needs an empty-state message. Review the grouped material example in **Swatches & previews** before application adoption. The catalog uses illustrative wood/paint/library samples; it has no business data, pricing, sheen control or persistence migration.
+
+Text table columns may provide `thumbnail: item => ({src, loading, fit})` to show
+48px decorative artwork next to their label and metadata. `fit` defaults to
+`contain`; use `cover` for surface samples. `loading: true` shows the existing
+Shimmer while an application prepares an image (for example a rendered model).
+Image downloads also shimmer until load/error. Missing or failed images fall back
+to an icon. Names, sorting, row keyboard navigation and actions are unchanged;
+applications retain responsibility for asset authorization and model rendering.
