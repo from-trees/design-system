@@ -401,3 +401,97 @@ it("keeps multi-status edits as a draft and clears only that field on apply", as
     filters: { name: { operator: "contains", value: "oak" } },
   });
 });
+
+it("shows thumbnail shimmers through image loading and failures while preserving row names and activation", async () => {
+  const open = vi.fn();
+  const illustrated: TableColumn<Item>[] = [
+    {
+      id: "name",
+      label: "Name",
+      kind: "text",
+      value: (r) => r.name,
+      metadata: () => "Saved item",
+      thumbnail: (r) => ({ src: `/${r.id}.png` }),
+    },
+  ];
+  const { container } = render(
+    <DataTable
+      {...base}
+      columns={illustrated}
+      onQueryChange={() => {}}
+      onOpenRow={open}
+    />,
+  );
+  const thumbnails = container.querySelectorAll(
+    '[data-ft-ui="table-thumbnail"]',
+  );
+  expect(thumbnails).toHaveLength(2);
+  expect(
+    thumbnails[0].querySelector('[data-ft-ui="shimmer"]'),
+  ).toBeInTheDocument();
+  fireEvent.load(thumbnails[0].querySelector("img")!);
+  expect(thumbnails[0]).toHaveAttribute("aria-busy", "false");
+  expect(
+    thumbnails[0].querySelector('[data-ft-ui="shimmer"]'),
+  ).not.toBeInTheDocument();
+  fireEvent.error(thumbnails[1].querySelector("img")!);
+  expect(thumbnails[1]).toHaveAttribute("aria-busy", "false");
+  expect(thumbnails[1].querySelector("img")).not.toBeInTheDocument();
+  expect(
+    thumbnails[1].querySelector('[data-ft-ui="shimmer"]'),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("Oak kitchen")).toBeVisible();
+  const row = screen.getByText("Oak kitchen").closest("tr")!;
+  row.focus();
+  await userEvent.keyboard("{Enter}");
+  expect(open).toHaveBeenCalledWith(items[0]);
+});
+it("supports pending generated artwork, missing images and source changes", () => {
+  const columnsFor = (src?: string, loading = false): TableColumn<Item>[] => [
+    {
+      id: "name",
+      label: "Name",
+      kind: "text",
+      value: (r) => r.name,
+      thumbnail: () => ({ src, loading }),
+    },
+  ];
+  const { container, rerender } = render(
+    <DataTable
+      {...base}
+      columns={columnsFor(undefined, true)}
+      onQueryChange={() => {}}
+    />,
+  );
+  expect(
+    container.querySelectorAll(
+      '[data-ft-ui="table-thumbnail"][aria-busy="true"]',
+    ),
+  ).toHaveLength(2);
+  rerender(
+    <DataTable
+      {...base}
+      columns={columnsFor("/ready.png")}
+      onQueryChange={() => {}}
+    />,
+  );
+  fireEvent.load(container.querySelector("img")!);
+  rerender(
+    <DataTable
+      {...base}
+      columns={columnsFor("/changed.png")}
+      onQueryChange={() => {}}
+    />,
+  );
+  expect(
+    container.querySelectorAll(
+      '[data-ft-ui="table-thumbnail"][aria-busy="true"]',
+    ),
+  ).toHaveLength(2);
+  rerender(
+    <DataTable {...base} columns={columnsFor()} onQueryChange={() => {}} />,
+  );
+  expect(
+    container.querySelector('[data-ft-ui="shimmer"]'),
+  ).not.toBeInTheDocument();
+});
