@@ -142,7 +142,6 @@ export function EstimateProfitPrototype() {
                         { id: "qty", label: "Qty", numeric: true },
                         { id: "rate", label: "Rate", numeric: true },
                         { id: "cost", label: "Cost", numeric: true },
-                        { id: "profit", label: "Profit %", numeric: true },
                         { id: "total", label: "Total", numeric: true },
                       ]
                 }
@@ -160,7 +159,6 @@ export function EstimateProfitPrototype() {
                         row.qty,
                         money(rate(row.cost)),
                         money(row.cost),
-                        `${margin.toFixed(1)}%`,
                         money(rate(row.cost) * row.qty),
                       ],
                 }))}
