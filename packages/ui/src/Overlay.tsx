@@ -21,7 +21,9 @@ export type OverlayProps = {
 export type DialogProps = OverlayProps & {
   size?: "default" | "fullscreen" | "workflow";
 };
-export type SidePanelProps = OverlayProps & { size?: "default" | "workflow" };
+export type SidePanelProps = OverlayProps & {
+  size?: "default" | "workflow" | "wide-workflow";
+};
 const slideIn = stylex.keyframes({
   from: { transform: "translateX(100%)" },
   to: { transform: "translateX(0)" },
@@ -97,6 +99,7 @@ const styles = stylex.create({
     },
     animationTimingFunction: "cubic-bezier(0.2, 0, 0, 1)",
   },
+  wideWorkflowDrawer: { width: "min(1100px, 100vw)" },
   dialog: {
     width: "100%",
     minWidth: 0,
@@ -174,11 +177,13 @@ function Overlay({
   fullScreen = false,
   workflow = false,
   workflowPanel = false,
+  wideWorkflowPanel = false,
 }: OverlayProps & {
   side?: boolean;
   fullScreen?: boolean;
   workflow?: boolean;
   workflowPanel?: boolean;
+  wideWorkflowPanel?: boolean;
 }) {
   const theme = useThemeStyles();
   const descriptionId = useId();
@@ -204,6 +209,7 @@ function Overlay({
           fullScreen && styles.fullscreen,
           workflow && styles.workflow,
           workflowPanel && styles.workflowDrawer,
+          wideWorkflowPanel && styles.wideWorkflowDrawer,
         )}
       >
         <AriaDialog
@@ -250,5 +256,12 @@ export function Dialog({ size = "default", ...props }: DialogProps) {
   );
 }
 export function SidePanel({ size = "default", ...props }: SidePanelProps) {
-  return <Overlay {...props} side workflowPanel={size === "workflow"} />;
+  return (
+    <Overlay
+      {...props}
+      side
+      workflowPanel={size !== "default"}
+      wideWorkflowPanel={size === "wide-workflow"}
+    />
+  );
 }
