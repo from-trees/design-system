@@ -28,6 +28,8 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 
 `Parameters` renders ordered app-defined groups and fields. Define the specific schema, grouping, order and units in an app wrapper, as the catalog's CabinetParameters does. The UI package provides no cabinet preset or default units.
 
+`Slider` is a controlled native range input that composes with `ParameterRow` labels and contextual help. Applications supply `min`, `max`, `step`, `value`, `onChange` and optional `formatValue`; all units, formulas, persistence and authorization stay in the application. Arrow keys retain the supplied precision. `SidePanel size="wide-workflow"` provides a 1,100-pixel desktop editor capped at the viewport width, retaining the existing workflow panel's focus, dismissal and motion behavior. Review the synthetic `?example=estimate-profit` catalog composition before adoption.
+
 
 ### Workflow progress (0.8.0)
 

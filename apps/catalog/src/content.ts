@@ -19,6 +19,7 @@ export type PageId =
   | "customer-journey"
   | "estimate-options"
   | "estimate-workflow"
+  | "estimate-profit"
   | "customizer"
   | "sidebar"
   | "patterns"
@@ -157,6 +158,14 @@ export const pages: {
     group: "Patterns",
     description:
       "Prepare an estimate in six resumable steps: customer, direct line items and choices, documents, terms, finalization and delivery.",
+  },
+  {
+    id: "estimate-profit",
+    title: "Estimate pricing",
+    icon: "receipt",
+    group: "Patterns",
+    description:
+      "Private cost and gross-margin controls in a wider estimate editor, with a separate customer-safe preview.",
   },
   {
     id: "estimate-options",
