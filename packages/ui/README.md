@@ -79,3 +79,6 @@ Shimmer while an application prepares an image (for example a rendered model).
 Image downloads also shimmer until load/error. Missing or failed images fall back
 to an icon. Names, sorting, row keyboard navigation and actions are unchanged;
 applications retain responsibility for asset authorization and model rendering.
+
+
+`Slider valueInput={{ label, suffix }}` replaces its read-only output with a synchronized decimal text input, without increment buttons. The field reserves enough width to show a decimal value; the label, slider and field remain on one line using `ParameterRow layout="inline"`, which gives compound controls the space after the label. Bounds and increments come from the app's existing `min`, `max` and `step`; Enter or blur validates the draft entry and snaps it to that increment. Escape cancels the draft entry. Blank, nonfinite and out-of-range values remain invalid without changing the controlled value. `onValidityChange` reports both pending drafts and invalid entries so app save/progress controls can wait for a valid applied value. Both controls have unique IDs and retain the parent parameter's contextual help. Omit `valueInput` to preserve the read-only output contract.
