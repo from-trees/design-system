@@ -20,3 +20,7 @@ This change supplies one native SendEmailDialog and an interactive catalog for e
 6. Record actual per-delivery recipients and timestamps in the existing activity history. Keep automatic verification, receipt and system-notification recipient policies explicit; editing a manual invitation does not silently broaden them.
 
 Attachment selection is intentionally deferred to a later change. The component's summary/notice slots allow future document-specific controls without duplicating the composer; this review introduces no attachment selection behavior.
+
+## Adoption package
+
+The confirmed composer is packaged as `0.16.0-cc.1`. It retains the exact-entry Slider and Parameter controls already present in Cabinitron’s vendored `0.15.0` package, so adopting the composer does not remove those controls. The package remains source-only and is built from this reviewed branch; no registry publication or catalog deployment is performed.
