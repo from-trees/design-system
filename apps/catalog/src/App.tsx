@@ -1,3 +1,4 @@
+import { EmailDeliveryPrototype } from "./EmailDeliveryPrototype";
 import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateProfitPrototype } from "./EstimateProfitPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
@@ -73,6 +74,17 @@ export default function App() {
     "parameters",
     "panels",
   ].includes(page);
+  if (
+    new URLSearchParams(window.location.search).get("example") ===
+    "email-delivery"
+  )
+    return (
+      <ThemeProvider theme={theme} density={density}>
+        <main {...stylex.props(s.content)}>
+          <EmailDeliveryPrototype />
+        </main>
+      </ThemeProvider>
+    );
   if (
     new URLSearchParams(window.location.search).get("example") ===
     "estimate-profit"

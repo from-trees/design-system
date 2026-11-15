@@ -1,3 +1,4 @@
+import { EmailDeliveryPrototype } from "./EmailDeliveryPrototype";
 import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
 import { EstimateProfitPrototype } from "./EstimateProfitPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
@@ -1066,6 +1067,8 @@ export function HelpDemo() {
 }
 export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
   switch (page) {
+    case "email-delivery":
+      return <EmailDeliveryPrototype />;
     case "workspace-navigation":
       return <WorkspaceNavigationPrototype />;
     case "tables":
