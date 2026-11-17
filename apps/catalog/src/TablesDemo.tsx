@@ -214,7 +214,29 @@ export function TablesDemo({ state }: { state: ExampleState }) {
     <div {...stylex.props(layout.stack, gap.xl)}>
       <DataTable
         label="Invoices"
-        columns={columns}
+        columns={columns.map((column) =>
+          column.id === "customer" && column.kind === "text"
+            ? {
+                ...column,
+                inlineAction: (row: Invoice) => ({
+                  label: `Filter by customer ${row.customer}`,
+                  icon: "settings" as const,
+                  disabled: state === "disabled",
+                  onAction: () => {
+                    setNotice("");
+                    setQuery((current) => ({
+                      ...current,
+                      page: 1,
+                      filters: {
+                        ...current.filters,
+                        customer: { operator: "eq", value: row.customer },
+                      },
+                    }));
+                  },
+                }),
+              }
+            : column,
+        )}
         query={query}
         onQueryChange={(next) => {
           setNotice("");

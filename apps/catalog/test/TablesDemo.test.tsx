@@ -154,3 +154,22 @@ it("combines multi-status IN with scalar customer equality and rejects operators
     }),
   ).toThrow();
 });
+
+it("filters the entire dataset from a customer cell and resets pagination while preserving other query state", async () => {
+  const user = userEvent.setup();
+  render(<TablesDemo state="default" />);
+  await screen.findByText("67 results · Page 1 of 7");
+  await user.click(screen.getByRole("button", { name: "Status filter" }));
+  await user.click(await screen.findByRole("checkbox", { name: "Issued" }));
+  await user.click(screen.getByRole("button", { name: "Apply filter" }));
+  await screen.findByText("22 results · Page 1 of 3");
+  await user.click(screen.getByRole("button", { name: "Next page" }));
+  await screen.findByText("22 results · Page 2 of 3");
+  await user.click(screen.getAllByRole("button", { name: "Filter by customer Sam Rivera" })[0]);
+  await screen.findByText("5 results · Page 1 of 1");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Filter by customer Alex Morgan" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Status filter" })).toHaveTextContent("Issued");
+  await user.click(screen.getByRole("button", { name: "Clear filters" }));
+  await screen.findByText("67 results · Page 1 of 7");
+});

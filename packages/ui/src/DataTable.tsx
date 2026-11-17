@@ -12,7 +12,7 @@ import * as stylex from "@stylexjs/stylex";
 import { color, metrics, space } from "./tokens.stylex";
 import { layout, gap } from "./utilities";
 import { Button, IconButton } from "./Button";
-import { Icon } from "./Icon";
+import { Icon, type IconName } from "./Icon";
 import { TextInput, Select } from "./Field";
 import { MenuButton, type Action } from "./MenuButton";
 import { Badge, Status } from "./Feedback";
@@ -32,6 +32,13 @@ export type TableColumn<T> = BaseColumn &
         kind: "text";
         value: (item: T) => string | null;
         metadata?: (item: T) => string | null;
+        /** Optional contextual action beside the text. Apps own the action's query or navigation. */
+        inlineAction?: (item: T) => {
+          label: string;
+          icon: IconName;
+          onAction: () => void;
+          disabled?: boolean;
+        } | null;
         /** Decorative artwork next to the existing cell label. Apps supply images or pending render state. */
         thumbnail?: (item: T) => {
           src?: string;
@@ -327,12 +334,24 @@ function displayCell<T>(
       )}
     </>
   );
-  if (!column.thumbnail) return text;
-  const thumbnail = column.thumbnail(item);
-  return (
+  const thumbnail = column.thumbnail?.(item);
+  const content = !thumbnail ? text : (
     <span {...stylex.props(styles.illustrated)}>
       <TableThumbnail key={thumbnail.src ?? "empty"} {...thumbnail} />
       <span {...stylex.props(styles.caption)}>{text}</span>
+    </span>
+  );
+  const action = column.inlineAction?.(item);
+  if (!action) return content;
+  return (
+    <span {...stylex.props(layout.row, layout.alignCenter, gap.xs)}>
+      <span {...stylex.props(styles.caption)}>{content}</span>
+      <IconButton
+        label={action.label}
+        icon={action.icon}
+        isDisabled={action.disabled}
+        onPress={action.onAction}
+      />
     </span>
   );
 }
