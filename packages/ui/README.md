@@ -79,3 +79,11 @@ Shimmer while an application prepares an image (for example a rendered model).
 Image downloads also shimmer until load/error. Missing or failed images fall back
 to an icon. Names, sorting, row keyboard navigation and actions are unchanged;
 applications retain responsibility for asset authorization and model rendering.
+
+Text table columns may supply `inlineAction: item => ({label, icon, onAction,
+disabled})` (or `null`) for a contextual icon button beside the cell label.
+Use a specific accessible label, such as `Filter by customer ${item.customer}`.
+The button supports pointer and keyboard activation independently of row opening.
+Applications own query updates, navigation and authorization. For filter shortcuts,
+preserve other query fields and filters, replace the relevant filter, and reset
+`page` to 1. See the catalog's Tables customer shortcut for an example.

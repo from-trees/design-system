@@ -495,3 +495,39 @@ it("supports pending generated artwork, missing images and source changes", () =
     container.querySelector('[data-ft-ui="shimmer"]'),
   ).not.toBeInTheDocument();
 });
+
+it("runs inline text actions by pointer and keyboard without opening the row", async () => {
+  const user = userEvent.setup();
+  const onAction = vi.fn();
+  const onOpen = vi.fn();
+  render(
+    <DataTable
+      {...base}
+      columns={[
+        {
+          id: "name",
+          label: "Name",
+          kind: "text",
+          value: (item) => item.name,
+          inlineAction: (item) => ({
+            label: `Filter by ${item.name}`,
+            icon: "settings",
+            onAction: () => onAction(item.id),
+            disabled: item.id === "b",
+          }),
+        },
+      ]}
+      onQueryChange={vi.fn()}
+      onOpenRow={onOpen}
+    />,
+  );
+  const shortcut = screen.getByRole("button", { name: "Filter by Oak kitchen" });
+  await user.click(shortcut);
+  expect(onAction).toHaveBeenLastCalledWith("a");
+  shortcut.focus();
+  await user.keyboard("{Enter}");
+  await user.keyboard(" ");
+  expect(onAction).toHaveBeenCalledTimes(3);
+  expect(onOpen).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "Filter by Walnut bar" })).toBeDisabled();
+});
