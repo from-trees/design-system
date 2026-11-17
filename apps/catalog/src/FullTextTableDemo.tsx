@@ -4,7 +4,7 @@ import { DataTable, type TableQuery } from "@from-trees/ui";
 const names = [
   "Sample Home — Large Bathroom + Shower Duplicate v2",
   "Sample Home — Large Bathroom + Shower Duplicate",
-  "Sample Home — A long design name with room details, finish choices, and revision notes that remain visible across multiple lines on smaller screens",
+  "Sample Home — A long design name with room details, finish choices, and revision notes that use the available horizontal column space before truncating",
   "AnUnbrokenDesignName".repeat(12),
 ];
 const items = names.map((name, i) => ({
@@ -26,10 +26,10 @@ export function FullTextTableDemo() {
   );
   return (
     <section>
-      <h3>Full text within the column</h3>
+      <h3>Single-line text using the column width</h3>
       <p>
-        Names use the available column width and wrap so their full text stays
-        visible.
+        Names stay on one line and use the available column width, with ellipsis
+        only at the column edge.
       </p>
       <DataTable
         label="Full design names"
@@ -38,7 +38,7 @@ export function FullTextTableDemo() {
             id: "name",
             label: "Design",
             kind: "text",
-            wrapText: true,
+            fillWidth: true,
             value: (item) => item.name,
           },
           {

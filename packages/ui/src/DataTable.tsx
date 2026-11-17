@@ -30,8 +30,8 @@ export type TableColumn<T> = BaseColumn &
   (
     | {
         kind: "text";
-        /** Show full text using the column width, wrapping when needed. */
-        wrapText?: boolean;
+        /** Use the available column width; truncate only at its edge. */
+        fillWidth?: boolean;
         value: (item: T) => string | null;
         metadata?: (item: T) => string | null;
         /** Optional contextual action beside the text. Apps own the action's query or navigation. */
@@ -173,14 +173,11 @@ const styles = stylex.create({
     whiteSpace: "nowrap",
     maxWidth: 320,
   },
-  wrappedText: {
-    maxWidth: "none",
-    whiteSpace: "normal",
-    overflow: "visible",
-    textOverflow: "clip",
-    overflowWrap: "anywhere",
-  },
-  wrappedCell: { maxWidth: "none" },
+  fullWidthText: { maxWidth: "none" },
+  // A zero preferred width lets ellipsis follow the cell's allocated width
+  // instead of the text's intrinsic width. The primary minimum still applies.
+  fullWidthCell: { width: "100%", maxWidth: 0 },
+  fullWidthCaption: { flexGrow: 1, flexBasis: 0, minWidth: 0 },
   metadata: {
     display: "block",
     fontWeight: 400,
@@ -336,7 +333,7 @@ function displayCell<T>(
     <>
       <span
         title={String(value)}
-        {...stylex.props(styles.text, column.wrapText && styles.wrappedText)}
+        {...stylex.props(styles.text, column.fillWidth && styles.fullWidthText)}
       >
         {String(value)}
       </span>
@@ -353,14 +350,28 @@ function displayCell<T>(
   ) : (
     <span {...stylex.props(styles.illustrated)}>
       <TableThumbnail key={thumbnail.src ?? "empty"} {...thumbnail} />
-      <span {...stylex.props(styles.caption)}>{text}</span>
+      <span
+        {...stylex.props(
+          styles.caption,
+          column.fillWidth && styles.fullWidthCaption,
+        )}
+      >
+        {text}
+      </span>
     </span>
   );
   const action = column.inlineAction?.(item);
   if (!action) return content;
   return (
     <span {...stylex.props(layout.row, layout.alignCenter, gap.xs)}>
-      <span {...stylex.props(styles.caption)}>{content}</span>
+      <span
+        {...stylex.props(
+          styles.caption,
+          column.fillWidth && styles.fullWidthCaption,
+        )}
+      >
+        {content}
+      </span>
       <IconButton
         label={action.label}
         icon={action.icon}
@@ -614,8 +625,8 @@ export function DataTable<T>({
                       styles.cell,
                       id === columns[0]?.id && styles.primary,
                       column?.kind === "text" &&
-                        column.wrapText &&
-                        styles.wrappedCell,
+                        column.fillWidth &&
+                        styles.fullWidthCell,
                       (column?.kind === "number" || column?.kind === "money") &&
                         styles.numeric,
                       column?.kind === "date" && styles.date,

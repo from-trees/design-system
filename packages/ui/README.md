@@ -88,4 +88,4 @@ Applications own query updates, navigation and authorization. For filter shortcu
 preserve other query fields and filters, replace the relevant filter, and reset
 `page` to 1. See the catalog's Tables customer shortcut for an example.
 
-Text columns may opt into `wrapText: true` to show their complete value across the available column width and wrap long or unbroken text. Other columns retain compact ellipsis. Metadata keeps its existing compact presentation.
+Text columns may opt into `fillWidth: true` to use the available horizontal column width while remaining on one line. Values truncate with ellipsis only at the column edge. Other columns retain their compact width cap. Metadata keeps its existing compact presentation.
