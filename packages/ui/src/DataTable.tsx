@@ -30,6 +30,8 @@ export type TableColumn<T> = BaseColumn &
   (
     | {
         kind: "text";
+        /** Show full text using the column width, wrapping when needed. */
+        wrapText?: boolean;
         value: (item: T) => string | null;
         metadata?: (item: T) => string | null;
         /** Optional contextual action beside the text. Apps own the action's query or navigation. */
@@ -171,6 +173,14 @@ const styles = stylex.create({
     whiteSpace: "nowrap",
     maxWidth: 320,
   },
+  wrappedText: {
+    maxWidth: "none",
+    whiteSpace: "normal",
+    overflow: "visible",
+    textOverflow: "clip",
+    overflowWrap: "anywhere",
+  },
+  wrappedCell: { maxWidth: "none" },
   metadata: {
     display: "block",
     fontWeight: 400,
@@ -324,7 +334,10 @@ function displayCell<T>(
   }
   const text = (
     <>
-      <span title={String(value)} {...stylex.props(styles.text)}>
+      <span
+        title={String(value)}
+        {...stylex.props(styles.text, column.wrapText && styles.wrappedText)}
+      >
         {String(value)}
       </span>
       {column.metadata?.(item) && (
@@ -335,7 +348,9 @@ function displayCell<T>(
     </>
   );
   const thumbnail = column.thumbnail?.(item);
-  const content = !thumbnail ? text : (
+  const content = !thumbnail ? (
+    text
+  ) : (
     <span {...stylex.props(styles.illustrated)}>
       <TableThumbnail key={thumbnail.src ?? "empty"} {...thumbnail} />
       <span {...stylex.props(styles.caption)}>{text}</span>
@@ -598,6 +613,9 @@ export function DataTable<T>({
                     {...stylex.props(
                       styles.cell,
                       id === columns[0]?.id && styles.primary,
+                      column?.kind === "text" &&
+                        column.wrapText &&
+                        styles.wrappedCell,
                       (column?.kind === "number" || column?.kind === "money") &&
                         styles.numeric,
                       column?.kind === "date" && styles.date,
