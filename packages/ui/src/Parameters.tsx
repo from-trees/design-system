@@ -34,6 +34,8 @@ export type CustomParameter = {
   control: ReactNode | ((props: ParameterControlProps) => ReactNode);
 };
 export type ParameterRowProps = {
+  /** Compact labels leave the remaining row width to a compound control. */
+  layout?: "balanced" | "inline";
   label: string;
   icon?: IconName;
   reference?: string;
@@ -80,6 +82,7 @@ const styles = stylex.create({
     gap: 12,
     alignItems: "center",
   },
+  inlineRow: { gridTemplateColumns: "max-content minmax(0, 1fr)" },
   label: {
     display: "flex",
     gap: 8,
@@ -141,6 +144,7 @@ const styles = stylex.create({
 });
 /** One layout for every editor. Built-in fields inherit the row's accessible label. */
 export function ParameterRow({
+  layout = "balanced",
   label,
   icon,
   reference,
@@ -163,7 +167,9 @@ export function ParameterRow({
   };
   return (
     <div {...stylex.props(styles.field)}>
-      <div {...stylex.props(styles.row)}>
+      <div
+        {...stylex.props(styles.row, layout === "inline" && styles.inlineRow)}
+      >
         <div {...stylex.props(styles.labelGroup)}>
           <label
             id={`${id}-label`}

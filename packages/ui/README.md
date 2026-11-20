@@ -30,6 +30,8 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 
 `Slider` is a controlled native range input that composes with `ParameterRow` labels and contextual help. Applications supply `min`, `max`, `step`, `value`, `onChange` and optional `formatValue`; all units, formulas, persistence and authorization stay in the application. Arrow keys retain the supplied precision. `SidePanel size="wide-workflow"` provides a 1,100-pixel desktop editor capped at the viewport width, retaining the existing workflow panel's focus, dismissal and motion behavior. Review the synthetic `?example=estimate-profit` catalog composition before adoption.
 
+`Slider valueInput={{ label, suffix }}` replaces its read-only output with a synchronized decimal text input, without increment buttons. The field reserves enough width to show a decimal value; the label, slider and field remain on one line using `ParameterRow layout="inline"`, which gives compound controls the space after the label. Bounds and increments come from the app's existing `min`, `max` and `step`; Enter or blur validates the draft entry and snaps it to that increment. Escape cancels the draft entry. Blank, nonfinite and out-of-range values remain invalid without changing the controlled value. `onValidityChange` reports both pending drafts and invalid entries so app save/progress controls can wait for a valid applied value. Both controls have unique IDs and retain the parent parameter's contextual help. Omit `valueInput` to preserve the read-only output contract.
+
 
 ### Workflow progress (0.8.0)
 
