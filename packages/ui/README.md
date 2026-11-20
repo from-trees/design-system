@@ -88,4 +88,12 @@ Applications own query updates, navigation and authorization. For filter shortcu
 preserve other query fields and filters, replace the relevant filter, and reset
 `page` to 1. See the catalog's Tables customer shortcut for an example.
 
+Use a column with `kind: "action"` for a compact, directly available icon button.
+Its `value(item)` supplies the button label, icon, and action. Place it before
+the data columns to make the action easier to reach. The first data column
+remains the row heading. Activating the icon runs the supplied action separately
+from the row action.
+
 Text columns may opt into `fillWidth: true` to use the available horizontal column width while remaining on one line. Values truncate with ellipsis only at the column edge. Other columns retain their compact width cap. Metadata keeps its existing compact presentation.
+
+`Dialog`, `SidePanel`, and `TaskHeader` accept optional `headerActions` for controls such as a contextual button with `icon="help"`. Applications supply the accessible name and behavior.

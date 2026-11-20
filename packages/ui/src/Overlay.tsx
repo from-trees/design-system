@@ -16,6 +16,7 @@ export type OverlayProps = {
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
   footer?: ReactNode;
+  headerActions?: ReactNode;
   dismissible?: boolean;
 };
 export type DialogProps = OverlayProps & {
@@ -123,6 +124,7 @@ const styles = stylex.create({
     borderBottomColor: color.border,
     flexShrink: 0,
   },
+  headerActions: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
   title: {
     fontFamily: "inherit",
     fontStyle: "normal",
@@ -172,6 +174,7 @@ function Overlay({
   onOpenChange,
   children,
   footer,
+  headerActions,
   dismissible = true,
   side = false,
   fullScreen = false,
@@ -230,13 +233,18 @@ function Overlay({
                 </p>
               )}
             </div>
-            {dismissible && (
-              <Button
-                variant="ghost"
-                icon="close"
-                aria-label={`Close ${title}`}
-                onPress={() => onOpenChange(false)}
-              />
+            {(headerActions || dismissible) && (
+              <div {...stylex.props(styles.headerActions)}>
+                {headerActions}
+                {dismissible && (
+                  <Button
+                    variant="ghost"
+                    icon="close"
+                    aria-label={`Close ${title}`}
+                    onPress={() => onOpenChange(false)}
+                  />
+                )}
+              </div>
             )}
           </header>
           <div {...stylex.props(styles.body)}>{children}</div>

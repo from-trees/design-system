@@ -263,6 +263,7 @@ export function TaskHeader({
   busy = false,
   disabled = false,
   error,
+  headerActions,
 }: {
   title: string;
   description?: string;
@@ -272,6 +273,7 @@ export function TaskHeader({
   busy?: boolean;
   disabled?: boolean;
   error?: string;
+  headerActions?: ReactNode;
 }) {
   const id = useId();
   return (
@@ -285,6 +287,7 @@ export function TaskHeader({
         )}
       </div>
       <div {...stylex.props(styles.taskActions)}>
+        {headerActions}
         <Button isDisabled={busy} onClick={onCancel}>
           Cancel
         </Button>
