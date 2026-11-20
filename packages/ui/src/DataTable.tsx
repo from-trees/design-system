@@ -49,6 +49,14 @@ export type TableColumn<T> = BaseColumn &
         };
       }
     | {
+        kind: "action";
+        value: (item: T) => {
+          label: string;
+          icon: IconName;
+          onAction: () => void;
+        };
+      }
+    | {
         kind: "number";
         value: (item: T) => number | null;
         maximumFractionDigits?: number;
@@ -145,6 +153,12 @@ const styles = stylex.create({
     textAlign: "start",
     outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
     outlineOffset: -2,
+  },
+  compactAction: {
+    textAlign: "center",
+    paddingInline: space.sm,
+    minWidth: 0,
+    width: 1,
   },
   primary: { minWidth: 200, maxWidth: 340, fontWeight: 550 },
   illustrated: { display: "flex", alignItems: "center", gap: space.sm },
@@ -292,6 +306,17 @@ function displayCell<T>(
   locale: string,
   timeZone?: string,
 ) {
+  if (column.kind === "action") {
+    const action = column.value(item);
+    return (
+      <IconButton
+        label={action.label}
+        icon={action.icon}
+        variant="secondary"
+        onPress={action.onAction}
+      />
+    );
+  }
   if (column.kind === "status") {
     const status = column.value(item);
     return status ? <Badge tone={status.tone}>{status.label}</Badge> : "—";
@@ -430,6 +455,8 @@ export function DataTable<T>({
     setSearch("");
     change({ search: "", filters: {} });
   };
+  const rowHeaderId =
+    columns.find((column) => column.kind !== "action")?.id ?? columns[0]?.id;
   const allColumns = [
     ...columns.map((column) => ({ id: column.id, column })),
     { id: "__actions", column: null },
@@ -543,12 +570,13 @@ export function DataTable<T>({
             {({ id, column }) => (
               <Column
                 id={id}
-                isRowHeader={id === columns[0]?.id}
+                isRowHeader={id === rowHeaderId}
                 allowsSorting={!!column?.sortable}
                 {...stylex.props(
                   styles.cell,
                   styles.header,
                   column?.sortable && styles.sortable,
+                  column?.kind === "action" && styles.compactAction,
                   (column?.kind === "number" || column?.kind === "money") &&
                     styles.numeric,
                   !column && styles.action,
@@ -623,7 +651,8 @@ export function DataTable<T>({
                   <Cell
                     {...stylex.props(
                       styles.cell,
-                      id === columns[0]?.id && styles.primary,
+                      id === rowHeaderId && styles.primary,
+                      column?.kind === "action" && styles.compactAction,
                       column?.kind === "text" &&
                         column.fillWidth &&
                         styles.fullWidthCell,
@@ -633,7 +662,9 @@ export function DataTable<T>({
                       !column && styles.action,
                     )}
                   >
-                    {row.item === null ? (
+                    {row.item === null && column?.kind === "action" ? (
+                      <Shimmer width={24} />
+                    ) : row.item === null ? (
                       <div {...stylex.props(styles.illustrated)}>
                         {column?.kind === "text" && column.thumbnail && (
                           <Shimmer width={48} height={48} variant="block" />
@@ -648,7 +679,7 @@ export function DataTable<T>({
                                 : 24
                             }
                           />
-                          {id === columns[0]?.id && (
+                          {id === rowHeaderId && (
                             <Shimmer width="55%" height={10} />
                           )}
                         </div>

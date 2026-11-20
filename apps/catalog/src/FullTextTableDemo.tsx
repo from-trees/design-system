@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DataTable, type TableQuery } from "@from-trees/ui";
+import { DataTable, Status, type TableQuery } from "@from-trees/ui";
 
 const names = [
   "Sample Home — Large Bathroom + Shower Duplicate v2",
@@ -14,6 +14,7 @@ const items = names.map((name, i) => ({
 }));
 
 export function FullTextTableDemo() {
+  const [notice, setNotice] = useState("");
   const [query, setQuery] = useState<TableQuery>({
     search: "",
     filters: {},
@@ -34,6 +35,16 @@ export function FullTextTableDemo() {
       <DataTable
         label="Full design names"
         columns={[
+          {
+            id: "open",
+            label: "Open",
+            kind: "action",
+            value: (item) => ({
+              label: `Open ${item.name}`,
+              icon: "external",
+              onAction: () => setNotice(`Open action selected for revision ${item.revision}.`),
+            }),
+          },
           {
             id: "name",
             label: "Design",
@@ -57,7 +68,9 @@ export function FullTextTableDemo() {
         }}
         getRowId={(item) => item.id}
         getRowLabel={(item) => item.name}
+        onOpenRow={(item) => setNotice(`History selected for revision ${item.revision}.`)}
       />
+      {notice && <Status>{notice}</Status>}
     </section>
   );
 }

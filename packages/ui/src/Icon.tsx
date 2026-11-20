@@ -49,6 +49,7 @@ import {
   Trash2,
   Undo2,
   X,
+  CircleHelp,
   type LucideIcon,
 } from "lucide-react";
 const icons = {
@@ -88,6 +89,7 @@ const icons = {
   more: MoreHorizontal,
   check: Check,
   info: Info,
+  help: CircleHelp,
   search: Search,
   external: ExternalLink,
   chevronDown: ChevronDown,
