@@ -95,3 +95,10 @@ export {
 } from "./DocumentSection";
 
 export type { MenuControl, MenuControlGroup } from "./MenuControls";
+export { Slider, type SliderProps } from "./Slider";
+
+export {
+  SendEmailDialog,
+  type EmailDraft,
+  type SendEmailDialogProps,
+} from "./SendEmailDialog";

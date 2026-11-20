@@ -12,7 +12,7 @@ import * as stylex from "@stylexjs/stylex";
 import { color, metrics, space } from "./tokens.stylex";
 import { layout, gap } from "./utilities";
 import { Button, IconButton } from "./Button";
-import { Icon } from "./Icon";
+import { Icon, type IconName } from "./Icon";
 import { TextInput, Select } from "./Field";
 import { MenuButton, type Action } from "./MenuButton";
 import { Badge, Status } from "./Feedback";
@@ -32,6 +32,19 @@ export type TableColumn<T> = BaseColumn &
         kind: "text";
         value: (item: T) => string | null;
         metadata?: (item: T) => string | null;
+        /** Optional contextual action beside the text. Apps own the action's query or navigation. */
+        inlineAction?: (item: T) => {
+          label: string;
+          icon: IconName;
+          onAction: () => void;
+          disabled?: boolean;
+        } | null;
+        /** Decorative artwork next to the existing cell label. Apps supply images or pending render state. */
+        thumbnail?: (item: T) => {
+          src?: string;
+          loading?: boolean;
+          fit?: "contain" | "cover";
+        };
       }
     | {
         kind: "number";
@@ -132,6 +145,25 @@ const styles = stylex.create({
     outlineOffset: -2,
   },
   primary: { minWidth: 200, maxWidth: 340, fontWeight: 550 },
+  illustrated: { display: "flex", alignItems: "center", gap: space.sm },
+  caption: { minWidth: 0 },
+  thumbnail: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    width: 48,
+    height: 48,
+    flexShrink: 0,
+    overflow: "hidden",
+    borderRadius: metrics.radius,
+    backgroundColor: color.subtle,
+    color: color.muted,
+  },
+  thumbnailImage: { width: "100%", height: "100%", objectFit: "contain" },
+  cover: { objectFit: "cover" },
+  pendingImage: { visibility: "hidden" },
+  thumbnailLoading: { position: "absolute", inset: 0 },
   text: {
     display: "block",
     overflow: "hidden",
@@ -200,8 +232,53 @@ const styles = stylex.create({
     gap: space.sm,
     minHeight: 28,
     justifyContent: "center",
+    flexGrow: 1,
   },
 });
+function TableThumbnail({
+  src,
+  loading,
+  fit,
+}: {
+  src?: string;
+  loading?: boolean;
+  fit?: "contain" | "cover";
+}) {
+  const [state, setState] = useState<"loading" | "loaded" | "error">(
+    src ? "loading" : "error",
+  );
+  const pending = !!loading || state === "loading";
+  return (
+    <span
+      aria-hidden="true"
+      aria-busy={pending}
+      data-ft-ui="table-thumbnail"
+      {...stylex.props(styles.thumbnail)}
+    >
+      {src && state !== "error" && (
+        <img
+          alt=""
+          src={src}
+          loading="lazy"
+          onLoad={() => setState("loaded")}
+          onError={() => setState("error")}
+          {...stylex.props(
+            styles.thumbnailImage,
+            fit === "cover" && styles.cover,
+            pending && styles.pendingImage,
+          )}
+        />
+      )}
+      {pending ? (
+        <span {...stylex.props(styles.thumbnailLoading)}>
+          <Shimmer width={48} height={48} variant="block" />
+        </span>
+      ) : state === "error" ? (
+        <Icon name="view" />
+      ) : null}
+    </span>
+  );
+}
 function displayCell<T>(
   column: TableColumn<T>,
   item: T,
@@ -245,7 +322,7 @@ function displayCell<T>(
       </time>
     );
   }
-  return (
+  const text = (
     <>
       <span title={String(value)} {...stylex.props(styles.text)}>
         {String(value)}
@@ -256,6 +333,26 @@ function displayCell<T>(
         </span>
       )}
     </>
+  );
+  const thumbnail = column.thumbnail?.(item);
+  const content = !thumbnail ? text : (
+    <span {...stylex.props(styles.illustrated)}>
+      <TableThumbnail key={thumbnail.src ?? "empty"} {...thumbnail} />
+      <span {...stylex.props(styles.caption)}>{text}</span>
+    </span>
+  );
+  const action = column.inlineAction?.(item);
+  if (!action) return content;
+  return (
+    <span {...stylex.props(layout.row, layout.alignCenter, gap.xs)}>
+      <span {...stylex.props(styles.caption)}>{content}</span>
+      <IconButton
+        label={action.label}
+        icon={action.icon}
+        isDisabled={action.disabled}
+        onPress={action.onAction}
+      />
+    </span>
   );
 }
 /** Owns layout, keyboard navigation and formatting. Apps supply whole-dataset query results. */
@@ -508,19 +605,24 @@ export function DataTable<T>({
                     )}
                   >
                     {row.item === null ? (
-                      <div {...stylex.props(styles.shimmerCell)}>
-                        <Shimmer
-                          width={
-                            column
-                              ? column.kind === "text"
-                                ? "85%"
-                                : "65%"
-                              : 24
-                          }
-                        />
-                        {id === columns[0]?.id && (
-                          <Shimmer width="55%" height={10} />
+                      <div {...stylex.props(styles.illustrated)}>
+                        {column?.kind === "text" && column.thumbnail && (
+                          <Shimmer width={48} height={48} variant="block" />
                         )}
+                        <div {...stylex.props(styles.shimmerCell)}>
+                          <Shimmer
+                            width={
+                              column
+                                ? column.kind === "text"
+                                  ? "85%"
+                                  : "65%"
+                                : 24
+                            }
+                          />
+                          {id === columns[0]?.id && (
+                            <Shimmer width="55%" height={10} />
+                          )}
+                        </div>
                       </div>
                     ) : column ? (
                       displayCell(column, row.item, locale, timeZone)

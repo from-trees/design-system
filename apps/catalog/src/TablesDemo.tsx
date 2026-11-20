@@ -19,6 +19,7 @@ import {
 import { layout, gap } from "@from-trees/ui/utilities";
 import type { ExampleState } from "./demos";
 import { s } from "./styles";
+import { ThumbnailTableDemo } from "./ThumbnailTableDemo";
 type Invoice = {
   id: string;
   number: string;
@@ -172,6 +173,7 @@ export function queryDemoInvoices(
   };
 }
 export function TablesDemo({ state }: { state: ExampleState }) {
+  const [showThumbnailDemo, setShowThumbnailDemo] = useState(false);
   const [query, setQuery] = useState<TableQuery>({
     search: "",
     filters: {},
@@ -212,7 +214,29 @@ export function TablesDemo({ state }: { state: ExampleState }) {
     <div {...stylex.props(layout.stack, gap.xl)}>
       <DataTable
         label="Invoices"
-        columns={columns}
+        columns={columns.map((column) =>
+          column.id === "customer" && column.kind === "text"
+            ? {
+                ...column,
+                inlineAction: (row: Invoice) => ({
+                  label: `Filter by customer ${row.customer}`,
+                  icon: "settings" as const,
+                  disabled: state === "disabled",
+                  onAction: () => {
+                    setNotice("");
+                    setQuery((current) => ({
+                      ...current,
+                      page: 1,
+                      filters: {
+                        ...current.filters,
+                        customer: { operator: "eq", value: row.customer },
+                      },
+                    }));
+                  },
+                }),
+              }
+            : column,
+        )}
         query={query}
         onQueryChange={(next) => {
           setNotice("");
@@ -249,6 +273,12 @@ export function TablesDemo({ state }: { state: ExampleState }) {
             ),
         }}
       />
+      <Button onPress={() => setShowThumbnailDemo((show) => !show)}>
+        {showThumbnailDemo
+          ? "Hide thumbnail example"
+          : "Preview thumbnail rows"}
+      </Button>
+      {showThumbnailDemo && <ThumbnailTableDemo />}
       {notice && <Status>{notice}</Status>}
       <details>
         <summary>Review controls & API contract</summary>

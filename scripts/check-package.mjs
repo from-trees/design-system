@@ -23,6 +23,7 @@ for (const path of [
   "src/tokens.stylex.ts",
   "src/utilities.ts",
   "src/Button.tsx",
+  "src/SendEmailDialog.tsx",
   "src/List.tsx",
   "src/DataTable.tsx",
   "src/WorkspaceNavigation.tsx",

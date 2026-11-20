@@ -19,6 +19,8 @@ export type PageId =
   | "customer-journey"
   | "estimate-options"
   | "estimate-workflow"
+  | "estimate-profit"
+  | "email-delivery"
   | "customizer"
   | "sidebar"
   | "patterns"
@@ -159,6 +161,22 @@ export const pages: {
       "Prepare an estimate in six resumable steps: customer, direct line items and choices, documents, terms, finalization and delivery.",
   },
   {
+    id: "email-delivery",
+    title: "Send email",
+    icon: "share",
+    group: "Patterns",
+    description:
+      "One shared email dialog with editable Cc recipients, subject and message for document delivery.",
+  },
+  {
+    id: "estimate-profit",
+    title: "Estimate pricing",
+    icon: "receipt",
+    group: "Patterns",
+    description:
+      "Private cost and gross-margin controls in a wider estimate editor, with a separate customer-safe preview.",
+  },
+  {
     id: "estimate-options",
     title: "Estimate options",
     icon: "check",
@@ -216,6 +234,11 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  "email-delivery": [
+    "Apps supply the fixed To and reply-to addresses, default Cc recipients and document summary.",
+    "Cc is optional and editable; addresses are committed on Enter or blur, deduplicated and removable.",
+    "The dialog prevents overlapping sends and preserves edits after failure. Apps own recipient authorization, delivery identity, retries and immutable document rules.",
+  ],
   "estimate-workflow": [
     "Save the initial name, customer and expiration as a resumable draft.",
     "Create sections and choices before adding their rows; imported design groups are read-only and refresh explicitly.",
@@ -280,6 +303,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Arrow keys navigate cells; Enter opens a record when available. One sticky Actions column holds shared menus, including Open. Closing details restores focus to the same row/menu.",
     "The table owns spacing, alignment and formatting: text/metadata, integer or decimal numbers, integer minor-unit money, date-only dates, timestamp dates and status badges. No app-defined cell layout or extra action columns.",
     "Numbered pagination includes First, Previous, Next, Last and 10/25/50/100 rows per page. Server totals describe the filtered dataset, not just the visible page.",
+    "Text columns may add 48px decorative thumbnails beside their names and metadata. Images shimmer while downloading; loading also covers app-generated artwork. Missing or failed images use an icon. Preview loading never disables the row or changes its accessible name.",
     "Shimmer rows match column structure while loading. Errors, no records and no matches are separate states. Responses echo their normalized query; mismatched results never appear under a new query.",
     "The catalog simulates a paginated endpoint over synthetic records with delay, failure/retry and request cancellation. Apps own authorization, SQL allowlists, search fields, endpoints, URL state and stale-response protection. Confirm this example before Cabinitron API adoption.",
   ],
