@@ -35,7 +35,7 @@ const money = (cents: number) =>
   );
 const s = stylex.create({
   header: {
-    width: { default: 340, "@media (max-width: 600px)": "100%" },
+    width: { default: 440, "@media (max-width: 600px)": "100%" },
     maxWidth: "100%",
   },
   screen: { padding: 24 },
@@ -44,6 +44,7 @@ export function EstimateProfitPrototype() {
   const [open, setOpen] = useState(true);
   const [customer, setCustomer] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [invalid, setInvalid] = useState<Record<string, boolean>>({});
   const [margins, setMargins] = useState<Record<string, number>>(() => {
     try {
       return (
@@ -76,6 +77,7 @@ export function EstimateProfitPrototype() {
             {!customer && (
               <Button
                 variant="primary"
+                isDisabled={Object.values(invalid).some(Boolean)}
                 onPress={() => {
                   localStorage.setItem(key, JSON.stringify(margins));
                   setSaved(true);
@@ -110,10 +112,22 @@ export function EstimateProfitPrototype() {
                   customer ? undefined : (
                     <div {...stylex.props(s.header)}>
                       <ParameterRow
+                        layout="inline"
                         label="Gross margin"
-                        help="Choose 0%–90% in 0.1% increments. Gross margin = profit ÷ selling price. Rate = unit cost ÷ (1 − margin). At 90%, a $100 cost gives a $1,000 rate. Adjusting this section changes only its rates and totals. Save prices retains the selection when reopened."
+                        help="Choose 0%–90% in 0.1% increments. Type an exact percentage beside the slider; Enter or leaving the field applies it, rounded to 0.1%. Out-of-range or blank entries stay invalid until corrected. Escape restores the last applied value. Gross margin = profit ÷ selling price. Rate = unit cost ÷ (1 − margin). At 90%, a $100 cost gives a $1,000 rate. Adjusting this section changes only its rates and totals. Save prices retains the selection when reopened."
                       >
                         <Slider
+                          onValidityChange={(value) =>
+                            setInvalid((current) =>
+                              current[group.id] === value
+                                ? current
+                                : { ...current, [group.id]: value },
+                            )
+                          }
+                          valueInput={{
+                            label: `${group.title} gross margin percent`,
+                            suffix: "%",
+                          }}
                           aria-label={`${group.title} gross margin`}
                           value={margin}
                           min={0}
