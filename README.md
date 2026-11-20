@@ -107,3 +107,10 @@ Open `#workspace-navigation` in the catalog, or `?example=workspace-navigation#w
 ### Customer estimate choices (catalog review)
 
 `DocumentSection` and `DocumentChoiceGroup` provide section tables, footers and native option selection. Open `#estimate-options` or `?example=estimate-options#estimate-options` to compare four sample designs, narrow an initial price range and save choices. See [the behavior and adoption contract](docs/estimate-options.md). Cabinitron adoption follows behavior confirmation in a separate review.
+
+
+## Document email composer
+
+`SendEmailDialog` provides fixed To/reply-to, editable optional Cc recipients, subject and introductory message, app-owned summaries/notices, pending protection and retryable errors. The catalog's **Send email** example switches between estimate, design-approval and invoice configurations and simulates success/failure without sending mail.
+
+Applications supply a controlled `EmailDraft` and an asynchronous `onSend(draft)` callback. They own recipient authorization, document readiness, immutable queue payloads and idempotency keys. Normalize and validate recipients on the server as well. Retries must preserve their original envelope; edits after an ambiguous attempt require an explicit new delivery identity. Verification codes and automatic receipt recipients follow their own server-owned policies.

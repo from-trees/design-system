@@ -20,6 +20,7 @@ export type PageId =
   | "estimate-options"
   | "estimate-workflow"
   | "estimate-profit"
+  | "email-delivery"
   | "customizer"
   | "sidebar"
   | "patterns"
@@ -160,6 +161,14 @@ export const pages: {
       "Prepare an estimate in six resumable steps: customer, direct line items and choices, documents, terms, finalization and delivery.",
   },
   {
+    id: "email-delivery",
+    title: "Send email",
+    icon: "share",
+    group: "Patterns",
+    description:
+      "One shared email dialog with editable Cc recipients, subject and message for document delivery.",
+  },
+  {
     id: "estimate-profit",
     title: "Estimate pricing",
     icon: "receipt",
@@ -225,6 +234,11 @@ export const pages: {
   },
 ];
 export const behavior: Partial<Record<PageId, string[]>> = {
+  "email-delivery": [
+    "Apps supply the fixed To and reply-to addresses, default Cc recipients and document summary.",
+    "Cc is optional and editable; addresses are committed on Enter or blur, deduplicated and removable.",
+    "The dialog prevents overlapping sends and preserves edits after failure. Apps own recipient authorization, delivery identity, retries and immutable document rules.",
+  ],
   "estimate-workflow": [
     "Save the initial name, customer and expiration as a resumable draft.",
     "Create sections and choices before adding their rows; imported design groups are read-only and refresh explicitly.",
