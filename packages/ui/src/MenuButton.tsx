@@ -28,6 +28,7 @@ export type Action = {
 };
 const styles = stylex.create({
   labeledTrigger: { width: "auto", paddingInline: 10, gap: 6 },
+  helpTrigger: { width: "auto", minWidth: metrics.control, paddingInline: 4 },
   triggerContents: { display: "flex", alignItems: "center", gap: 4 },
   trigger: {
     boxSizing: "border-box",
@@ -116,7 +117,11 @@ export function MenuButton({
   const trigger = (
     <AriaButton
       aria-label={label}
-      {...stylex.props(styles.trigger, !!text && styles.labeledTrigger)}
+      {...stylex.props(
+        styles.trigger,
+        !!text && styles.labeledTrigger,
+        !text && icon === "help" && styles.helpTrigger,
+      )}
     >
       <span title={label} {...stylex.props(styles.triggerContents)}>
         {icon && <Icon name={icon} size={18} />}

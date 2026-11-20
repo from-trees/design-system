@@ -471,6 +471,22 @@ export function MenusDemo({ state }: { state: ExampleState }) {
         <p {...stylex.props(s.text)}>A row with no primary action</p>
         <MenuButton label="Design actions" actions={actions.slice(1)} />
       </div>
+      <div {...stylex.props(s.row, s.between)}>
+        <p {...stylex.props(s.text)}>Contextual help</p>
+        <MenuButton
+          label="Design help"
+          icon="help"
+          actions={[
+            {
+              id: "guidance",
+              label: "Working with cabinet designs",
+              disabled: state === "disabled",
+              onAction: () =>
+                setMessage("Save a revision before sharing your design."),
+            },
+          ]}
+        />
+      </div>
       {message && <Status tone="success">{message}</Status>}
     </Stack>
   );
