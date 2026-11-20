@@ -611,6 +611,7 @@ export function SidebarDemo({
 }
 export function OverlayDemo() {
   const [dialog, setDialog] = useState(false);
+  const [help, setHelp] = useState(false);
   const [panel, setPanel] = useState(false);
   const [name, setName] = useState("Kitchen renovation");
   const [message, setMessage] = useState("");
@@ -634,6 +635,14 @@ export function OverlayDemo() {
         description="A focused task without leaving your place."
         open={dialog}
         onOpenChange={setDialog}
+        headerActions={
+          <IconButton
+            label="Project name help"
+            icon="help"
+            aria-expanded={help}
+            onPress={() => setHelp((visible) => !visible)}
+          />
+        }
         footer={
           <>
             <Button onPress={() => setDialog(false)}>Cancel</Button>
@@ -650,6 +659,7 @@ export function OverlayDemo() {
           </>
         }
       >
+        {help && <p>Choose a name your team will recognize.</p>}
         <TextInput
           label="Project name"
           value={name}

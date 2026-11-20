@@ -531,3 +531,46 @@ it("runs inline text actions by pointer and keyboard without opening the row", a
   expect(onOpen).not.toHaveBeenCalled();
   expect(screen.getByRole("button", { name: "Filter by Walnut bar" })).toBeDisabled();
 });
+
+
+it("keeps a leading action separate from the data row heading and row action", async () => {
+  const user = userEvent.setup();
+  const onAction = vi.fn();
+  const onOpenRow = vi.fn();
+  render(
+    <DataTable
+      {...base}
+      columns={[
+        {
+          id: "preview",
+          label: "Preview",
+          kind: "action",
+          value: (item) => ({
+            label: `Preview ${item.name}`,
+            icon: "external",
+            onAction: () => onAction(item.id),
+          }),
+        },
+        ...columns,
+      ]}
+      onOpenRow={onOpenRow}
+      onQueryChange={vi.fn()}
+    />,
+  );
+  expect(screen.getAllByRole("columnheader")[0]).toHaveTextContent("Preview");
+  const name = screen.getByRole("rowheader", { name: "Oak kitchen" });
+  const row = name.closest("tr")!;
+  const shortcut = within(row.cells[0]).getByRole("button", {
+    name: "Preview Oak kitchen",
+  });
+
+  await user.click(shortcut);
+  shortcut.focus();
+  await user.keyboard("{Enter}");
+  await user.keyboard(" ");
+
+  expect(onAction.mock.calls).toEqual([["a"], ["a"], ["a"]]);
+  expect(onOpenRow).not.toHaveBeenCalled();
+  await user.click(name);
+  expect(onOpenRow).toHaveBeenCalledWith(items[0]);
+});

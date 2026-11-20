@@ -19,6 +19,7 @@ import {
 import { layout, gap } from "@from-trees/ui/utilities";
 import type { ExampleState } from "./demos";
 import { s } from "./styles";
+import { FullTextTableDemo } from "./FullTextTableDemo";
 import { ThumbnailTableDemo } from "./ThumbnailTableDemo";
 type Invoice = {
   id: string;
@@ -173,6 +174,7 @@ export function queryDemoInvoices(
   };
 }
 export function TablesDemo({ state }: { state: ExampleState }) {
+  const [showFullTextDemo, setShowFullTextDemo] = useState(false);
   const [showThumbnailDemo, setShowThumbnailDemo] = useState(false);
   const [query, setQuery] = useState<TableQuery>({
     search: "",
@@ -279,6 +281,10 @@ export function TablesDemo({ state }: { state: ExampleState }) {
           : "Preview thumbnail rows"}
       </Button>
       {showThumbnailDemo && <ThumbnailTableDemo />}
+      <Button onPress={() => setShowFullTextDemo((show) => !show)}>
+        {showFullTextDemo ? "Hide full text example" : "Preview full text rows"}
+      </Button>
+      {showFullTextDemo && <FullTextTableDemo />}
       {notice && <Status>{notice}</Status>}
       <details>
         <summary>Review controls & API contract</summary>
