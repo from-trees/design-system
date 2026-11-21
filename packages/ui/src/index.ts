@@ -7,6 +7,8 @@ export { Panel, Section } from "./Panel";
 export {
   Dialog,
   SidePanel,
+  NavigableSidePanel,
+  type NavigableSidePanelProps,
   type OverlayProps,
   type SidePanelProps,
   type DialogProps,

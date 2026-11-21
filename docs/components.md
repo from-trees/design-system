@@ -18,6 +18,7 @@ Import components from `@from-trees/ui`, tokens from `@from-trees/ui/tokens.styl
 | Section          | title, collapsible, defaultOpen, modified, hasError, children         | Named grouping; optional initial expansion and status hints                          |
 | Dialog           | title, description, open, onOpenChange, children, footer, dismissible | Focused modal task                                                                   |
 | SidePanel        | same as Dialog                                                        | Contextual modal drawer; full width on narrow viewports                              |
+| NavigableSidePanel | SidePanel props, pageKey, back | Multiple views in one side panel with a visible Back button |
 | SegmentedControl | label, value, onChange, options                                       | Radio-group semantics for mutually exclusive modes                                   |
 | Badge            | tone, children                                                        | neutral/success/warning/danger, non-announcing label                                 |
 | Status           | tone, children                                                        | Error alert or polite status announcement                                            |
@@ -250,3 +251,10 @@ The [advanced cabinet customizer inspector exploration](customizer-inspector-pro
 `TableQuery`, `TablePage<T>`, `TableQuerySchema`, `parseTableQuery`, `tableQueryKey` and `tablePageSizes` are exported from the React entry point and the pure `@from-trees/ui/table-query` subpath. Search/filter/sort/page-size changes reset page 1. The table never performs whole-dataset operations on a received page. See [table behavior, API contract and endpoint adoption checklist](admin-tables.md) before integrating.
 
 Table filters carry `{operator, value}` conditions. Operators are `eq`, `contains`, `in` and `noteq`; applications allowlist them per field. `in` accepts a string array and matches any selected value, while conditions on separate fields combine with AND. TableFilter supplies `id`, `label`, optional `operators` (default eq), and optional enum `options`. A shared dialog owns operator/value editing and multi-status selection. Transport types `TableFilterOperator`, `TableFilterValue` and `TableFilterSchema` are also exported. See the API contract for wire encoding and null/case semantics.
+
+
+## Navigable side panels
+
+Use `NavigableSidePanel` when a record detail opens a related record or editor inside the same panel. Supply a stable `pageKey` for the current view and use `back={{ label, onPress }}` on child views. Give Back a destination label such as “Back to project.” On a view change, the new view slides in briefly, the body starts at the top, and focus moves to the heading. Set `depth` for panels with more than two levels so the animation reverses when returning to a shallower view. By default, a view with Back is one level below the root. Reduced-motion preferences skip the slide. Closing returns focus to the opener.
+
+The app owns the view history and draft state. Wire Back and Cancel to the previous view, discarding the draft when appropriate. Save should return to the same previous view after persistence succeeds. Keep the child view open and show local feedback when saving fails. Use the standard close behavior to dismiss the entire panel.

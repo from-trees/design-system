@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import {
   ModalOverlay,
   Modal,
@@ -25,6 +25,11 @@ export type DialogProps = OverlayProps & {
 export type SidePanelProps = OverlayProps & {
   size?: "default" | "workflow" | "wide-workflow";
 };
+export type NavigableSidePanelProps = SidePanelProps & {
+  pageKey: string;
+  depth?: number;
+  back?: { label: string; onPress: () => void };
+};
 const slideIn = stylex.keyframes({
   from: { transform: "translateX(100%)" },
   to: { transform: "translateX(0)" },
@@ -32,6 +37,14 @@ const slideIn = stylex.keyframes({
 const slideOut = stylex.keyframes({
   from: { transform: "translateX(0)" },
   to: { transform: "translateX(100%)" },
+});
+const forwardPage = stylex.keyframes({
+  from: { transform: "translateX(24px)", opacity: 0.65 },
+  to: { transform: "translateX(0)", opacity: 1 },
+});
+const backPage = stylex.keyframes({
+  from: { transform: "translateX(-24px)", opacity: 0.65 },
+  to: { transform: "translateX(0)", opacity: 1 },
 });
 const styles = stylex.create({
   overlay: {
@@ -111,6 +124,21 @@ const styles = stylex.create({
     outline: "none",
   },
   drawerDialog: { height: "100%" },
+  page: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+    minHeight: 0,
+    animationName: {
+      default: "none",
+      "@media (prefers-reduced-motion: no-preference)": {
+        ":is([data-transition=forward])": forwardPage,
+        ":is([data-transition=back])": backPage,
+      },
+    },
+    animationDuration: "180ms",
+    animationTimingFunction: "cubic-bezier(0.2, 0, 0, 1)",
+  },
   header: {
     minWidth: 0,
     boxSizing: "border-box",
@@ -125,6 +153,7 @@ const styles = stylex.create({
     flexShrink: 0,
   },
   headerActions: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
+  back: { marginBottom: 8 },
   title: {
     fontFamily: "inherit",
     fontStyle: "normal",
@@ -181,15 +210,74 @@ function Overlay({
   workflow = false,
   workflowPanel = false,
   wideWorkflowPanel = false,
+  navigation,
 }: OverlayProps & {
   side?: boolean;
   fullScreen?: boolean;
   workflow?: boolean;
   workflowPanel?: boolean;
   wideWorkflowPanel?: boolean;
+  navigation?: Pick<NavigableSidePanelProps, "pageKey" | "depth" | "back">;
 }) {
   const theme = useThemeStyles();
   const descriptionId = useId();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const previousPage = useRef<{ key: string; depth: number }>();
+  const pageKey = navigation?.pageKey;
+  const depth = navigation?.depth ?? (navigation?.back ? 1 : 0);
+  useLayoutEffect(() => {
+    const previous = previousPage.current;
+    if (open && previous && previous.key !== pageKey && pageRef.current) {
+      pageRef.current.dataset.transition = depth < previous.depth ? "back" : "forward";
+      titleRef.current?.focus({ preventScroll: true });
+    }
+    previousPage.current = open && pageKey !== undefined ? { key: pageKey, depth } : undefined;
+  }, [open, pageKey, depth]);
+
+  const content = (
+    <>
+      <header {...stylex.props(styles.header)}>
+        <div>
+          {navigation?.back && (
+            <div {...stylex.props(styles.back)}>
+              <Button variant="ghost" icon="previous" onPress={navigation.back.onPress}>
+                {navigation.back.label}
+              </Button>
+            </div>
+          )}
+          <Heading
+            slot="title"
+            ref={titleRef}
+            tabIndex={navigation ? -1 : undefined}
+            {...stylex.props(styles.title)}
+          >
+            {title}
+          </Heading>
+          {description && (
+            <p id={descriptionId} {...stylex.props(styles.description)}>
+              {description}
+            </p>
+          )}
+        </div>
+        {(headerActions || dismissible) && (
+          <div {...stylex.props(styles.headerActions)}>
+            {headerActions}
+            {dismissible && (
+              <Button
+                variant="ghost"
+                icon="close"
+                aria-label={`Close ${title}`}
+                onPress={() => onOpenChange(false)}
+              />
+            )}
+          </div>
+        )}
+      </header>
+      <div {...stylex.props(styles.body)}>{children}</div>
+      {footer && <footer {...stylex.props(styles.footer)}>{footer}</footer>}
+    </>
+  );
   return (
     <ModalOverlay
       data-ft-ui="overlay"
@@ -222,33 +310,11 @@ function Overlay({
             (side || fullScreen || workflow) && styles.drawerDialog,
           )}
         >
-          <header {...stylex.props(styles.header)}>
-            <div>
-              <Heading slot="title" {...stylex.props(styles.title)}>
-                {title}
-              </Heading>
-              {description && (
-                <p id={descriptionId} {...stylex.props(styles.description)}>
-                  {description}
-                </p>
-              )}
+          {navigation ? (
+            <div ref={pageRef} key={pageKey} {...stylex.props(styles.page)}>
+              {content}
             </div>
-            {(headerActions || dismissible) && (
-              <div {...stylex.props(styles.headerActions)}>
-                {headerActions}
-                {dismissible && (
-                  <Button
-                    variant="ghost"
-                    icon="close"
-                    aria-label={`Close ${title}`}
-                    onPress={() => onOpenChange(false)}
-                  />
-                )}
-              </div>
-            )}
-          </header>
-          <div {...stylex.props(styles.body)}>{children}</div>
-          {footer && <footer {...stylex.props(styles.footer)}>{footer}</footer>}
+          ) : content}
         </AriaDialog>
       </Modal>
     </ModalOverlay>
@@ -270,6 +336,24 @@ export function SidePanel({ size = "default", ...props }: SidePanelProps) {
       side
       workflowPanel={size !== "default"}
       wideWorkflowPanel={size === "wide-workflow"}
+    />
+  );
+}
+
+export function NavigableSidePanel({
+  size = "default",
+  pageKey,
+  depth,
+  back,
+  ...props
+}: NavigableSidePanelProps) {
+  return (
+    <Overlay
+      {...props}
+      side
+      workflowPanel={size !== "default"}
+      wideWorkflowPanel={size === "wide-workflow"}
+      navigation={{ pageKey, depth, back }}
     />
   );
 }
