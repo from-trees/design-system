@@ -255,6 +255,6 @@ Table filters carry `{operator, value}` conditions. Operators are `eq`, `contain
 
 ## Navigable side panels
 
-Use `NavigableSidePanel` when a record detail opens a related record or editor inside the same panel. Supply a stable `pageKey` for the current view and use `back={{ label, onPress }}` on child views. Give Back a destination label such as “Back to project.” On a view change, the body starts at the top and focus moves to the view heading. Closing returns focus to the opener.
+Use `NavigableSidePanel` when a record detail opens a related record or editor inside the same panel. Supply a stable `pageKey` for the current view and use `back={{ label, onPress }}` on child views. Give Back a destination label such as “Back to project.” On a view change, the new view slides in briefly, the body starts at the top, and focus moves to the heading. Set `depth` for panels with more than two levels so the animation reverses when returning to a shallower view. By default, a view with Back is one level below the root. Reduced-motion preferences skip the slide. Closing returns focus to the opener.
 
 The app owns the view history and draft state. Wire Back and Cancel to the previous view, discarding the draft when appropriate. Save should return to the same previous view after persistence succeeds. Keep the child view open and show local feedback when saving fails. Use the standard close behavior to dismiss the entire panel.

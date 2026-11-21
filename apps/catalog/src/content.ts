@@ -363,7 +363,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Applications own unsaved-change confirmation, request cancellation and permission checks.",
   ],
   "navigable-side-panel": [
-    "The panel stays open when changing views. Focus moves to the new heading and the body starts at the top.",
+    "The panel stays open as each view slides in. The slide reverses on return and respects reduced-motion preferences. Focus moves to the new heading and the body starts at the top.",
     "Back and Cancel return to the previous view. Save returns after a successful update. If saving fails, show the error and keep the current view open.",
     "Use Back for the previous view and Close to return to the table.",
   ],
