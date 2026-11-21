@@ -13,6 +13,7 @@ export type PageId =
   | "parameters"
   | "panels"
   | "overlays"
+  | "navigable-side-panel"
   | "feedback"
   | "toolbars"
   | "designer-toolbars"
@@ -127,6 +128,13 @@ export const pages: {
     group: "Components",
     description:
       "Keep tasks where people are working. Open focused dialogs or contextual side panels instead of updating content several scrolls away.",
+  },
+  {
+    id: "navigable-side-panel",
+    title: "Navigable side panel",
+    icon: "external",
+    group: "Components",
+    description: "Open a project from the table, then open a task or deliverable within the same panel.",
   },
   {
     id: "feedback",
@@ -353,6 +361,11 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Escape and outside click dismiss by default; dismissible=false supports a guarded task.",
     "Side panels retain context and fill narrow screens. Header and footer stay outside the scrolling body.",
     "Applications own unsaved-change confirmation, request cancellation and permission checks.",
+  ],
+  "navigable-side-panel": [
+    "The panel stays open when changing views. Focus moves to the new heading and the body starts at the top.",
+    "Back and Cancel return to the previous view. Save returns after a successful update. If saving fails, show the error and keep the current view open.",
+    "Use Back for the previous view and Close to return to the table.",
   ],
   feedback: [
     "Errors use alert announcements. Status updates use polite announcements.",

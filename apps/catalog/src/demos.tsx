@@ -5,6 +5,7 @@ import { EstimateProfitPrototype } from "./EstimateProfitPrototype";
 import { EstimateOptionsPrototype } from "./EstimateOptionsPrototype";
 import { ApprovalWorkflowPrototype } from "./ApprovalWorkflowPrototype";
 import { WorkspaceNavigationPrototype } from "./WorkspaceNavigationPrototype";
+import { NavigableSidePanelDemo } from "./NavigableSidePanelDemo";
 import { TablesDemo } from "./TablesDemo";
 import { CustomerJourneyPrototype } from "./CustomerJourneyPrototype";
 import { CustomizerInspectorPrototype } from "./CustomizerInspectorPrototype";
@@ -1155,6 +1156,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
           <ApprovalWorkflowPrototype />
         </Stack>
       );
+    case "navigable-side-panel":
+      return <NavigableSidePanelDemo />;
     case "feedback":
       return (
         <Stack>

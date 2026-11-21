@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import {
   ModalOverlay,
   Modal,
@@ -24,6 +24,10 @@ export type DialogProps = OverlayProps & {
 };
 export type SidePanelProps = OverlayProps & {
   size?: "default" | "workflow" | "wide-workflow";
+};
+export type NavigableSidePanelProps = SidePanelProps & {
+  pageKey: string;
+  back?: { label: string; onPress: () => void };
 };
 const slideIn = stylex.keyframes({
   from: { transform: "translateX(100%)" },
@@ -125,6 +129,7 @@ const styles = stylex.create({
     flexShrink: 0,
   },
   headerActions: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
+  back: { marginBottom: 8 },
   title: {
     fontFamily: "inherit",
     fontStyle: "normal",
@@ -181,15 +186,26 @@ function Overlay({
   workflow = false,
   workflowPanel = false,
   wideWorkflowPanel = false,
+  navigation,
 }: OverlayProps & {
   side?: boolean;
   fullScreen?: boolean;
   workflow?: boolean;
   workflowPanel?: boolean;
   wideWorkflowPanel?: boolean;
+  navigation?: Pick<NavigableSidePanelProps, "pageKey" | "back">;
 }) {
   const theme = useThemeStyles();
   const descriptionId = useId();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const previousPage = useRef<string>();
+  const pageKey = navigation?.pageKey;
+  useLayoutEffect(() => {
+    if (open && previousPage.current !== undefined && previousPage.current !== pageKey) {
+      titleRef.current?.focus({ preventScroll: true });
+    }
+    previousPage.current = open ? pageKey : undefined;
+  }, [open, pageKey]);
   return (
     <ModalOverlay
       data-ft-ui="overlay"
@@ -224,7 +240,19 @@ function Overlay({
         >
           <header {...stylex.props(styles.header)}>
             <div>
-              <Heading slot="title" {...stylex.props(styles.title)}>
+              {navigation?.back && (
+                <div {...stylex.props(styles.back)}>
+                  <Button variant="ghost" icon="previous" onPress={navigation.back.onPress}>
+                    {navigation.back.label}
+                  </Button>
+                </div>
+              )}
+              <Heading
+                slot="title"
+                ref={titleRef}
+                tabIndex={navigation ? -1 : undefined}
+                {...stylex.props(styles.title)}
+              >
                 {title}
               </Heading>
               {description && (
@@ -247,7 +275,7 @@ function Overlay({
               </div>
             )}
           </header>
-          <div {...stylex.props(styles.body)}>{children}</div>
+          <div key={pageKey} {...stylex.props(styles.body)}>{children}</div>
           {footer && <footer {...stylex.props(styles.footer)}>{footer}</footer>}
         </AriaDialog>
       </Modal>
@@ -270,6 +298,23 @@ export function SidePanel({ size = "default", ...props }: SidePanelProps) {
       side
       workflowPanel={size !== "default"}
       wideWorkflowPanel={size === "wide-workflow"}
+    />
+  );
+}
+
+export function NavigableSidePanel({
+  size = "default",
+  pageKey,
+  back,
+  ...props
+}: NavigableSidePanelProps) {
+  return (
+    <Overlay
+      {...props}
+      side
+      workflowPanel={size !== "default"}
+      wideWorkflowPanel={size === "wide-workflow"}
+      navigation={{ pageKey, back }}
     />
   );
 }
