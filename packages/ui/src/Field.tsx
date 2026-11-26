@@ -1,6 +1,7 @@
 import {
   useId,
   type InputHTMLAttributes,
+  type TextareaHTMLAttributes,
   type SelectHTMLAttributes,
   type ReactNode,
 } from "react";
@@ -39,6 +40,7 @@ const styles = stylex.create({
     outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
     outlineOffset: 2,
   },
+  textarea: { minHeight: 96, resize: "vertical" },
   error: { borderColor: color.danger },
   message: { fontSize: 12, color: color.muted },
   invalid: { color: color.danger },
@@ -120,6 +122,59 @@ export function TextInput({
         }
         {...stylex.props(
           styles.input,
+          (!!error || parameter?.["aria-invalid"]) && styles.error,
+          props.disabled && styles.disabled,
+        )}
+      />
+      {(error || help) && (
+        <span
+          id={`${id}-message`}
+          {...stylex.props(styles.message, !!error && styles.invalid)}
+        >
+          {error || help}
+        </span>
+      )}
+    </div>
+  );
+}
+export function TextArea({
+  label,
+  help,
+  error,
+  id: suppliedId,
+  rows = 4,
+  ...props
+}: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const generatedId = useId();
+  const parameter = useParameterControl();
+  const id = parameter?.id ?? suppliedId ?? generatedId;
+  if (!parameter && !label && !props["aria-label"] && !props["aria-labelledby"])
+    throw new Error("Standalone fields require a label.");
+  return (
+    <div {...stylex.props(styles.field)}>
+      {!parameter && label && (
+        <label htmlFor={id} {...stylex.props(styles.label)}>
+          {label}
+        </label>
+      )}
+      <textarea
+        {...props}
+        id={id}
+        rows={rows}
+        aria-labelledby={
+          parameter?.["aria-labelledby"] ?? props["aria-labelledby"]
+        }
+        aria-invalid={!!error || parameter?.["aria-invalid"] || props["aria-invalid"]}
+        aria-describedby={
+          [
+            parameter?.["aria-describedby"],
+            props["aria-describedby"],
+            (help || error) && `${id}-message`,
+          ].filter(Boolean).join(" ") || undefined
+        }
+        {...stylex.props(
+          styles.input,
+          styles.textarea,
           (!!error || parameter?.["aria-invalid"]) && styles.error,
           props.disabled && styles.disabled,
         )}

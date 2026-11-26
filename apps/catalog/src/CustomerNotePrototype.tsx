@@ -9,6 +9,7 @@ import {
   Select,
   Status,
   Switch,
+  TextArea,
   TextInput,
 } from "@from-trees/ui";
 import { color, metrics, space } from "@from-trees/ui/tokens.stylex";
@@ -48,15 +49,6 @@ const styles = stylex.create({
     padding: space.md, borderWidth: 1, borderStyle: "solid", borderColor: color.border,
     borderRadius: metrics.radius, backgroundColor: color.subtle,
   },
-  label: { color: color.muted, fontSize: metrics.small, fontWeight: 550 },
-  textarea: {
-    boxSizing: "border-box", width: "100%", minWidth: 0, minHeight: 96, resize: "vertical",
-    paddingBlock: 7, paddingInline: 10, borderWidth: 1, borderStyle: "solid",
-    borderColor: color.border, borderRadius: metrics.radius, backgroundColor: color.surface,
-    color: color.ink, fontFamily: "inherit", fontSize: metrics.font, lineHeight: 1.4,
-    outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
-    outlineOffset: 2,
-  },
   list: { listStyle: "none", margin: 0, padding: 0 },
   listRow: {
     display: "flex", justifyContent: "space-between", alignItems: "center", gap: space.sm,
@@ -86,7 +78,6 @@ function NoteComposer({ formId, onSave }: {
   const [assignee, setAssignee] = useState("");
   const [files, setFiles] = useState<Attachment[]>([]);
   const [fileError, setFileError] = useState("");
-  const bodyId = useId();
   const picker = useRef<HTMLInputElement>(null);
 
   function addFiles(attachments: Attachment[]) {
@@ -111,17 +102,12 @@ function NoteComposer({ formId, onSave }: {
   return (
     <form id={formId} onSubmit={save} {...stylex.props(layout.stack, gap.lg)}>
       <TextInput label="Note title" required value={title} onChange={(event) => setTitle(event.target.value)} />
-      <div {...stylex.props(layout.stack, gap.xs)}>
-        <label htmlFor={bodyId} {...stylex.props(styles.label)}>Note body</label>
-        <textarea
-          id={bodyId}
-          required
-          rows={4}
-          value={body}
-          onChange={(event) => setBody(event.target.value)}
-          {...stylex.props(styles.textarea)}
-        />
-      </div>
+      <TextArea
+        label="Note body"
+        required
+        value={body}
+        onChange={(event) => setBody(event.target.value)}
+      />
       <div {...stylex.props(layout.stack, gap.md)}>
         <Switch label="Schedule follow-up" selected={scheduling} onChange={setScheduling} />
         {scheduling && (
@@ -195,6 +181,8 @@ export function CustomerNotePrototype() {
   const [page, setPage] = useState<"closed" | "summary" | "add-note">("closed");
   const [notes, setNotes] = useState<Note[]>([existingNote]);
   const [saved, setSaved] = useState<{ followUp: boolean }>();
+  const [simulateFailure, setSimulateFailure] = useState(false);
+  const [failed, setFailed] = useState<{ noteId: number; file: Attachment }[]>([]);
   const formId = useId();
   const composing = page === "add-note";
   const returnToSummary = () => setPage("summary");
@@ -206,6 +194,11 @@ export function CustomerNotePrototype() {
           <Button variant="ghost" onPress={returnToSummary}>{customer}</Button>
           <Badge tone="success">Active</Badge>
         </div>
+        <Switch
+          label="Simulate an attachment upload failure"
+          selected={simulateFailure}
+          onChange={setSimulateFailure}
+        />
       </Panel>
       <NavigableSidePanel
         open={page !== "closed"}
@@ -223,13 +216,22 @@ export function CustomerNotePrototype() {
       >
         {composing ? (
           <NoteComposer formId={formId} onSave={(note) => {
-            setNotes((current) => [{ ...note, id: current.length }, ...current]);
+            const failedFile = simulateFailure ? note.files.at(-1) : undefined;
+            const noteId = notes.length;
+            setNotes((current) => [{
+              ...note,
+              id: noteId,
+              files: failedFile ? note.files.slice(0, -1) : note.files,
+            }, ...current]);
+            if (failedFile) setFailed((current) => [...current, { noteId, file: failedFile }]);
             setSaved({ followUp: Boolean(note.followUp) });
             returnToSummary();
           }} />
         ) : (
           <div {...stylex.props(layout.stack, gap.lg)}>
-            {saved && <Status tone="success">{saved.followUp ? "Note saved and follow-up scheduled." : "Note saved."}</Status>}
+            {saved && failed.length === 0 && (
+              <Status tone="success">{saved.followUp ? "Note saved and follow-up scheduled." : "Note saved."}</Status>
+            )}
             <div {...stylex.props(styles.toolbar)}>
               <h3 {...stylex.props(styles.heading)}>Recent notes</h3>
               <Button variant="primary" icon="add" onPress={() => {
@@ -248,6 +250,21 @@ export function CustomerNotePrototype() {
                     <p {...stylex.props(styles.muted)}>{formatPacificWallTime(note.followUp.due)} · {note.followUp.assignee || "Unassigned"}</p>
                   </div>
                 )}
+                {failed.filter((entry) => entry.noteId === note.id).map((entry) => (
+                  <div key={entry.file.id} {...stylex.props(layout.stack, gap.sm)}>
+                    <Status tone="warning">Note saved. {entry.file.name} could not be uploaded.</Status>
+                    <div>
+                      <Button onPress={() => {
+                        setNotes((current) => current.map((item) =>
+                          item.id === entry.noteId
+                            ? { ...item, files: [...item.files, entry.file] }
+                            : item,
+                        ));
+                        setFailed((current) => current.filter((pending) => pending !== entry));
+                      }}>Retry attachment</Button>
+                    </div>
+                  </div>
+                ))}
                 {note.files.length > 0 && (
                   <ul aria-label="Note attachments" {...stylex.props(styles.list)}>
                     {note.files.map((file) => <li key={file.id} {...stylex.props(styles.text)}>{file.name}</li>)}
