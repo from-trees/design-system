@@ -18,6 +18,7 @@ export type PageId =
   | "toolbars"
   | "designer-toolbars"
   | "customer-journey"
+  | "customer-notes"
   | "estimate-options"
   | "estimate-workflow"
   | "estimate-profit"
@@ -201,6 +202,14 @@ export const pages: {
       "From estimate review to delivery: a clear next action, visible progress and focused customer tasks.",
   },
   {
+    id: "customer-notes",
+    title: "Add customer note",
+    icon: "edit",
+    group: "Patterns",
+    description:
+      "Open a customer’s Summary, write a note, optionally schedule a follow-up and attach files, then return to the same Summary.",
+  },
+  {
     id: "customizer",
     title: "Cabinet customizer",
     icon: "parts",
@@ -371,6 +380,13 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "Errors use alert announcements. Status updates use polite announcements.",
     "Messages belong beside their action. Badges carry a text label as well as color.",
     "Shimmer placeholders match the incoming content. The owning region announces loading; reduced-motion preferences disable animation. Replace placeholders with content or an error and retry.",
+  ],
+  "customer-notes": [
+    "Open Add note from the customer’s Summary. The composer replaces the current page inside the full-height navigable side panel.",
+    "A scheduled follow-up requires a Pacific date and time and a description. The assignee is optional.",
+    "Attach files or use the sample PDF, then remove any files you do not wish to include. The demo keeps file names in memory and does not upload files.",
+    "Save returns to the same Summary, announces success and shows the new note first with its follow-up and attachments. Cancel, Back and Close return to Summary and discard the draft.",
+    "FTOPS saves the note before uploading attachments. When an upload fails, the application needs to distinguish a saved note from any missing attachments.",
   ],
   patterns: [
     "All state is synthetic and browser-local. No customer records or external share links are created.",

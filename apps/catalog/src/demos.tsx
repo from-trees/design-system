@@ -1,3 +1,4 @@
+import { CustomerNotePrototype } from "./CustomerNotePrototype";
 import { ObstructionMenuExample } from "./ObstructionMenuExample";
 import { EmailDeliveryPrototype } from "./EmailDeliveryPrototype";
 import { EstimateWorkflowPrototype } from "./EstimateWorkflowPrototype";
@@ -1114,6 +1115,8 @@ export function Demo({ page, state }: { page: PageId; state: ExampleState }) {
       return <EstimateProfitPrototype />;
     case "estimate-options":
       return <EstimateOptionsPrototype />;
+    case "customer-notes":
+      return <CustomerNotePrototype />;
     case "customer-journey":
       return <CustomerJourneyPrototype />;
     case "customizer":
