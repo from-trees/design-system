@@ -63,6 +63,7 @@ export default function App() {
     page === "designer-toolbars" ||
     page === "customizer" ||
     page === "customer-journey" ||
+    page === "customer-notes" ||
     page === "estimate-options" ||
     page === "estimate-workflow";
   const hasStates = [
@@ -209,6 +210,7 @@ export default function App() {
                 page === "designer-toolbars" ||
                 page === "customizer" ||
                 page === "customer-journey" ||
+                page === "customer-notes" ||
                 page === "estimate-options" ||
                 page === "workspace-navigation"
                   ? "Prototype"
@@ -272,9 +274,11 @@ export default function App() {
                                   ? "Cabinitron · sidebar prototype"
                                   : page === "workspace-navigation"
                                     ? "Cabinitron · workspace navigation"
-                                    : isComposition
-                                      ? "Cabinitron · composed examples"
-                                      : "Interactive example"}
+                                    : page === "customer-notes"
+                                      ? "FTOPS · customer Summary"
+                                      : isComposition
+                                        ? "Cabinitron · composed examples"
+                                        : "Interactive example"}
                       </h2>
                       {snippets[page] && (
                         <SegmentedControl
