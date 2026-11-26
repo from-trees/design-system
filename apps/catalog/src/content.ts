@@ -386,7 +386,7 @@ export const behavior: Partial<Record<PageId, string[]>> = {
     "A scheduled follow-up requires a Pacific date and time and a description. The assignee is optional.",
     "Attach files or use the sample PDF, then remove any files you do not wish to include. The demo keeps file names in memory and does not upload files.",
     "Save returns to the same Summary, announces success and shows the new note first with its follow-up and attachments. Cancel, Back and Close return to Summary and discard the draft.",
-    "FTOPS saves the note before uploading attachments. When an upload fails, the application needs to distinguish a saved note from any missing attachments.",
+    "Enable the simulated upload failure to see a saved note with a missing attachment. Retry the attachment from Summary to add it to the existing note.",
   ],
   patterns: [
     "All state is synthetic and browser-local. No customer records or external share links are created.",

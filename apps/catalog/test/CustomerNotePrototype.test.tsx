@@ -58,3 +58,22 @@ it("returns to the same Summary on cancel and opens a fresh draft next time", as
   expect(fresh.getByRole("switch", { name: "Schedule follow-up" })).not.toBeChecked();
   expect(fresh.queryByRole("list", { name: "Attached files" })).not.toBeInTheDocument();
 });
+
+it("reports the failed attachment on the saved note and retries it without duplicating the note", async () => {
+  render(<ThemeProvider><CustomerNotePrototype /></ThemeProvider>);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("switch", { name: "Simulate an attachment upload failure" }));
+  await user.click(screen.getByRole("button", { name: "Cedar Row Studio" }));
+  await user.click(screen.getByRole("button", { name: "Add note" }));
+  const editor = within(screen.getByRole("dialog", { name: "Add note" }));
+  await user.type(editor.getByRole("textbox", { name: "Note body" }), "A note with an attachment.");
+  await user.click(editor.getByRole("button", { name: "Use sample PDF" }));
+  await user.click(editor.getByRole("button", { name: "Save note" }));
+  const summary = within(screen.getByRole("dialog", { name: "Cedar Row Studio" }));
+  const note = within(summary.getAllByRole("article")[0]);
+  expect(note.getByRole("status")).toHaveTextContent("Note saved. finish-options.pdf could not be uploaded.");
+  expect(note.queryByRole("list", { name: "Note attachments" })).not.toBeInTheDocument();
+  await user.click(note.getByRole("button", { name: "Retry attachment" }));
+  expect(note.getByRole("list", { name: "Note attachments" })).toHaveTextContent("finish-options.pdf");
+  expect(summary.getAllByRole("article")).toHaveLength(2);
+});
