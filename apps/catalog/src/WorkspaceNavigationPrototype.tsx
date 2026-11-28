@@ -38,7 +38,11 @@ const styles = stylex.create({
   muted: { color: color.muted, margin: 0 },
   frame: { minHeight: 400 },
   canvas: { height: "min(860px,85dvh)", minHeight: 400 },
-  full: { height: "100dvh", boxSizing: "border-box", padding: 20 },
+  full: {
+    height: "100dvh",
+    boxSizing: "border-box",
+    padding: { default: 20, "@media (max-width: 640px)": 0 },
+  },
   fullCanvas: { flexGrow: 1, minHeight: 0, height: "auto" },
   details: {
     margin: 0,
@@ -473,6 +477,7 @@ export function WorkspaceNavigationPrototype({
             {copied && <Status tone="success">Record link copied.</Status>}
             <SegmentedControl
               label="Record section"
+              narrowBehavior="select"
               value={route.detail ?? "overview"}
               onChange={(detail) => {
                 const params = new URLSearchParams(route.url.searchParams);

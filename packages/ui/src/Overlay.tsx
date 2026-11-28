@@ -46,35 +46,32 @@ const backPage = stylex.keyframes({
   from: { transform: "translateX(-24px)", opacity: 0.65 },
   to: { transform: "translateX(0)", opacity: 1 },
 });
+const narrow = "@media (max-width: 640px)";
 const styles = stylex.create({
   overlay: {
     position: "fixed",
     inset: 0,
+    height: "var(--visual-viewport-height, 100dvh)",
     zIndex: 200,
     overflow: "hidden",
     backgroundColor: color.overlay,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: { default: 20, [narrow]: 12 },
     boxSizing: "border-box",
   },
   fullscreenOverlay: { padding: 0 },
   workflowOverlay: {
-    padding: { default: 24, "@media (max-width: 640px)": 12 },
+    padding: { default: 24, [narrow]: 12 },
   },
   workflow: {
     width: "min(1440px, 100%)",
-    height: {
-      default: "calc(100dvh - 48px)",
-      "@media (max-width: 640px)": "calc(100dvh - 24px)",
-    },
-    maxHeight: "100%",
+    height: "100%",
   },
   fullscreen: {
-    width: "100vw",
-    height: "100dvh",
-    maxHeight: "100dvh",
+    width: "100%",
+    height: "100%",
     borderWidth: 0,
     borderRadius: 0,
   },
@@ -82,7 +79,7 @@ const styles = stylex.create({
   modal: {
     boxSizing: "border-box",
     width: "min(520px, 100%)",
-    maxHeight: "calc(100dvh - 40px)",
+    maxHeight: "100%",
     backgroundColor: color.surface,
     borderWidth: 1,
     borderStyle: "solid",
@@ -92,16 +89,15 @@ const styles = stylex.create({
     overflow: "hidden",
   },
   drawer: {
-    width: "min(480px, 100vw)",
-    height: "100dvh",
-    maxHeight: "100dvh",
+    width: "min(480px, 100%)",
+    height: "100%",
     borderRadius: 0,
     borderTopWidth: 0,
     borderBottomWidth: 0,
     borderRightWidth: 0,
   },
   workflowDrawer: {
-    width: "min(640px, 100vw)",
+    width: "min(640px, 100%)",
     animationName: {
       default: "none",
       ":is([data-entering])": slideIn,
@@ -113,7 +109,11 @@ const styles = stylex.create({
     },
     animationTimingFunction: "cubic-bezier(0.2, 0, 0, 1)",
   },
-  wideWorkflowDrawer: { width: "min(1100px, 100vw)" },
+  wideWorkflowDrawer: { width: "min(1100px, 100%)" },
+  phoneDrawer: {
+    width: { default: null, [narrow]: "100%" },
+    borderLeftWidth: { default: null, [narrow]: 0 },
+  },
   dialog: {
     width: "100%",
     minWidth: 0,
@@ -145,13 +145,14 @@ const styles = stylex.create({
     display: "flex",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: 16,
-    padding: metrics.panelPadding,
+    gap: { default: 16, [narrow]: 8 },
+    padding: { default: metrics.panelPadding, [narrow]: 12 },
     borderBottomWidth: 1,
     borderBottomStyle: "solid",
     borderBottomColor: color.border,
     flexShrink: 0,
   },
+  heading: { minWidth: 0, overflowWrap: "anywhere" },
   headerActions: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
   back: { marginBottom: 8 },
   title: {
@@ -173,8 +174,9 @@ const styles = stylex.create({
   body: {
     minWidth: 0,
     boxSizing: "border-box",
-    padding: metrics.panelPadding,
+    padding: { default: metrics.panelPadding, [narrow]: 12 },
     overflowY: "auto",
+    overflowWrap: "anywhere",
     overscrollBehavior: "contain",
     minHeight: 0,
     flexGrow: 1,
@@ -185,7 +187,7 @@ const styles = stylex.create({
     backgroundColor: color.surface,
     color: color.ink,
     margin: 0,
-    padding: metrics.panelPadding,
+    padding: { default: metrics.panelPadding, [narrow]: 12 },
     borderTopWidth: 1,
     borderTopStyle: "solid",
     borderTopColor: color.border,
@@ -238,7 +240,7 @@ function Overlay({
   const content = (
     <>
       <header {...stylex.props(styles.header)}>
-        <div>
+        <div {...stylex.props(styles.heading)}>
           {navigation?.back && (
             <div {...stylex.props(styles.back)}>
               <Button variant="ghost" icon="previous" onPress={navigation.back.onPress}>
@@ -301,6 +303,7 @@ function Overlay({
           workflow && styles.workflow,
           workflowPanel && styles.workflowDrawer,
           wideWorkflowPanel && styles.wideWorkflowDrawer,
+          side && styles.phoneDrawer,
         )}
       >
         <AriaDialog
