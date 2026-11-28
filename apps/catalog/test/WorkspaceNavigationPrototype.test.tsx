@@ -34,6 +34,24 @@ it("restores direct record section, saved revision and table criteria on reload"
     filters: { status: { operator: "in", value: ["Draft"] } },
   });
 });
+it("keeps the compact section picker and desktop segments on the same record section", async () => {
+  const user = userEvent.setup();
+  window.history.replaceState(
+    null,
+    "",
+    workspaceHref(businessPath + "/customers/directory/directory-1"),
+  );
+  render(<WorkspaceNavigationPrototype />);
+
+  const panel = screen.getByRole("dialog", { name: "Alex Morgan" });
+  const picker = within(panel).getByRole("combobox", { name: "Record section" });
+  await user.selectOptions(picker, "contacts");
+  expect(within(panel).getByRole("list", { name: "Customer contacts" })).toBeVisible();
+  expect(within(panel).getByRole("radio", { name: "Contacts" })).toBeChecked();
+
+  await user.click(within(panel).getByRole("radio", { name: "Overview" }));
+  expect(picker).toHaveValue("overview");
+});
 it("opens a record from its list and closes it without losing the list state", async () => {
   const user = userEvent.setup();
   window.history.replaceState(
