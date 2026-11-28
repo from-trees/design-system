@@ -53,7 +53,9 @@ Spacing keys: none/xs/sm/md/lg/xl/xxl = 0/4/8/12/16/24/32 px. Gap, padding, marg
 </WorkspaceLayout>
 ```
 
-Give the layout a bounded parent height for independent scrolling. Its mobile breakpoint follows its container width, so the same behavior works in the catalog and an application. Normal links work without a custom navigation callback. Do not turn application destinations into button rows or action menus.
+Give the layout a bounded parent height for independent scrolling. The navigation opens in a drawer until the workspace container reaches 761px. Normal links work without a custom navigation callback. Do not turn application destinations into button rows or action menus.
+
+Side panels cover the viewport at widths up to 640px. Panel bodies scroll independently of headers and footers. Use `SegmentedControl narrowBehavior="select"` for record sections that should switch to a native select at 420px of available space or less. Keep the same controlled value and options at both sizes. Tables keep their columns in a horizontal scroll area. At up to 540px of available space, the table expands vertically so the surrounding page can scroll to the pagination.
 
 The workspace catalog example owns its synthetic routing model. Review refresh, copied/deep links, Back/Forward, list criteria, exact saved revisions, customer/contact/address identity and unavailable destinations there before application adoption. Existing Cabinitron customer editing/preparation, permissions, immutable snapshots and backend APIs remain application responsibilities.
 

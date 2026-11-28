@@ -26,6 +26,7 @@ export type Action = {
   destructive?: boolean;
   separatorBefore?: boolean;
 };
+const touch = "@media (pointer: coarse)";
 const styles = stylex.create({
   labeledTrigger: { width: "auto", paddingInline: 10, gap: 6 },
   helpTrigger: { width: "auto", minWidth: metrics.control, paddingInline: 6 },
@@ -41,8 +42,9 @@ const styles = stylex.create({
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: metrics.control,
-    width: metrics.control,
+    minHeight: { default: metrics.control, [touch]: 44 },
+    minWidth: { default: null, [touch]: 44 },
+    width: { default: metrics.control, [touch]: 44 },
     padding: 0,
     borderWidth: 1,
     borderStyle: "solid",

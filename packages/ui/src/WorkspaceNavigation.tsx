@@ -22,7 +22,7 @@ export type NavigationGroup = NavigationDestination & {
   items: readonly NavigationItem[];
 };
 export type NavigationHandler = (destination: NavigationDestination) => void;
-const narrow = "@container workspace (max-width: 760px)";
+const wide = "@container workspace (min-width: 761px)";
 const styles = stylex.create({
   container: {
     containerType: "inline-size",
@@ -34,11 +34,9 @@ const styles = stylex.create({
   shell: {
     height: "100%",
     minHeight: 0,
-    display: "grid",
-    gridTemplateColumns: {
-      default: "216px minmax(0,1fr)",
-      [narrow]: "minmax(0,1fr)",
-    },
+    boxSizing: "border-box",
+    display: { default: "block", [wide]: "grid" },
+    gridTemplateColumns: "216px minmax(0,1fr)",
     backgroundColor: color.canvas,
     color: color.ink,
     borderWidth: 1,
@@ -48,11 +46,17 @@ const styles = stylex.create({
     overflow: "clip",
     minWidth: 0,
   },
-  page: { display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 },
+  page: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    minWidth: 0,
+    minHeight: 0,
+  },
   sidebar: {
     minHeight: 0,
     overflowY: "auto",
-    display: { default: "flex", [narrow]: "none" },
+    display: { default: "none", [wide]: "flex" },
     flexDirection: "column",
     gap: space.lg,
     padding: space.lg,
@@ -69,7 +73,7 @@ const styles = stylex.create({
     overflowWrap: "anywhere",
   },
   mobile: {
-    display: { default: "none", [narrow]: "flex" },
+    display: { default: "flex", [wide]: "none" },
     alignItems: "center",
     justifyContent: "space-between",
     gap: space.md,
@@ -84,7 +88,7 @@ const styles = stylex.create({
     minHeight: 0,
     overflowY: "auto",
     flexGrow: 1,
-    padding: space.lg,
+    padding: { default: space.md, [wide]: space.lg },
   },
   nav: { display: "flex", flexDirection: "column", gap: space.lg, minWidth: 0 },
   group: { margin: 0, padding: 0, borderWidth: 0, minWidth: 0 },
@@ -116,7 +120,7 @@ const styles = stylex.create({
     display: "flex",
     alignItems: "center",
     gap: space.sm,
-    minHeight: metrics.control,
+    minHeight: { default: 44, [wide]: metrics.control },
     boxSizing: "border-box",
     paddingBlock: space.xs,
     paddingInline: space.sm,

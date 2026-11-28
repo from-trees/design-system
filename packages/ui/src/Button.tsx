@@ -17,6 +17,7 @@ export type ButtonProps = Omit<
   variant?: "primary" | "secondary" | "ghost" | "danger";
   busy?: boolean;
 };
+const touch = "@media (pointer: coarse)";
 const styles = stylex.create({
   base: {
     boxSizing: "border-box",
@@ -26,7 +27,8 @@ const styles = stylex.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    minHeight: metrics.control,
+    minHeight: { default: metrics.control, [touch]: 44 },
+    minWidth: { default: null, [touch]: 44 },
     paddingBlock: 7,
     paddingInline: 12,
     borderWidth: 1,
@@ -64,7 +66,10 @@ const styles = stylex.create({
   },
   disabled: { opacity: 0.45, cursor: "not-allowed" },
   busy: { cursor: "progress" },
-  icon: { paddingInline: 0, width: metrics.control },
+  icon: {
+    paddingInline: 0,
+    width: { default: metrics.control, [touch]: 44 },
+  },
   tooltip: {
     paddingBlock: 6,
     paddingInline: 9,

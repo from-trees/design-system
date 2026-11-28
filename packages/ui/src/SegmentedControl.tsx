@@ -2,7 +2,17 @@ import { RadioGroup, Radio } from "react-aria-components";
 import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 import { Icon, type IconName } from "./Icon";
+import { Select } from "./Field";
+const narrow = "@container segmented-control (max-width: 420px)";
 const styles = stylex.create({
+  container: {
+    containerType: "inline-size",
+    containerName: "segmented-control",
+    minWidth: 0,
+    width: "100%",
+  },
+  wide: { display: { default: "block", [narrow]: "none" } },
+  narrow: { display: { default: "none", [narrow]: "block" } },
   root: {
     display: "inline-flex",
     gap: 3,
@@ -40,11 +50,14 @@ export function SegmentedControl({
   label,
   value,
   onChange,
+  narrowBehavior,
   options,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  /** Show a native select when the control has 420px or less available. */
+  narrowBehavior?: "select";
   options: readonly {
     value: string;
     label: string;
@@ -52,7 +65,7 @@ export function SegmentedControl({
     disabled?: boolean;
   }[];
 }) {
-  return (
+  const segments = (
     <RadioGroup
       aria-label={label}
       orientation="horizontal"
@@ -77,5 +90,28 @@ export function SegmentedControl({
         </Radio>
       ))}
     </RadioGroup>
+  );
+  if (narrowBehavior !== "select") return segments;
+  return (
+    <div {...stylex.props(styles.container)}>
+      <div {...stylex.props(styles.wide)}>{segments}</div>
+      <div {...stylex.props(styles.narrow)}>
+        <Select
+          label={label}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          {options.map((option) => (
+            <option
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      </div>
+    </div>
   );
 }

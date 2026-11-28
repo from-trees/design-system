@@ -90,8 +90,11 @@ export type DataTableProps<T> = {
   locale?: string;
   timeZone?: string;
 };
+const narrow = "@container data-table (max-width: 540px)";
 const styles = stylex.create({
   root: {
+    containerType: "inline-size",
+    containerName: "data-table",
     minWidth: 0,
     color: color.ink,
     fontFamily: "inherit",
@@ -116,7 +119,8 @@ const styles = stylex.create({
   grow: { flexGrow: 1 },
   scroll: {
     overflow: "auto",
-    maxHeight: 540,
+    maxHeight: { default: 540, [narrow]: "none" },
+    maxWidth: "100%",
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: color.border,
@@ -144,7 +148,7 @@ const styles = stylex.create({
   sortable: { cursor: "pointer" },
   cell: {
     paddingBlock: metrics.fieldGap,
-    paddingInline: space.lg,
+    paddingInline: { default: space.lg, [narrow]: space.sm },
     minWidth: 120,
     borderBottomWidth: 1,
     borderBottomStyle: "solid",
@@ -160,7 +164,11 @@ const styles = stylex.create({
     minWidth: 0,
     width: 1,
   },
-  primary: { minWidth: 200, maxWidth: 340, fontWeight: 550 },
+  primary: {
+    minWidth: { default: 200, [narrow]: 144 },
+    maxWidth: { default: 340, [narrow]: 200 },
+    fontWeight: 550,
+  },
   illustrated: { display: "flex", alignItems: "center", gap: space.sm },
   caption: { minWidth: 0 },
   thumbnail: {

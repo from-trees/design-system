@@ -10,6 +10,7 @@ import * as stylex from "@stylexjs/stylex";
 import { color, metrics } from "./tokens.stylex";
 import { useParameterControl } from "./ParameterContext";
 import { Icon } from "./Icon";
+const touch = "@media (pointer: coarse)";
 const styles = stylex.create({
   field: { display: "flex", flexDirection: "column", gap: 6, minWidth: 0 },
   label: {
@@ -26,7 +27,7 @@ const styles = stylex.create({
     boxSizing: "border-box",
     width: "100%",
     minWidth: 0,
-    minHeight: metrics.control,
+    minHeight: { default: metrics.control, [touch]: 44 },
     paddingBlock: 7,
     paddingInline: 10,
     borderWidth: 1,
@@ -36,7 +37,8 @@ const styles = stylex.create({
     backgroundColor: color.surface,
     color: color.ink,
     fontFamily: "inherit",
-    fontSize: metrics.font,
+    // Safari zooms to focus editable controls with text smaller than 16px.
+    fontSize: { default: metrics.font, [touch]: "16px" },
     outline: { default: "none", ":focus-visible": `2px solid ${color.focus}` },
     outlineOffset: 2,
   },
